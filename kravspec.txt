@@ -1,0 +1,35 @@
+Kravspcefikation
+=========================================
+
+-----------------------------------------
+Alex Telon (alete471)
+Anton Sundblad (antsu469)
+Filip Strömbäck (filst914)
+-----------------------------------------
+
+GameBoy (ej color) emulator på FPGA
+
+1 Bakgrund
+
+Gameboy(GB) är en spelkonsol ifrån stenåldern med en upplösning på 160x144 samt 16kB ram.
+Upp till 8MB rom, färgpaletten är på 2bit per pixel. 
+
+2 Blockshema
+
+
+CPU <-> RAM <-> GPU -> VGA -> display
+        ^^
+	||
+     knappar
+
+3 Krav
+3.1 skall-krav
+    3.1.1 Fungerande CPU och GPU efter GB specefikationer.
+    3.1.2 Skall kunna köra ett enkelt program. (kanske inte ett spel)
+
+
+3.2 bör-krav
+    2.2.1 Bör kunna köra ett enklare officielt spel.
+    3.2.2 möjlighet till snabbare emulering
+    3.2.3 implementera kända buggar i GameBoy som utnyttjas i spel
+    3.2.4 ladda/spara speldata till PC via UART
