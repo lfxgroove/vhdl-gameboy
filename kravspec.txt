@@ -11,12 +11,21 @@ GameBoy (ej color) emulator på FPGA
 
 1 Bakgrund
 
-Gameboy(GB) är en spelkonsol ifrån stenåldern med en upplösning på 160x144 samt 16kB ram.
-Upp till 8MB rom, färgpaletten är på 2bit per pixel. 
+Gameboy(GB) är en spelkonsol med en upplösning på 160x144 samt 16kB ram.
+Program lagras på ett upp till 8MB rom, färgpaletten är på 2bit per pixel.  Konsolen 
+innehåller också ett enkelt ljudkort som har stöd för två kanaler samtidigt.
+
+Vårt projekt är att bygga en emulator för denna spelkonsol på ett FPGA-kort. Emulatorn
+kommer att skicka ut en bild via VGA och använda knappar i hårdvara som inmatning.
+Eftersom konsolen totalt har 8 knappar behöver vi komplettera FPGA-kortet med ett par
+extra tryckknappar.
+
 
 2 Blockshema
 
-
+       ljud
+        ^^
+	||
 CPU <-> RAM <-> GPU -> VGA -> display
         ^^
 	||
@@ -26,10 +35,12 @@ CPU <-> RAM <-> GPU -> VGA -> display
 3.1 skall-krav
     3.1.1 Fungerande CPU och GPU efter GB specefikationer.
     3.1.2 Skall kunna köra ett enkelt program. (kanske inte ett spel)
+    3.1.3 Skall kunna ta inmatning från hårdvaruknapparna.
 
 
 3.2 bör-krav
     2.2.1 Bör kunna köra ett enklare officielt spel.
-    3.2.2 möjlighet till snabbare emulering
-    3.2.3 implementera kända buggar i GameBoy som utnyttjas i spel
-    3.2.4 ladda/spara speldata till PC via UART
+    3.2.2 Möjlighet till snabbare emulering
+    3.2.3 Implementera de kända buggar i hårdvaran som uttnytjas i spel.
+    3.2.4 Ladda/spara speldata/rom till PC via UART
+    3.2.5 Stöd för emulering av den ljudhårdvara som finns i GB.
