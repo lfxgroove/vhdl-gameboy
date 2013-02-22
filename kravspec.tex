@@ -1,0 +1,133 @@
+\documentclass{article}
+\usepackage[T1]{fontenc}
+\usepackage{parskip}
+\usepackage{caption}
+\usepackage{tikz}
+
+\begin{document}
+\title{GameBoy (ej color) emulator på FPGA}
+% \subtitle{Kravspecifikation}
+\author{Alex Telon (alete471), Anton Sundblad (antsu469), Filip Strömbäck (filst914)}
+
+
+\maketitle
+
+\clearpage
+
+\section{Bakgrund}
+
+Gameboy(GB) är en spelkonsol med en upplösning på 160x144 samt 16kB ram.
+Program lagras på ett upp till 8MB rom, färgpaletten är på 2bit per pixel.  Konsolen 
+innehåller också ett enkelt ljudkort som har stöd för två kanaler samtidigt.
+
+Vårt projekt är att bygga en emulator för denna spelkonsol på ett FPGA-kort. Emulatorn
+kommer att skicka ut en bild via VGA och använda knappar i hårdvara som inmatning.
+Eftersom konsolen totalt har 8 knappar behöver vi komplettera FPGA-kortet med ett par
+extra tryckknappar.
+
+För att kunna köra något på vår emulator utan att ha fått allt att fungera perfekt
+ska vi också skriva en eller flera demos för att kunna testa det vi har implementerat.
+
+\section{Blockschema}
+
+
+\usetikzlibrary{shapes.geometric}
+\begin{tikzpicture}
+[every node/.style={inner sep=0pt}]
+\node (1) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (50.0pt, -188.125pt)  {};
+\node (2) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (115.0pt, -188.125pt)  {};
+\node (3) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (176.875pt, -189.375pt)  {};
+\node (4) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (241.875pt, -189.375pt)  {};
+\node (5) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (311.25pt, -189.375pt)  {};
+\node (6) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (113.75pt, -104.375pt)  {};
+\node (7) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (115.0pt, -275.0pt)  {};
+\node (8) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (51.25pt, -274.375pt)  {};
+\draw [line width=0.625, ->, color=black] (4) to  (5);
+\draw [line width=0.625, ->, color=black] (3) to  (4);
+\draw [line width=0.625, ->, color=black] (2) to  [in=159, out=20] (3);
+\draw [line width=0.625, ->, color=black] (3) to  [in=339, out=200] (2);
+\draw [line width=0.625, ->, color=black] (1) to  [in=160, out=20] (2);
+\draw [line width=0.625, ->, color=black] (2) to  [in=335, out=205] (1);
+\draw [line width=0.625, ->, color=black] (2) to  (6);
+\draw [line width=0.625, ->, color=black] (7) to  (2);
+\draw [line width=0.625, ->, color=black] (8) to  [in=286, out=76] (1);
+\draw [line width=0.625, ->, color=black] (1) to  [in=106, out=256] (8);
+\node at (50.0pt, -163.125pt) {\textcolor{black}{CPU}};
+\node at (115.0pt, -163.125pt) {\textcolor{black}{RAM}};
+\node at (176.875pt, -164.375pt) {\textcolor{black}{GPU}};
+\node at (241.875pt, -164.375pt) {\textcolor{black}{VGA}};
+\node at (311.25pt, -164.375pt) {\textcolor{black}{Skärm}};
+\node at (113.75pt, -79.375pt) {\textcolor{black}{Ljud}};
+\node at (115.0pt, -250.0pt) {\textcolor{black}{Knappar}};
+\node at (51.25pt, -249.375pt) {\textcolor{black}{UART}};
+\end{tikzpicture}
+
+
+\section{Krav}
+\subsection{Skall-krav}
+3.1.1 Vi skall skriva en demo som visar alla features vi har implementerat i vår
+emulator. Den skall minst innehålla en scrollande bild som påverkas av knapptryckningar.
+Denna demo skall kunna köras på vår emulator och på en referensimplementation.
+
+3.1.2 Fungerande CPU och GPU efter GB specefikationer.
+
+3.1.3 Skall kunna ta inmatning från hårdvaruknapparna.
+
+\usetikzlibrary{shapes.geometric}
+\begin{tikzpicture}
+[every node/.style={inner sep=0pt}]
+\node (1) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (68.75pt, -75.625pt)  {};
+\node (2) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (223.125pt, -78.75pt)  {};
+\node (3) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (118.125pt, -170.0pt)  {};
+\node (4) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (278.75pt, -170.625pt)  {};
+\draw [line width=0.625, ->, color=black] (1) to  (2);
+\draw [line width=0.625, ->, color=black] (2) to  [in=10, out=250] (3);
+\draw [line width=0.625, ->, color=black] (2) to  [in=150, out=272] (4);
+\node at (68.75pt, -50.625pt) {\textcolor{black}{Strömtillslag}};
+\node at (223.125pt, -53.75pt) {\textcolor{black}{Demo körs}};
+\node at (118.125pt, -145.0pt) {\textcolor{black}{Demo vänster}};
+\node at (278.75pt, -145.625pt) {\textcolor{black}{Demo höger}};
+\node at (160.5pt, -120.0pt) {\textcolor{black}{Knapptryckning}};
+\node at (270.625pt, -120.0pt) {\textcolor{black}{Knapptryckning}};
+\end{tikzpicture}
+
+\subsection{Bör-krav}
+3.2.1 Bör kunna köra ett enklare officielt spel.
+
+3.2.2 Möjlighet till snabbare emulering
+
+3.2.3 Implementera de kända buggar i hårdvaran som uttnytjas i spel.
+
+3.2.4 Ladda/spara speldata/rom till PC via UART
+
+3.2.5 Stöd för emulering av den ljudhårdvara som finns i GB.
+
+\usetikzlibrary{shapes.geometric}
+\begin{tikzpicture}
+[every node/.style={inner sep=0pt}]
+\node (1) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (55.625pt, -61.875pt)  {};
+\node (2) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (200.625pt, -63.75pt)  {};
+\node (3) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (200.0pt, -159.375pt)  {};
+\node (4) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (149.375pt, -261.875pt)  {};
+\node (5) [regular polygon, regular polygon sides=4, minimum size=50.0pt, fill=lightgray, line width=0.625pt, draw=black] at (250.0pt, -261.25pt)  {};
+\draw [line width=0.625, ->, color=black] (1) to  (2);
+\draw [line width=0.625, ->, color=black] (2) to  (3);
+\draw [line width=0.625, ->, color=black] (3) to  (4);
+\draw [line width=0.625, ->, color=black] (3) to  (5);
+\draw [line width=0.625, ->, color=black] (3) to  [in=329, out=30] (2);
+\draw [line width=0.625, ->, color=black] (4) to  [in=203, out=104] (3);
+\draw [line width=0.625, ->, color=black] (5) to  [in=335, out=76] (3);
+\node at (55.625pt, -36.875pt) {\textcolor{black}{Strömtillslag}};
+\node at (200.625pt, -38.75pt) {\textcolor{black}{Logga visas}};
+\node at (145.625pt, -159.375pt) {\textcolor{black}{Program körs}};
+\node at (76.875pt, -261.875pt) {\textcolor{black}{Load save data (uart)}};
+\node at (322.5pt, -261.25pt) {\textcolor{black}{Save save data (uart)}};
+\node at (151.875pt, -110.0pt) {\textcolor{black}{Program via UART}};
+\node at (168.75pt, -203.75pt) [rotate=63] {\textcolor{black}{Dator}};
+\node at (231.875pt, -205.0pt) [rotate=297] {\textcolor{black}{Dator}};
+\node at (279.375pt, -117.5pt) {\textcolor{black}{Knapp på dator}};
+\node at (142.5pt, -196.25pt) [rotate=65] {\textcolor{black}{Klar}};
+\node at (258.125pt, -198.75pt) [rotate=293] {\textcolor{black}{Klar}};
+\end{tikzpicture}
+
+\end{document}

@@ -20,6 +20,8 @@ kommer att skicka ut en bild via VGA och använda knappar i hårdvara som inmatnin
 Eftersom konsolen totalt har 8 knappar behöver vi komplettera FPGA-kortet med ett par
 extra tryckknappar.
 
+För att kunna köra något på vår emulator utan att ha fått allt att fungera perfekt
+ska vi också skriva en eller flera demos för att kunna testa det vi har implementerat.
 
 2 Blockshema
 
@@ -33,8 +35,10 @@ CPU <-> RAM <-> GPU -> VGA -> display
 
 3 Krav
 3.1 skall-krav
-    3.1.1 Fungerande CPU och GPU efter GB specefikationer.
-    3.1.2 Skall kunna köra ett enkelt program. (kanske inte ett spel)
+    3.1.1 Vi skall skriva en demo som visar alla features vi har implementerat i vår
+emulator. Den skall minst innehålla en scrollande bild som påverkas av knapptryckningar.
+Denna demo skall kunna köras på vår emulator och på en referensimplementation.
+    3.1.2 Fungerande CPU och GPU efter GB specefikationer.
     3.1.3 Skall kunna ta inmatning från hårdvaruknapparna.
 
 
