@@ -1,0 +1,29 @@
+=Analys=
+==CPU==
+*CPU: 8-bit 
+CPU Registret innehåller fälten A-F av vardera 8-bitar där A-F, B-C, D-E och H-L kan sammanlänkas. Förutom detta ska en SP och PC finnas och ett statusregister på 8-bitar där endast fyra används Z, N, H och C där H är en halv-carry för de lägsta 4 bitarna. Vi har inspirerats av Olle-roos modellen men kommer göra huvuddelen av all logik i kontrollenheten då vi tror att det blir tydligare VHDL kod. (en köttig case-sats)
+
+==Minneshantering==
+*Main RAM: 8KB
+*Video RAM: 8KB
+* ROM: Upp till 8MB
+Vår FPGA har totalt XXKB så vi får plats med RAM internt, ROM får vi dock inte plats i FPGAn så vi får lägga det på Nexys3.  Förutom Video RAM så ska det finnas ett block på max 1KB i RAM för saker som att spara vart alla sprites är placerade m.m.
+
+==GPU==
+*Resolution: 160x144 (20x18 tiles)
+*Max # of sprites: 40
+*Max # sprites/line: 10
+*Max sprite size: 8x16
+*Min sprite size: 8x8
+Snacka om hur GPU ska göras. Ingen dubbelbuffring
+Vår FPGA kan ge en bild på 640x480 med pixelklocka på 25 Mhz. Vilket ger 4 klockpulser för varje pixel då vi har en 100Mhz klocka. Vi behöver dock endast 160x144pixlar för vårt GameBoy.  Utritning av detta kommer göras genom att stretcha ut GB pixlarna över hela 640x480. Detta gör att efter varje utritad pixel i x-led så ska tre likadana efter den ritas ut och där blir det mer tid för uträkning för nästa bit. Detta gör att vi totalt har 16 klockpulser per pixel på oss. (hur blir de med 24hz uppdateringsfrekvens?) Varje ”storpixel” blir alltså 4x3 pixlar stor.
+
+
+==Klocka==
+*Clock Speed: 4.194304 MHz
+Då våran klocka är så mycket snabbare får vi grinda klockan ;) ^^
+==Indata==
+*Sex knappar
+*Ladda nytt ROM
+GB har fyra riktningsknappar och A och B som vi inte hanterar genom avbrott utan genom att mjukvaran frågar efter knapptryckningar. GB-rekomendationer är att mjukvaran ska kolla efter uppdateringar en gång per frame.
+
