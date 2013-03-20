@@ -14,5 +14,7 @@ En fil som heter `fil_att_konvertera.html` skapas och den kan du sen konvertera 
 
 Prova att köra detta på filen `conversion/exempel1.txt` för att få en pdf-fil
 
-====Kod snodd från====
-*http://johbuc6.coconia.net/doku.php/mediawiki2html_machine/code
+Kod snodd från
+--------------
+
+*   http://johbuc6.coconia.net/doku.php/mediawiki2html_machine/code
