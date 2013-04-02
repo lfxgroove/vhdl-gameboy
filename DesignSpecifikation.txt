@@ -48,5 +48,15 @@ Den generella uppbyggnaden av vår emulator ser ut som följer:
 
 [[File:cpu_block.png]]
 
+=== GPU ===
+
+GPU:n har två register för att mellanlagra scanlines som ska skickas till VGA-displayen. Detta eftersom varje scanline ska skickas tre gånger. Det gör att vi kommer få mycket tid på oss att generera varje ny scanline.
+
+[[File:gpu_schema.png]]
+
+=== Minneskontroller ===
+
+Minneskontrollerns uppgift är att abstrahera den virtuella adressrymden och översätta dessa virtuella addresser till fysiska adresser i rätt minne. Denna minesskontroller kommer på så vis att skriva direkt i register i exempelvis GPU:n. Minneskontrollern innehåller också ett register för att hålla reda på vilken ROM-bank som är aktiv. Den kommer i VHDL att implementeras med en case-sats.
+
 == Milstolpar ==
 Efter halva projekttiden ska vi kunna visa upp en GPU som kan generera en bild med något innehåll, samt en CPU som kan initiera CPU:n så pass mycket.
