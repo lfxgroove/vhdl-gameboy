@@ -3,4 +3,5 @@ GameBoyGay/
 *.mpf
 *#
 Makefile
-*.anton
+*.wlf
+*.cr.mti
