@@ -25,6 +25,9 @@ architecture Cpu_Implementation of Cpu is
   -- how long have we been waiting?
   signal Waited_Clks : std_logic_vector(15 downto 0) := X"0000";
 
+  -- tmp variable for calculations on full addresses
+  signal Tmp_addr : std_logic_vector(15 downto 0);
+
 begin
   -- 
   process(Clk)
@@ -34,8 +37,8 @@ begin
         Waited_Clks <= X"0000";
         State <= Waiting;
         Mem_Write_Enable <= '0';
-        PC <= X"0000"; -- TODO Not the real default
-        -- Reset SP?
+        PC <= X"0100"; -- see 3.2.3 at page 63
+        SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";
       else
@@ -109,7 +112,35 @@ begin
                 -- states, like Exec2, are unusable since the
                 -- contents of Mem_Read will most likely be
                 -- destroyed.
-              -- END op-codes from page 69 --
+                -- END op-codes from page 69 --
+
+                -- OP-codes from page 70
+                
+                -- 5. LD A,(C) - F2
+                -- Put value at address $FF00 + register C into A.
+                -- Same as: LD A,($FF00+C)
+                --     when X"F2" =>
+                --       A <= Get_what_is_on_the_freaking_adress(std_logic_vector(unsigned (C) + X"FF00"));
+                
+                -- 6. LD(C),A - E2
+                -- Put A into address $FF00 + register C.
+                when X"E2" =>
+                Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
+                Mem_Write <= A;
+                Mem_Write_Enable <= '1';
+                
+                -- 7. LD A,(HLD) is same as LD A,(HL-) same as LDD A,(HL)
+                -- Put value at address HL into A. Decrement HL.
+                -- Same as: LD A,(HL) - DEC HL
+              when X"3A" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= A;
+                Mem_Write_Enable <= '1';
+                Tmp_addr <= std_logic_vector(unsigned(H & L) - X"0001");
+                H <= Tmp_addr(15 downto 8);
+                L <= Tmp_addr(7 downto 0);
+                -- END of-codes from page 71
+                
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case;
