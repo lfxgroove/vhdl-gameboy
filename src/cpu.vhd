@@ -49,6 +49,7 @@ begin
           when Fetch =>
             Mem_Addr <= PC;
             State <= Exec;
+            PC <= std_logic_vector(unsigned(PC) + 1);
           when Exec =>
             case (Mem_Read) is
               -- LD A, B
