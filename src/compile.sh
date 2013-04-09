@@ -16,6 +16,7 @@ do
     ghdl -a $file
 done
 
+echo "Simulating for ${time}..."
 ghdl --elab-run ${model_name} --vcd=${model_name}.vcd --stop-time=${time}
 
 if [ $# -gt 2 ]
