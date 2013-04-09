@@ -18,7 +18,8 @@ architecture Cpu_Implementation of Cpu is
   -- Stack pointer and program counter
   signal SP, PC : std_logic_vector(15 downto 0);
 
-  type State_Type is (Waiting, Fetch, Exec);
+  -- Exec2, 3 is used when an instruction requires more than one clock cycle.
+  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
