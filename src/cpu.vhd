@@ -36,7 +36,7 @@ begin
         State <= Waiting;
         PC <= X"0000"; -- TODO Not the real default
         -- Reset SP?
-        A <= X"01";
+        A <= X"03";
         B <= X"00";
       else
         
@@ -57,7 +57,7 @@ begin
               when X"78" =>
                 B <= A;
               when others =>
-                --FAKKA UR TOTALT OCH DÖ.
+                --FAKKA UR TOTALT OCH D
             end case;
             State <= Waiting;
           when others =>
