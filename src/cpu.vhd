@@ -41,7 +41,7 @@ begin
         Waited_Clks <= X"0000";
         State <= Waiting;
         Mem_Write_Enable <= '0';
-        PC <= X"0100"; -- see 3.2.3 at page 63
+        PC <= X"0150"; -- the first adress that we can work with
         SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";

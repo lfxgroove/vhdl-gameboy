@@ -1,0 +1,58 @@
+-- TODO skriv ett skript som parsar denna info automatiskt ifrån cpu.vhd
+-- We also want to have a list where we can have information about which codes
+-- are being tested!
+
+              -- LD A, A (empty implementation since it does not do anything
+              7F
+              -- LD A, B
+              78
+              -- LD A, C
+              79
+              --LD A, D
+              7A
+              --LD A, E
+              7B
+              -- LD A, H
+              7C
+              -- LD A, L
+              7D
+              -- LD A, (BC)
+              0A
+              -- LD A, (DE)
+              1A
+              -- LD A, (HL)
+              7E
+              -- LD A, (nn), two byte immediate value
+              FA
+              -- LD A, #
+              3E - IN TEST
+              -- LD B, A
+              47 - IN TEST
+              -- LD C, A
+              4F - IN TEST
+              -- LD D, A
+              57 - IN TEST
+              -- LD E, A
+              5F - IN TEST
+              -- LD H, A
+              67 - IN TEST
+              -- LD L, A
+              6F - IN TEST
+              -- LD (BC), A
+              02
+              -- LD (DE), A
+              12
+              -- LD (HL), A
+              77
+                -- LD (nn), A
+              EA
+                -- LD A,(C)
+              F2
+                -- LD(C),A
+              E2
+                -- LD A,(HL-)
+              3A
+                -- END of-codes from page 71
+
+
+
