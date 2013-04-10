@@ -24,13 +24,17 @@ architecture Cpu_Implementation of Cpu is
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
   signal Waited_Clks : std_logic_vector(15 downto 0) := X"0000";
-
   -- tmp variable for calculations on full addresses
-  signal Tmp_addr : std_logic_vector(15 downto 0);
+  signal Tmp_Addr : std_logic_vector(15 downto 0);
+  -- tmp variable for calculations on 8-bit stuff
+  signal Tmp_8bit : std_logic_vector(7 downto 0);
+  -- Instruction Register
+  signal IR : std_logic_vector(7 downto 0);
 
 begin
   -- 
   process(Clk)
+variable tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
       if (Reset = '1') then
@@ -123,7 +127,7 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-              -- LD (nn), A
+                -- LD (nn), A
               when X"EA" =>
                 -- This instruction cannot be implemented
                 -- with the current structure. An instruction
@@ -132,42 +136,52 @@ begin
                 -- contents of Mem_Read will most likely be
                 -- destroyed.
                 -- END op-codes from page 69 --
-
                 -- OP-codes from page 70
-                
-                -- 5. LD A,(C) - F2
-                -- Put value at address $FF00 + register C into A.
-                -- Same as: LD A,($FF00+C)
-                --     when X"F2" =>
-                --       A <= Get_what_is_on_the_freaking_adress(std_logic_vector(unsigned (C) + X"FF00"));
-                
-                -- 6. LD(C),A - E2
-                -- Put A into address $FF00 + register C.
-                when X"E2" =>
+                -- LD A,(C)
+              when X"F2" =>
+                IR <= Mem_Read;
+                Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
+                State <= Exec2;
+                -- LD(C),A
+              when X"E2" =>
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-                
-                -- 7. LD A,(HLD) is same as LD A,(HL-) same as LDD A,(HL)
-                -- Put value at address HL into A. Decrement HL.
-                -- Same as: LD A,(HL) - DEC HL
+                -- LD A,(HL-)
               when X"3A" =>
+                IR <= Mem_Read;
                 Mem_Addr <= H & L;
-                Mem_Write <= A;
-                Mem_Write_Enable <= '1';
-                Tmp_addr <= std_logic_vector(unsigned(H & L) - X"0001");
-                H <= Tmp_addr(15 downto 8);
-                L <= Tmp_addr(7 downto 0);
+                State <= Exec2;
                 -- END of-codes from page 71
-                
+
               when others =>
                 --FAKKA UR TOTALT OCH D
-            end case;
+            end case; -- End case (Mem_Read)
+          when Exec2 =>
+            case (IR) is
+              -- LD A,(C)
+              when X"F2" =>
+                A <= Mem_Read;
+                -- LD A,(HL-)
+              when X"3A" =>
+                A <= Mem_Read;
+                tmp := std_logic_vector(unsigned(H & L) - X"0001");
+                H <= tmp(15 downto 8);
+                L <= tmp(7 downto 0);
+                
+              when others =>
+            end case; -- End case Exec2
+          when Exec3 =>
+            case (IR) is
+              
+              when others =>
+            end case; -- End case Exec3
+            
           when others =>
-        end case;
+        end case; -- End case State 
       end if;
     end if;
   end process;
-    
+  
 
 end Cpu_Implementation;
