@@ -65,12 +65,31 @@ begin
             State <= Waiting;
 
             case (Mem_Read) is
+              -- OP-codes from page 69 in GBCPUman.
+              -- LD A, A (empty implementation since it does not do anything
+              -- LD A, A
+              when X"7F" =>
               -- LD A, B
               when X"78" =>
                 B <= A;
-              -- OP-codes from page 69 in GBCPUman.
-              -- LD A, A (empty implementation since it does not do anything
-              when X"7F" =>
+              -- LD A, C
+              when X"79" =>
+                A <= C;
+              --LD A, D
+              when X"7A" =>
+                A <= D;
+              --LD A, E
+              when X"7B" =>
+                A <= E;
+              -- LD A, H
+              when X"7C" =>
+                A <= H;
+              -- LD A, L
+              when X"7D" =>
+                A <= L;
+              when X"0A" =>
+                Mem_Addr <= B & C;
+                State <= Exec2;
               -- LD B, A
               when X"47" =>
                 B <= A;
