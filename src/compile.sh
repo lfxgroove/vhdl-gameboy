@@ -13,11 +13,13 @@ time=$2
 for file in *.vhd
 do
     echo "Compiling $file"
-    ghdl -a $file
+    #DO _NOT_ MOVE --ieee=synopsys to the end of the line as one would expect should work..
+    ghdl -a --ieee=synopsys ${file}
 done
 
 echo "Simulating for ${time}..."
-ghdl --elab-run ${model_name} --vcd=${model_name}.vcd --stop-time=${time}
+#Same for this, do _NOT_ move that little ieee part...
+ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=${time}
 
 if [ $# -gt 2 ]
 then
