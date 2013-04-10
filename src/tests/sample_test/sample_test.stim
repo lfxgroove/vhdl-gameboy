@@ -1,0 +1,23 @@
+
+#Ran before every @test part is ran
+@prepare {
+ [0150] xx xx xx xx xx xx xx xx xx xx xx xx xx xx
+ xx xx xx xx xx xx xx xx xx xx xx xx xx  xx xx xx
+ [0180] xx xx xx   xx xx xx    xx
+}
+
+#This is a comment
+#Comment
+@test {
+  @check {
+    [0180] 
+  }
+}
+
+@test {
+  
+}
+
+@test {
+  
+}
