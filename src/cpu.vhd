@@ -34,7 +34,7 @@ architecture Cpu_Implementation of Cpu is
 begin
   -- 
   process(Clk)
-variable tmp : std_logic_vector(15 downto 0);
+    variable tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
       if (Reset = '1') then
