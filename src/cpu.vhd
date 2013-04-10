@@ -19,7 +19,7 @@ architecture Cpu_Implementation of Cpu is
   signal SP, PC : std_logic_vector(15 downto 0);
 
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
-  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3);
+  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -95,6 +95,24 @@ begin
               when X"0A" =>
                 Mem_Addr <= B & C;
                 State <= Exec2;
+              -- LD A, (DE)
+              when X"1A" =>
+                Mem_Addr <= D & E;
+                State <= Exec2;
+              -- LD A, (HL)
+              when X"7E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+              -- LD A, (nn), two byte immediate value
+              when X"FA" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+              -- LD A, #
+              when X"3E" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
               -- LD B, A
               when X"47" =>
                 B <= A;
@@ -163,6 +181,24 @@ begin
               -- LD A,(C)
               when X"F2" =>
                 A <= Mem_Read;
+              -- LD A, (BC)
+              when X"0A" =>
+                A <= Mem_Read;
+              -- LD A, (DE)
+              when X"1A" =>
+                A <= Mem_Read;
+              -- LD A, (HL)
+              when X"7E" =>
+                A <= Mem_Read;
+              -- LD A, (nn), two byte immediate value
+              when X"FA" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+              -- LD A, #
+              when X"3E" =>
+                A <= Mem_Read;
               -- LD A,(HL-)
               when X"3A" =>
                 A <= Mem_Read;
@@ -174,10 +210,20 @@ begin
             end case; -- End case Exec2
           when Exec3 =>
             case (IR) is
-              
+              -- LD A, (nn), two byte immediate value
+              when X"FA" =>
+                Mem_Addr <= Tmp_Addr(7 downto 0) & Mem_Read;
+                State <= Exec4;
               when others =>
             end case; -- End case Exec3
-            
+
+          when Exec4 =>
+            case (IR) is
+              -- LD A, nn, two byte immediate value
+              when X"FA" =>
+                A <= Mem_Read;
+              when others =>
+            end case;
           when others =>
         end case; -- End case State 
       end if;
