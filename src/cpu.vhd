@@ -91,6 +91,7 @@ begin
               -- LD A, L
               when X"7D" =>
                 A <= L;
+              -- LD A, (BC)
               when X"0A" =>
                 Mem_Addr <= B & C;
                 State <= Exec2;
@@ -162,7 +163,7 @@ begin
               -- LD A,(C)
               when X"F2" =>
                 A <= Mem_Read;
-                -- LD A,(HL-)
+              -- LD A,(HL-)
               when X"3A" =>
                 A <= Mem_Read;
                 tmp := std_logic_vector(unsigned(H & L) - X"0001");
