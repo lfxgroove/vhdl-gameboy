@@ -148,12 +148,9 @@ begin
                 Mem_Write_Enable <= '1';
                 -- LD (nn), A
               when X"EA" =>
-                -- This instruction cannot be implemented
-                -- with the current structure. An instruction
-                -- register needs to be added, otherwise other
-                -- states, like Exec2, are unusable since the
-                -- contents of Mem_Read will most likely be
-                -- destroyed.
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
                 -- END op-codes from page 69 --
                 -- OP-codes from page 70
                 -- LD A,(C)
@@ -177,6 +174,7 @@ begin
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
           when Exec2 =>
+            State <= Waiting;
             case (IR) is
               -- LD A,(C)
               when X"F2" =>
@@ -205,19 +203,31 @@ begin
                 tmp := std_logic_vector(unsigned(H & L) - X"0001");
                 H <= tmp(15 downto 8);
                 L <= tmp(7 downto 0);
-                
+              -- LD (nn), A
+              when X"EA" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
+            State <= Waiting;
             case (IR) is
               -- LD A, (nn), two byte immediate value
               when X"FA" =>
-                Mem_Addr <= Tmp_Addr(7 downto 0) & Mem_Read;
+                Mem_Addr <= Mem_Read & Tmp_Addr(7 downto 0);
                 State <= Exec4;
+              -- LD (nn), A
+              when X"EA" =>
+                Mem_Addr <= Mem_Read & Tmp_8Bit;
+                Mem_Write <= A;
+                Mem_Write_Enable <= '1';
               when others =>
             end case; -- End case Exec3
 
           when Exec4 =>
+            State <= Waiting;
             case (IR) is
               -- LD A, nn, two byte immediate value
               when X"FA" =>
