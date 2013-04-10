@@ -49,7 +49,8 @@ then
 		    ghdl -a --ieee=synopsys ${dir}/${test_name}_test.vhd
 		    echo "Simulating test: ${test_name^}"
 		    #Error suppression is used, perhaps this should be removed?
-		    ghdl --elab-run --ieee=synopsys ${test_name^}_Test --vcd=${test_name^}_Test.vcd --stop-time=${time} > /dev/null 2>&1
+		    ghdl --elab-run --ieee=synopsys ${test_name^}_Test --vcd=${test_name^}_Test.vcd --stop-time=${time}
+                    # > /dev/null 2>&1
 		    #Todo: Diff the files in some way!
 		fi
 	    done
