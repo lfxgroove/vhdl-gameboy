@@ -170,6 +170,175 @@ begin
                 State <= Exec2;
                 -- END of-codes from page 71
 
+                -- OP-codes from page 66-67
+                -- LD B, B
+              when X"40" =>
+                null;
+                -- LD B, C
+              when X"41" =>
+                B <= C;
+                -- LD B, D
+              when X"42" =>
+                B <= D;
+                -- LD B, E
+              when X"43" =>
+                B <= E;
+                -- LD B, H
+              when X"44" =>
+                B <= H;
+                -- LD B, L
+              when X"45" =>
+                B <= L;
+                -- LD B, (HL)
+              when X"46" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD C, B
+              when X"48" =>
+                C <= B;
+                -- LD C, C
+              when X"49" =>
+                null;
+                -- LD C, D
+              when X"4A" =>
+                C <= D;
+                -- LD C, E
+              when X"4B" =>
+                C <= E;
+                -- LD C, H
+              when X"4C" =>
+                C <= H;
+                -- LD C, L
+              when X"4D" =>
+                C <= L;
+                -- LD C, (HL)
+              when X"4E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD D, B
+              when X"50" =>
+                D <= B;
+                -- LD D, C
+              when X"51" =>
+                D <= C;
+                -- LD D, D
+              when X"52" =>
+                null;
+                -- LD D, E
+              when X"53" =>
+                D <= E;
+                -- LD D, H
+              when X"54" =>
+                D <= H;
+                -- LD D, L
+              when X"55" =>
+                D <= L;
+                -- LD D, (HL)
+              when X"56" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD E, B
+              when X"58" =>
+                E <= B;
+                -- LD E, C
+              when X"59" =>
+                E <= C;
+                -- LD E, D
+              when X"5A" =>
+                E <= D;
+                -- LD E, E
+              when X"5B" =>
+                null;
+                -- LD E, H
+              when X"5C" =>
+                E <= H;
+                -- LD E, L
+              when X"5D" =>
+                E <= L;
+                -- LD E, (HL)
+              when X"5E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD H, B
+              when X"60" =>
+                H <= B;
+                -- LD H, C
+              when X"61" =>
+                H <= C;
+                -- LD H, D
+              when X"62" =>
+                H <= D;
+                -- LD H, E
+              when X"63" =>
+                H <= E;
+                -- LD H, H
+              when X"64" =>
+                null;
+                -- LD H, L
+              when X"65" =>
+                H <= L;
+                -- LD, H, (HL)
+              when X"66" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD L, B
+              when X"68" =>
+                L <= B;
+                -- LD L, C
+              when X"69" =>
+                L <= C;
+                -- LD L, D
+              when X"6A" =>
+                L <= D;
+                -- LD L, E
+              when X"6B" =>
+                L <= E;
+                -- LD L, H
+              when X"6C" =>
+                L <= H;
+                -- LD L, L
+              when X"6D" =>
+                null;
+                -- LD L, (HL)
+              when X"6E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- LD (HL), B
+              when X"70" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= B;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), C
+              when X"71" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= C;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), D
+              when X"72" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= B;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), E
+              when X"73" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= B;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), H
+              when X"74" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= B;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), L
+              when X"75" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= B;
+                Mem_Write_Enable <= '1';
+                -- LD (HL), n
+              when X"76" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 66-67
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -209,6 +378,28 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
+                -- LD B, (HL)
+              when X"46" =>
+                B <= Mem_Read;
+                -- LD C, (HL)
+              when X"4E" =>
+                C <= Mem_Read;
+                -- LD D, (HL)
+              when X"56" =>
+                D <= Mem_Read;
+                -- LD E, (HL)
+              when X"5E" =>
+                E <= Mem_Read;
+                -- LD, H, (HL)
+              when X"66" =>
+                H <= Mem_Read;
+                -- LD L, (HL)
+              when X"6E" =>
+                L <= Mem_Read;
+                -- LD (HL), n
+              when X"76" =>
+                Mem_Write <= Mem_Read;
+                Mem_Addr <= H & L;
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
