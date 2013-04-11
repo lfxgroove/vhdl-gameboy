@@ -94,23 +94,28 @@ begin
               -- LD A, (BC)
               when X"0A" =>
                 Mem_Addr <= B & C;
+                IR <= Mem_Read;
                 State <= Exec2;
               -- LD A, (DE)
               when X"1A" =>
                 Mem_Addr <= D & E;
+                IR <= Mem_Read;
                 State <= Exec2;
               -- LD A, (HL)
               when X"7E" =>
                 Mem_Addr <= H & L;
+                IR <= Mem_Read;
                 State <= Exec2;
               -- LD A, (nn), two byte immediate value
               when X"FA" =>
                 Mem_Addr <= PC;
+                IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
               -- LD A, #
               when X"3E" =>
                 Mem_Addr <= PC;
+                IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
               -- LD B, A
@@ -149,6 +154,7 @@ begin
                 -- LD (nn), A
               when X"EA" =>
                 Mem_Addr <= PC;
+                IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 69 --
@@ -361,6 +367,7 @@ begin
               when X"FA" =>
                 Tmp_Addr(7 downto 0) <= Mem_Read;
                 Mem_Addr <= PC;
+                IR <= X"FA";
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
               -- LD A, #
