@@ -28,12 +28,12 @@ architecture Bus_Controller_Behaviour of Bus_Controller is
   type Ram_8KType is array (0 to 8192) of std_logic_vector(7 downto 0);
   type Ram_127Type is array (0 to 126) of std_logic_vector(7 downto 0); 
 
-  signal External_Ram : Ram_8KType;
-  signal Internal_Ram : Ram_8KType;
-  signal Stack_Ram : Ram_127Type;
+  signal External_Ram : Ram_8KType := (others => X"00");
+  signal Internal_Ram : Ram_8KType := (others => X"00");
+  signal Stack_Ram : Ram_127Type := (others => X"00");
 
   -- TODO: Replace this with the larger external memory!
-  signal Rom_Memory : Ram_8KType;
+  signal Rom_Memory : Ram_8KType := (others => X"00");
 begin
 
   -- Writing to the rom
