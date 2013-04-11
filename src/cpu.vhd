@@ -112,16 +112,16 @@ begin
                 IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-              -- LD A, #
+              -- LD A, # -t
               when X"3E" =>
                 Mem_Addr <= PC;
                 IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-              -- LD B, A
+              -- LD B, A -t
               when X"47" =>
                 B <= A;
-              -- LD C, A
+              -- LD C, A -t
               when X"4F" =>
                 C <= A;
               -- LD D, A
@@ -146,7 +146,7 @@ begin
                 Mem_Addr <= D & E;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-              -- LD (HL), A
+              -- LD (HL), A -t
               when X"77" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= A;
@@ -309,12 +309,12 @@ begin
               when X"6E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- LD (HL), B
+                -- LD (HL), B -t
               when X"70" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), C
+                -- LD (HL), C -t
               when X"71" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= C;
