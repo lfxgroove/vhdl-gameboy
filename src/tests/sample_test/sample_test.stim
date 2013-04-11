@@ -1,43 +1,23 @@
-
+#Runs before every @test part is run
 @prepare {
-# Set HL to adress x"C000"
-# LD A, #C0
-# LD H, A
-# LD A, #00
-# LD L, A
-3E 81 67 3E 88 6F
+#bytes that should be existent in the beginning
+ [0150] xx xx xx xx xx xx xx xx xx xx xx xx xx xx
+ xx xx xx xx xx xx xx xx xx xx xx xx xx  xx xx xx
+ [0180] xx xx xx   xx xx xx    xx
 }
 
-
+#This is a comment
+#Comment
 @test {
-# LD A, #08
-# LD (HL), A
-3E 08 77
   @check {
-    [C000] 80 
+    [0150] 11 AB #Check that adr 0150 has data 11 and adr 0151			has data AB after running the test 
   }
 }
 
 @test {
-# LD A, #02
-# LD B, A
-# LD (HL), B
-3E 02 47 70
-  @check {
-    [C000] 02 
-  }
-}
-  
+
 }
 
 @test {
-# LD A, #01
-# LD C, A
-# LD (HL), C
-3E 01 4F 71
-  @check {
-    [C000] 01
-  }
-  
 
 }
