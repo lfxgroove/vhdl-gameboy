@@ -13,7 +13,7 @@ end Cpu;
 architecture Cpu_Implementation of Cpu is
   -- General purpose registers
   signal A, B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
-  -- Status register
+  -- Status register. Look at the ALU below.
   signal SR : std_logic_vector(7 downto 0) := X"00";
   -- Stack pointer and program counter
   signal SP, PC : std_logic_vector(15 downto 0);
@@ -32,9 +32,12 @@ architecture Cpu_Implementation of Cpu is
   signal IR : std_logic_vector(7 downto 0);
 
 begin
+
   -- 
   process(Clk)
-    variable tmp : std_logic_vector(15 downto 0);
+    variable Tmp : std_logic_vector(15 downto 0);
+    variable Tmp_Nibble : std_logic_vector(3 downto 0);
+    variable Tmp_Byte : std_logic_vector(7 downto 0);
   begin
     if rising_edge(Clk) then
       if (Reset = '1') then
@@ -67,6 +70,7 @@ begin
             -- if any instruction needs the Exec2 or Exec3 states
             -- they can safely set them anyway.
             State <= Waiting;
+            IR <= Mem_Read;
 
             case (Mem_Read) is
               -- OP-codes from page 69 in GBCPUman.
@@ -345,6 +349,59 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 66-67
+                -- OP-code from page 73
+                -- LD A, (HL+)
+              when X"2A" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                Tmp := std_logic_vector(unsigned(H & L) + 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- OP-code from page 74
+                -- LD (HL+), A
+              when X"22" =>
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                Tmp := std_logic_vector(unsigned(H & L) + 1);
+                Mem_Write <= A;
+                -- OP-codes from page 75
+                -- LD ($FF00+n), A
+              when X"E0" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD A, ($FF00+n)
+              when X"F0" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 75
+                -- OP-codes from page 76
+                -- LD BC,nn
+              when X"01" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD DE,nn
+              when X"11" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD HL,nn
+              when X"21" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD SP,nn
+              when X"31" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD SP, HL
+              when X"F9" =>
+                SP <= H & L;
+                -- END op-codes from page 76
+                
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -407,6 +464,42 @@ begin
               when X"76" =>
                 Mem_Write <= Mem_Read;
                 Mem_Addr <= H & L;
+                -- LD A, (HL+)
+              when X"2A" =>
+                A <= Mem_Read;
+                -- LD ($FF00+n), A
+              when X"E0" =>
+                Mem_Write_Enable <= '1';
+                Mem_Write <= A;
+                Mem_Addr <= std_logic_vector(unsigned(Mem_Read) + X"FF00");
+                -- LD A, ($FF00+n)
+              when X"F0" =>
+                Mem_Addr <= std_logic_vector(unsigned(Mem_Read) + X"FF00");
+                State <= Exec3;
+                -- LD BC, nn
+              when X"01" =>
+                C <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- LD DE, nn
+              when X"11" =>
+                E <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- LD HL, nn
+              when X"21" =>
+                L <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- LD SP, nn
+              when X"31" =>
+                SP(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -421,6 +514,22 @@ begin
                 Mem_Addr <= Mem_Read & Tmp_8Bit;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
+                -- LD A, ($FF00+n)
+              when X"F0" =>
+                A <= Mem_Read;
+                -- LD BC, nn
+              when X"01" =>
+                B <= Mem_Read;
+                -- LD DE, nn
+              when X"11" =>
+                D <= Mem_Read;
+                -- LD HL, nn
+              when X"21" =>
+                H <= Mem_Read;
+                -- LD SP, nn
+              when X"31" =>
+                SP(15 downto 8) <= Mem_Read;
+
               when others =>
             end case; -- End case Exec3
 
