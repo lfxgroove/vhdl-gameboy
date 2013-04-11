@@ -14,7 +14,7 @@ architecture Cpu_Implementation of Cpu is
   -- General purpose registers
   signal A, B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
   -- Status register
-  signal SR : std_logic_vector(7 downto 0);
+  signal SR : std_logic_vector(7 downto 0) := X"00";
   -- Stack pointer and program counter
   signal SP, PC : std_logic_vector(15 downto 0);
 
