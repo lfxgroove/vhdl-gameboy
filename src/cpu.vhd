@@ -44,7 +44,7 @@ begin
         Waited_Clks <= X"0000";
         State <= Waiting;
         Mem_Write_Enable <= '0';
-        PC <= X"0150"; -- see 3.2.3 at page 63
+        PC <= X"0150"; -- the first adress that we can work with
         SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";
@@ -116,16 +116,16 @@ begin
                 IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-              -- LD A, #
+              -- LD A, # -t
               when X"3E" =>
                 Mem_Addr <= PC;
                 IR <= Mem_Read;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-              -- LD B, A
+              -- LD B, A -t
               when X"47" =>
                 B <= A;
-              -- LD C, A
+              -- LD C, A -t
               when X"4F" =>
                 C <= A;
               -- LD D, A
@@ -150,7 +150,7 @@ begin
                 Mem_Addr <= D & E;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-              -- LD (HL), A
+              -- LD (HL), A -t
               when X"77" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= A;
@@ -313,12 +313,12 @@ begin
               when X"6E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- LD (HL), B
+                -- LD (HL), B -t
               when X"70" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), C
+                -- LD (HL), C -t
               when X"71" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= C;

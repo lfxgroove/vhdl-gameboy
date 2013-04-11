@@ -1,6 +1,6 @@
-
-#Ran before every @test part is ran
+#Runs before every @test part is run
 @prepare {
+#bytes that should be existent in the beginning
  [0150] xx xx xx xx xx xx xx xx xx xx xx xx xx xx
  xx xx xx xx xx xx xx xx xx xx xx xx xx  xx xx xx
  [0180] xx xx xx   xx xx xx    xx
@@ -10,14 +10,14 @@
 #Comment
 @test {
   @check {
-    [0180] 
+    [0150] 11 AB #Check that adr 0150 has data 11 and adr 0151			has data AB after running the test 
   }
 }
 
 @test {
-  
+
 }
 
 @test {
-  
+
 }
