@@ -8,8 +8,11 @@
 3E 81 67 3E 88 6F
 }
 
+### Testing LD X, A
+### Testing LD (HL), X
 
-@test {
+# Tests 77,3E
+@test { 
 # LD A, #08
 # LD (HL), A
 3E 08 77
@@ -17,7 +20,7 @@
     [C000] 80 
   }
 }
-
+# Tests 47,70
 @test {
 # LD A, #02
 # LD B, A
@@ -28,8 +31,7 @@
   }
 }
   
-}
-
+# Tests 4F,71
 @test {
 # LD A, #01
 # LD C, A
@@ -38,6 +40,511 @@
   @check {
     [C000] 01
   }
-  
-
 }
+# Tests 57,72
+@test {
+# LD A, #03
+# LD D, A
+# LD (HL), D
+3E 00 57 72
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests 5F,73
+@test {
+# LD A, #80
+# LD E, A
+# LD (HL), E
+3E 80 5F 73
+   @check {
+   [C000] 80
+   }
+}
+
+# Tests 67,74
+@test {
+# LD A, #80
+# LD H, A
+# LD (HL), H
+3E 80 67 74
+   @check {
+   [C000] 80
+   }
+}
+
+# Tests 6F,75
+@test {
+# LD A, #80
+# LD L, A
+# LD (HL), L
+3E 88 6F 75
+   @check {
+   [C000] 88
+   }
+}
+
+
+### Testing LD X, B
+
+# Tests 40
+@test {
+# LD A, #30
+# LD B, A
+# LD B, B
+# LD (HL), B
+3E 30 47 40 70
+  @check {
+    [C000] 30 
+  }
+}
+  
+# Tests 48
+@test {
+# LD A, #31
+# LD B, A
+# LD C, B
+# LD (HL), C
+3E 31 47 48 71
+  @check {
+    [C000] 31
+  }
+}
+
+# Tests 50
+@test {
+# LD A, #32
+# LD B, A
+# LD D, B
+# LD (HL), D
+3E 32 47 50 72
+  @check {
+    [C000] 32
+  }
+}
+
+# Tests 58
+@test {
+# LD A, #33
+# LD B, A
+# LD E, B
+# LD (HL), E
+3E 33 47 58 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 60
+@test {
+# LD A, #34
+# LD B, A
+# LD H, B
+# LD (HL), H
+3E 34 47 60 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 68
+@test {
+# LD A, #35
+# LD B, A
+# LD L, B
+# LD (HL), L
+3E 35 47 68 75
+  @check {
+    [C000] 35
+  }
+}
+
+
+### Testing LD X, C
+
+# Tests 41
+@test {
+# LD A, #40
+# LD C, A
+# LD B, C
+# LD (HL), B
+3E 40 4F 41 70
+  @check {
+    [C000] 40 
+  }
+}
+  
+# Tests 49
+@test {
+# LD A, #41
+# LD C, A
+# LD C, C
+# LD (HL), C
+3E 41 4F 49 71
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 51
+@test {
+# LD A, #42
+# LD C, A
+# LD D, C
+# LD (HL), D
+3E 42 4F 51 72
+  @check {
+    [C000] 42
+  }
+}
+
+# Tests 59
+@test {
+# LD A, #33
+# LD C, A
+# LD E, C
+# LD (HL), E
+3E 33 4F 59 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 61
+@test {
+# LD A, #34
+# LD C, A
+# LD H, C
+# LD (HL), H
+3E 34 4F 61 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 69
+@test {
+# LD A, #35
+# LD C, A
+# LD L, C
+# LD (HL), L
+3E 35 4F 69 75
+  @check {
+    [C000] 35
+  }
+}
+
+
+### Testing LD X, D
+
+# Tests 42
+@test {
+# LD A, #40
+# LD D, A
+# LD B, D
+# LD (HL), B
+3E 40 57 42 70
+  @check {
+    [C000] 40 
+  }
+}
+  
+# Tests 4A
+@test {
+# LD A, #41
+# LD D, A
+# LD C, D
+# LD (HL), C
+3E 41 57 4A 71
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 52
+@test {
+# LD A, #42
+# LD D, A
+# LD D, D
+# LD (HL), D
+3E 42 57 52 72
+  @check {
+    [C000] 42
+  }
+}
+
+# Tests 5A
+@test {
+# LD A, #33
+# LD D, A
+# LD E, D
+# LD (HL), E
+3E 33 57 5A 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 62
+@test {
+# LD A, #34
+# LD D, A
+# LD H, D
+# LD (HL), H
+3E 34 57 62 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 6A
+@test {
+# LD A, #35
+# LD D, A
+# LD L, D
+# LD (HL), L
+3E 35 57 6A 75
+  @check {
+    [C000] 35
+  }
+}
+
+
+### Testing LD X, E
+
+# Tests 43
+@test {
+# LD A, #40
+# LD E, A
+# LD B, E
+# LD (HL), B
+3E 40 5F 43 70
+  @check {
+    [C000] 40 
+  }
+}
+  
+# Tests 4B
+@test {
+# LD A, #41
+# LD E, A
+# LD C, E
+# LD (HL), C
+3E 41 5F 4B 71
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 53
+@test {
+# LD A, #42
+# LD E, A
+# LD D, E
+# LD (HL), D
+3E 42 5F 53 72
+  @check {
+    [C000] 42
+  }
+}
+
+# Tests 5B
+@test {
+# LD A, #33
+# LD E, A
+# LD E, E
+# LD (HL), E
+3E 33 5F 5B 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 63
+@test {
+# LD A, #34
+# LD E, A
+# LD H, E
+# LD (HL), H
+3E 34 5F 63 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 6B
+@test {
+# LD A, #35
+# LD E, A
+# LD L, E
+# LD (HL), L
+3E 35 5F 6B 75
+  @check {
+    [C000] 35
+  }
+}
+
+
+### Testing LD X, H
+
+# Tests 44
+@test {
+# LD A, #40
+# LD H, A
+# LD B, H
+# LD (HL), B
+3E 40 67 44 70
+  @check {
+    [C000] 40 
+  }
+}
+  
+# Tests 4C
+@test {
+# LD A, #41
+# LD H, A
+# LD C, H
+# LD (HL), C
+3E 41 67 4C 71
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 54
+@test {
+# LD A, #42
+# LD H, A
+# LD D, H
+# LD (HL), D
+3E 42 67 54 72
+  @check {
+    [C000] 42
+  }
+}
+
+# Tests 5C
+@test {
+# LD A, #33
+# LD H, A
+# LD E, H
+# LD (HL), E
+3E 33 67 5C 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 64
+@test {
+# LD A, #34
+# LD H, A
+# LD H, H
+# LD (HL), H
+3E 34 67 64 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 6C
+@test {
+# LD A, #35
+# LD H, A
+# LD L, H
+# LD (HL), L
+3E 35 67 6C 75
+  @check {
+    [C000] 35
+  }
+}
+
+
+
+### Testing LD X, L
+
+# Tests 45
+@test {
+# LD A, #40
+# LD L, A
+# LD B, L
+# LD (HL), B
+3E 40 6F 45 70
+  @check {
+    [C000] 40 
+  }
+}
+  
+# Tests 4D
+@test {
+# LD A, #41
+# LD L, A
+# LD C, L
+# LD (HL), C
+3E 41 6F 4D 71
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 55
+@test {
+# LD A, #42
+# LD L, A
+# LD D, L
+# LD (HL), D
+3E 42 6F 55 72
+  @check {
+    [C000] 42
+  }
+}
+
+# Tests 5D
+@test {
+# LD A, #33
+# LD L, A
+# LD E, L
+# LD (HL), E
+3E 33 6F 5D 73
+  @check {
+    [C000] 33
+  }
+}
+
+
+# Tests 65
+@test {
+# LD A, #34
+# LD L, A
+# LD L, L
+# LD (HL), L
+3E 34 6F 65 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 6D
+@test {
+# LD A, #35
+# LD L, A
+# LD L, L
+# LD (HL), L
+3E 35 6F 6D 75
+  @check {
+    [C000] 35
+  }
+}
+
