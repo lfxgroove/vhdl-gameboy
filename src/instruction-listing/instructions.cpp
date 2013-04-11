@@ -90,7 +90,7 @@ Instructions parseFile(const string &filename) {
       } else if (line.size() > 7 && line.substr(0, 7) == "when X\"") {
 	string opcode = line.substr(7, 2);
 	r.push_back(Instr(opcode, lastComment));
-      } else if (line == "end case") {
+      } else if (line.size() >= 8 && line.substr(0, 8) == "end case") {
 	state = after;
       }
       break;
@@ -120,7 +120,7 @@ bool opcodeComp(const Instr &a, const Instr &b) {
 
 int main(int argc, char *argv[]) {
   string file = "cpu.vhd";
-  string outputFile = "";
+  string outputFile = "implemented_op_codes.txt";
 
   enum Sort {
     sNone,
