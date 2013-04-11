@@ -1,11 +1,14 @@
 
 @prepare {
-# Set HL to adress x"C000"
+# Set HL and BC to adress x"C000"
 # LD A, #C0
 # LD H, A
+# LD B, A
 # LD A, #00
 # LD L, A
-3E 81 67 3E 88 6F
+# LD C, A
+3E C0 67 47 3E 88 6F 4F
+[C000] FF EE CC AA #just some data
 }
 
 ### Testing LD X, A
@@ -63,23 +66,27 @@
    }
 }
 
-# Tests 67,74
+# Tests 67,7C,02
 @test {
 # LD A, #80
-# LD H, A
-# LD (HL), H
-3E 80 67 74
+# LD H, A	- store 80 in H
+# LD A, #FF	- "destroy" A
+# LD A, H	- restore 80 to A
+# LD (BC), A	- (HL) = (BC) = C000
+3E 80 67 3E FF 7C 02
    @check {
-   [C000] 80
+   [C000] 80	- if 80 ALL must work otherwise 67 or 7C have failed
    }
 }
 
-# Tests 6F,75
+# Tests 6F
 @test {
-# LD A, #80
-# LD L, A
-# LD (HL), L
-3E 88 6F 75
+# LD A, #88
+# LD L, A	- store 88 in A
+# LD A, #FF	- "destroy" A
+# LD A, L	- restore 88 to A
+# LD (BC), A	
+3E 80 6F 3E FF 7C 02
    @check {
    [C000] 88
    }
@@ -137,26 +144,30 @@
 }
 
 
-# Tests 60
+# Tests 60,78
 @test {
 # LD A, #34
 # LD B, A
 # LD H, B
-# LD (HL), H
-3E 34 47 60 74
+# LD A, #FF - "destroy" A
+# LD A, B
+# LD (BC), A
+3E 34 47 60 3E FF 78 02
   @check {
     [C000] 34
   }
 }
 
 
-# Tests 68
+# Tests 68,7D
 @test {
 # LD A, #35
 # LD B, A
 # LD L, B
-# LD (HL), L
-3E 35 47 68 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 47 68 35 FF 7D 02
   @check {
     [C000] 35
   }
@@ -219,8 +230,10 @@
 # LD A, #34
 # LD C, A
 # LD H, C
-# LD (HL), H
-3E 34 4F 61 74
+# LD A, #FF
+# LD A, H
+# LD (BC), A
+3E 34 4F 61 3E FF 7C 02
   @check {
     [C000] 34
   }
@@ -232,8 +245,10 @@
 # LD A, #35
 # LD C, A
 # LD L, C
-# LD (HL), L
-3E 35 4F 69 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 4F 69 35 FF 7D 02
   @check {
     [C000] 35
   }
@@ -296,8 +311,10 @@
 # LD A, #34
 # LD D, A
 # LD H, D
-# LD (HL), H
-3E 34 57 62 74
+# LD A, #FF
+# LD A, H
+# LD (BC), A
+3E 34 57 62 35 FF 7C 02
   @check {
     [C000] 34
   }
@@ -309,8 +326,10 @@
 # LD A, #35
 # LD D, A
 # LD L, D
-# LD (HL), L
-3E 35 57 6A 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 57 6A 3E FF 7D 02
   @check {
     [C000] 35
   }
@@ -373,8 +392,10 @@
 # LD A, #34
 # LD E, A
 # LD H, E
-# LD (HL), H
-3E 34 5F 63 74
+# LD A, #FF
+# LD A, H
+# LD (BC), A
+3E 34 5F 63 3E FF 7C 02
   @check {
     [C000] 34
   }
@@ -386,8 +407,10 @@
 # LD A, #35
 # LD E, A
 # LD L, E
-# LD (HL), L
-3E 35 5F 6B 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 5F 6B 3E FF 7D 02
   @check {
     [C000] 35
   }
@@ -449,22 +472,26 @@
 @test {
 # LD A, #34
 # LD H, A
-# LD H, H
-# LD (HL), H
-3E 34 67 64 74
+# LD H, H	-- checking that this does not destroy anything
+# LD A, #FF
+# LD A, H
+# LD (BC), A
+3E 34 67 64 3E FF 7C 02
   @check {
     [C000] 34
   }
 }
 
 
-# Tests 6C
+# Tests 6C 
 @test {
 # LD A, #35
 # LD H, A
 # LD L, H
-# LD (HL), L
-3E 35 67 6C 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 67 6C 3E FF 7D 02
   @check {
     [C000] 35
   }
@@ -527,9 +554,11 @@
 @test {
 # LD A, #34
 # LD L, A
-# LD L, L
-# LD (HL), L
-3E 34 6F 65 74
+# LD H, L
+# LD A, #FF
+# LD A, H
+# LD (BC), A
+3E 34 6F 65 3E FF 7C 02
   @check {
     [C000] 34
   }
@@ -541,10 +570,89 @@
 # LD A, #35
 # LD L, A
 # LD L, L
-# LD (HL), L
-3E 35 6F 6D 75
+# LD A, #FF
+# LD A, L
+# LD (BC), A
+3E 35 6F 6D 3E FF 7D 02
   @check {
     [C000] 35
   }
 }
 
+
+### Testing LD X, (HL)
+## (HL) is C000 and contains FF to start with due to code in prepare
+
+# Tests 7E
+@test {
+# LD A, (HL) - (HL) contains FF
+# LD (HL), A
+7E 77
+  @check {
+    [C000] FF 
+  }
+}
+
+# Tests 46
+@test {
+# LD B, (HL) - (HL) contains FF
+# LD (HL), B
+46 70
+  @check {
+    [C000] FF 
+  }
+}
+
+
+# Tests 4E
+@test {
+# LD C, (HL) - (HL) contains FF
+# LD (HL), C
+4E 71
+  @check {
+    [C000] FF 
+  }
+}
+
+
+# Tests 56
+@test {
+# LD D, (HL) - (HL) contains FF
+# LD (HL), D
+56 72
+  @check {
+    [C000] FF 
+  }
+}
+
+# Tests 5E
+@test {
+# LD E, (HL) - (HL) contains FF
+# LD (HL), E
+5E 73
+  @check {
+    [C000] FF 
+  }
+}
+
+# Tests 66
+@test {
+# LD H, (HL) - (HL) contains FF
+# LD A, H
+# LD (BC), A
+66 7C 02
+  @check {
+    [C000] FF 
+  }
+}
+
+# Tests 6E
+@test {
+# LD L, (HL) - (HL) contains FF
+# LD A, L
+# LD (BC), A
+6E 7D 02
+  @check {
+    [C000] FF 
+  }
+}

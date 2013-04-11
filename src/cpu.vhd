@@ -77,7 +77,7 @@ begin
               -- LD A, A (empty implementation since it does not do anything
               -- LD A, A
               when X"7F" =>
-              -- LD A, B
+              -- LD A, B -t
               when X"78" =>
                 B <= A;
               -- LD A, C
@@ -89,10 +89,10 @@ begin
               --LD A, E
               when X"7B" =>
                 A <= E;
-              -- LD A, H
+              -- LD A, H -t
               when X"7C" =>
                 A <= H;
-              -- LD A, L
+              -- LD A, L -t
               when X"7D" =>
                 A <= L;
               -- LD A, (BC)
@@ -105,7 +105,7 @@ begin
                 Mem_Addr <= D & E;
                 IR <= Mem_Read;
                 State <= Exec2;
-              -- LD A, (HL)
+              -- LD A, (HL) -t
               when X"7E" =>
                 Mem_Addr <= H & L;
                 IR <= Mem_Read;
@@ -140,7 +140,7 @@ begin
               -- LD L, A -t
               when X"6F" =>
                 L <= A;
-              -- LD (BC), A
+              -- LD (BC), A -t
               when X"02" =>
                 Mem_Addr <= B & C;
                 Mem_Write <= A;
@@ -199,7 +199,7 @@ begin
                 -- LD B, L -t
               when X"45" =>
                 B <= L;
-                -- LD B, (HL)
+                -- LD B, (HL) -t
               when X"46" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -221,7 +221,7 @@ begin
                 -- LD C, L -t
               when X"4D" =>
                 C <= L;
-                -- LD C, (HL)
+                -- LD C, (HL) -t
               when X"4E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -243,7 +243,7 @@ begin
                 -- LD D, L -t
               when X"55" =>
                 D <= L;
-                -- LD D, (HL)
+                -- LD D, (HL) -t
               when X"56" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -265,7 +265,7 @@ begin
                 -- LD E, L -t
               when X"5D" =>
                 E <= L;
-                -- LD E, (HL)
+                -- LD E, (HL) -t
               when X"5E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -309,7 +309,7 @@ begin
                 -- LD L, L -t
               when X"6D" =>
                 null;
-                -- LD L, (HL)
+                -- LD L, (HL) -t
               when X"6E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -333,12 +333,12 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), H -t
+                -- LD (HL), H
               when X"74" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), L -t
+                -- LD (HL), L
               when X"75" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
@@ -454,7 +454,7 @@ begin
                 -- LD E, (HL)
               when X"5E" =>
                 E <= Mem_Read;
-                -- LD, H, (HL)
+                -- LD, H, (HL) -t
               when X"66" =>
                 H <= Mem_Read;
                 -- LD L, (HL)
