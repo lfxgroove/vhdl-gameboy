@@ -462,6 +462,28 @@ begin
                 SP <= Tmp;
                 State <= Exec2;
                 -- END op-codes from page 78
+                -- OP-codes from page 79
+                -- POP AF
+              when X"F1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP BC
+              when X"C1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP DE
+              when X"D1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP HL
+              when X"E1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- END op-codes from page 79
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -597,6 +619,30 @@ begin
                 Mem_Write <= L;
                 Mem_Addr <= Tmp;
                 SP <= Tmp;
+                -- POP AF
+              when X"F1" =>
+                F <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP BC
+              when X"C1" =>
+                C <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP DE
+              when X"D1" =>
+                E <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP HL
+              when X"E1" =>
+                L <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
                 
               when others =>
             end case; -- End case Exec2
@@ -641,6 +687,18 @@ begin
                 Mem_Write <= SP(7 downto 0);
                 Mem_Write_Enable <= '1';
                 State <= Exec4;
+                -- POP AF
+              when X"F1" =>
+                A <= Mem_Read;
+                -- POP BC
+              when X"C1" =>
+                B <= Mem_Read;
+                -- POP DE
+              when X"D1" =>
+                D <= Mem_Read;
+                -- POP HL
+              when X"E1" =>
+                H <= Mem_Read;
 
               when others =>
             end case; -- End case Exec3
