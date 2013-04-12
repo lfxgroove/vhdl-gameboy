@@ -58,8 +58,6 @@ begin
   -- 
   process(Clk)
     variable Tmp : std_logic_vector(15 downto 0);
-    variable Tmp_Nibble : std_logic_vector(3 downto 0);
-    variable Tmp_Byte : std_logic_vector(7 downto 0);
   begin
     if rising_edge(Clk) then
       if (Reset = '1') then
@@ -429,7 +427,41 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                
+                -- OP codes from page 78
+                -- LD (nn), SP
+              when X"08" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- PUSH AF
+              when X"F5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= A;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH BC
+              when X"C5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= B;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH DE
+              when X"D5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= D;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH HL
+              when X"E5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= H;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- END op-codes from page 78
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -534,6 +566,37 @@ begin
                 Alu_B <= X"00" & Mem_Read;
                 Alu_Mode <= Alu_Add;
                 State <= Exec3;
+                -- LD (nn), SP
+              when X"08" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- PUSH AF
+              when X"F5" =>
+                Tmp := std_logic_vector(unsigned(SP) + 1);
+                Mem_Write <= F;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH BC
+              when X"C5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= C;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                -- PUSH DE
+              when X"D5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= E;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                -- PUSH HL
+              when X"E5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= L;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
                 
               when others =>
             end case; -- End case Exec2
@@ -570,6 +633,14 @@ begin
                 L <= Alu_Result(7 downto 0);
                 SR <= Alu_Flags;
                 SR(7 downto 6) <= "00"; --Always zero
+                -- LD (nn), SP
+              when X"08" =>
+                Tmp_Addr(15 downto 8) <= Mem_Read;
+                -- Tmp_Addr has not been updated yet...
+                Mem_Addr <= Mem_Read & Tmp_Addr(7 downto 0);
+                Mem_Write <= SP(7 downto 0);
+                Mem_Write_Enable <= '1';
+                State <= Exec4;
 
               when others =>
             end case; -- End case Exec3
@@ -580,6 +651,11 @@ begin
               -- LD A, nn, two byte immediate value
               when X"FA" =>
                 A <= Mem_Read;
+                -- LD (nn), SP
+              when X"08" =>
+                Mem_Addr <= std_logic_vector(unsigned(Tmp_Addr) + 1);
+                Mem_Write <= SP(15 downto 8);
+                Mem_Write_Enable <= '1';
               when others =>
             end case;
           when others =>
