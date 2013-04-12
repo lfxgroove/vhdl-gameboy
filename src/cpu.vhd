@@ -31,7 +31,29 @@ architecture Cpu_Implementation of Cpu is
   -- Instruction Register
   signal IR : std_logic_vector(7 downto 0);
 
+  -- ALU instantiation.
+  component Alu
+    port(A, B : in std_logic_vector(15 downto 0);
+         Mode : in std_logic_vector(1 downto 0);
+         Result : out std_logic_vector(15 downto 0);
+         Flags : out std_logic_vector(7 downto 0));
+  end component;
+
+  -- Signals to the ALU
+  signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
+  signal Alu_Mode : std_logic_vector(1 downto 0);
+  signal Alu_Flags : std_logic_vector(7 downto 0);
+  -- Modes for the alu.
+  constant Alu_Add : std_logic_vector(1 downto 0) := "00";
+  constant Alu_Sub : std_logic_vector(1 downto 0) := "01";
 begin
+
+  Alu_Ports : Alu port map(
+    A => Alu_A,
+    B => Alu_B,
+    Mode => Alu_Mode,
+    Result => Alu_Result,
+    Flags => Alu_Flags);
 
   -- 
   process(Clk)
@@ -401,6 +423,12 @@ begin
               when X"F9" =>
                 SP <= H & L;
                 -- END op-codes from page 76
+                -- OP code from page 77
+                -- LD HL, SP+n
+              when X"F8" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
                 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -500,6 +528,13 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
+                -- LD HL, SP+n
+              when X"F8" =>
+                Alu_A <= SP;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add;
+                State <= Exec3;
+                
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -529,6 +564,12 @@ begin
                 -- LD SP, nn
               when X"31" =>
                 SP(15 downto 8) <= Mem_Read;
+                -- LD HL, SP+n
+              when X"F8" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                SR(7 downto 6) <= "00"; --Always zero
 
               when others =>
             end case; -- End case Exec3
