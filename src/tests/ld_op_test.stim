@@ -41,6 +41,27 @@
 # the test came out positive. Else something went wrong.
 }
 
+# Testing the setup done by prepare
+@test { 
+  @check {
+    [C000] FF
+    [C104] EE
+    [C208] DD
+  }
+}
+
+# Testing the setup done by prepare
+@test { 
+# LD (HL), A
+# LD (BC), A
+# LD (DE), A
+77 02 12
+  @check {
+    [C000] 03
+    [C104] 03
+    [C208] 03
+  }
+}
 
 ### Testing LD X, A
 ### Testing LD (HL), X
@@ -654,5 +675,20 @@
 7B 77
   @check {
     [C000] 08
+  }
+}
+
+
+#### Testing LDs with OP codes between 01-3a
+## nn = two byte immediate value. (LS byte first.)
+## so if nn=01 then that really is 80???
+
+# Tests 01
+@test {
+# LD BC, 01
+# LD (BC), A
+01 01 02
+  @check {
+    [C000] 80
   }
 }

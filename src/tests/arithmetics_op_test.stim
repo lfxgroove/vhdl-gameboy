@@ -1,0 +1,160 @@
+@prepare {
+# Set HL to adress X"C000"
+# LD A, #C0
+# LD H, A
+3E C0 67
+# LD A, #00
+# LD L, A
+3E 00 6F
+
+# Set BC to adress X"C104"
+# LD A, #C1
+# LD B, A
+3E D0 47
+# LD A, #04
+# LD C, A
+3E 01 4F
+
+# Set DE to adress X"C208"
+# LD A, #C2
+# LD D, A
+3E C2 57
+# LD A, #08
+# LD E, A
+3E 02 5F
+
+
+# default data 
+[C000] FF
+[C104] EE
+[C208] DD
+
+# LD A, #03
+3E 03
+
+}
+
+
+### Testing ADD A, n
+# Add n to A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if carry from bit 3.
+# C - Set if carry from bit 7.
+
+# Tests 80 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD B, A
+# LD A, #0A
+# ADD A, B
+# LD (HL), A
+35 01 47 35 0A 80 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 81 - CALC: 80+00
+@test { 
+# LD A, #80
+# LD C, A
+# LD A, #00
+# ADD A, C
+# LD (HL), A
+35 80 4F 35 00 81 77
+  @check {
+    [C000] 80
+  }
+}
+
+
+# Tests 82 - CALC: FF+01=00 THIS IS CORRECT RIGHT? 
+@test { 
+# LD A, #FF
+# LD D, A
+# LD A, #01
+# ADD A, D
+# LD (HL), A
+35 FF 57 35 01 82 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests 83 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD E, A
+# LD A, #0A
+# ADD A, E
+# LD (HL), A
+35 01 47 35 0A 83 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 84 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD H, A
+# LD A, #0A
+# ADD A, H
+# LD (HL), A
+35 01 47 35 0A 84 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 85 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD L, A
+# LD A, #0A
+# ADD A, L
+# LD (HL), A
+35 01 47 35 0A 85 77
+  @check {
+    [C000] 0B
+  }
+}
+
+
+# Tests 86 - CALC: 01+01 
+@test { 
+# LD A, #01
+# LD (HL), A
+# ADD A, (HL) # 1+1
+# LD (HL), A
+35 01 77 86 77
+  @check {
+    [C000] 02
+  }
+}
+
+# Tests 87 - CALC: 02+02 
+@test { 
+# LD A, #02
+# ADD A, A # 2+2
+# LD (HL), A
+35 01 87 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests C6 - CALC: 03+0F=12 
+@test { 
+# ADD A, #0F
+# LD (HL), A
+C6 77
+  @check {
+    [C000] 12
+  }
+}
+
+
