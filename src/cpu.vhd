@@ -31,13 +31,33 @@ architecture Cpu_Implementation of Cpu is
   -- Instruction Register
   signal IR : std_logic_vector(7 downto 0);
 
+  -- ALU instantiation.
+  component Alu
+    port(A, B : in std_logic_vector(15 downto 0);
+         Mode : in std_logic_vector(1 downto 0);
+         Result : out std_logic_vector(15 downto 0);
+         Flags : out std_logic_vector(7 downto 0));
+  end component;
+
+  -- Signals to the ALU
+  signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
+  signal Alu_Mode : std_logic_vector(1 downto 0);
+  signal Alu_Flags : std_logic_vector(7 downto 0);
+  -- Modes for the alu.
+  constant Alu_Add : std_logic_vector(1 downto 0) := "00";
+  constant Alu_Sub : std_logic_vector(1 downto 0) := "01";
 begin
+
+  Alu_Ports : Alu port map(
+    A => Alu_A,
+    B => Alu_B,
+    Mode => Alu_Mode,
+    Result => Alu_Result,
+    Flags => Alu_Flags);
 
   -- 
   process(Clk)
     variable Tmp : std_logic_vector(15 downto 0);
-    variable Tmp_Nibble : std_logic_vector(3 downto 0);
-    variable Tmp_Byte : std_logic_vector(7 downto 0);
   begin
     if rising_edge(Clk) then
       if (Reset = '1') then
@@ -401,7 +421,122 @@ begin
               when X"F9" =>
                 SP <= H & L;
                 -- END op-codes from page 76
-                
+                -- OP code from page 77
+                -- LD HL, SP+n
+              when X"F8" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- OP codes from page 78
+                -- LD (nn), SP
+              when X"08" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- PUSH AF
+              when X"F5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= A;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH BC
+              when X"C5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= B;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH DE
+              when X"D5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= D;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH HL
+              when X"E5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= H;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- END op-codes from page 78
+                -- OP-codes from page 79
+                -- POP AF
+              when X"F1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP BC
+              when X"C1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP DE
+              when X"D1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- POP HL
+              when X"E1" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- END op-codes from page 79
+                -- OP-codes from page 80
+                -- ADD A, A
+              when X"87" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, B
+              when X"80" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, C
+              when X"81" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, D
+              when X"82" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, E
+              when X"83" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, H
+              when X"84" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, L
+              when X"85" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- Add A, (HL)
+              when X"86" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- Add A, #
+              when X"C6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 80
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -500,6 +635,105 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
+                -- LD HL, SP+n
+              when X"F8" =>
+                Alu_A <= SP;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add;
+                State <= Exec3;
+                -- LD (nn), SP
+              when X"08" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- PUSH AF
+              when X"F5" =>
+                Tmp := std_logic_vector(unsigned(SP) + 1);
+                Mem_Write <= F;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                State <= Exec2;
+                -- PUSH BC
+              when X"C5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= C;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                -- PUSH DE
+              when X"D5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= E;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                -- PUSH HL
+              when X"E5" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                Mem_Write <= L;
+                Mem_Addr <= Tmp;
+                SP <= Tmp;
+                -- POP AF
+              when X"F1" =>
+                F <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP BC
+              when X"C1" =>
+                C <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP DE
+              when X"D1" =>
+                E <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- POP HL
+              when X"E1" =>
+                L <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                State <= Exec3;
+                -- ADD A, A
+              when X"87" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, B
+              when X"80" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, C
+              when X"81" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, D
+              when X"82" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, E
+              when X"83" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, H
+              when X"84" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, L
+              when X"85" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- Add A, (HL)
+              when X"86" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                State <= Exec3;
+                -- Add A, #
+              when X"C6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                State <= Exec3;
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -529,6 +763,41 @@ begin
                 -- LD SP, nn
               when X"31" =>
                 SP(15 downto 8) <= Mem_Read;
+                -- LD HL, SP+n
+              when X"F8" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                SR(7 downto 6) <= "00"; --Always zero
+                -- LD (nn), SP
+              when X"08" =>
+                Tmp_Addr(15 downto 8) <= Mem_Read;
+                -- Tmp_Addr has not been updated yet...
+                Mem_Addr <= Mem_Read & Tmp_Addr(7 downto 0);
+                Mem_Write <= SP(7 downto 0);
+                Mem_Write_Enable <= '1';
+                State <= Exec4;
+                -- POP AF
+              when X"F1" =>
+                A <= Mem_Read;
+                -- POP BC
+              when X"C1" =>
+                B <= Mem_Read;
+                -- POP DE
+              when X"D1" =>
+                D <= Mem_Read;
+                -- POP HL
+              when X"E1" =>
+                H <= Mem_Read;
+              when X"85" =>
+                -- Add A, (HL)
+              when X"86" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- Add A, #
+              when X"C6" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3
@@ -539,6 +808,11 @@ begin
               -- LD A, nn, two byte immediate value
               when X"FA" =>
                 A <= Mem_Read;
+                -- LD (nn), SP
+              when X"08" =>
+                Mem_Addr <= std_logic_vector(unsigned(Tmp_Addr) + 1);
+                Mem_Write <= SP(15 downto 8);
+                Mem_Write_Enable <= '1';
               when others =>
             end case;
           when others =>
