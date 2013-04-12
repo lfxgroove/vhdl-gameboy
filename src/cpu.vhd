@@ -484,6 +484,59 @@ begin
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
                 -- END op-codes from page 79
+                -- OP-codes from page 80
+                -- ADD A, A
+              when X"87" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, B
+              when X"80" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, C
+              when X"81" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, D
+              when X"82" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, E
+              when X"83" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, H
+              when X"84" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- ADD A, L
+              when X"85" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Add;
+                State <= Exec2;
+                -- Add A, (HL)
+              when X"86" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- Add A, #
+              when X"C6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 80
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -643,7 +696,44 @@ begin
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 State <= Exec3;
-                
+                -- ADD A, A
+              when X"87" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, B
+              when X"80" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, C
+              when X"81" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, D
+              when X"82" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, E
+              when X"83" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, H
+              when X"84" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- ADD A, L
+              when X"85" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- Add A, (HL)
+              when X"86" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                State <= Exec3;
+                -- Add A, #
+              when X"C6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                State <= Exec3;
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -699,6 +789,15 @@ begin
                 -- POP HL
               when X"E1" =>
                 H <= Mem_Read;
+              when X"85" =>
+                -- Add A, (HL)
+              when X"86" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
+                -- Add A, #
+              when X"C6" =>
+                A <= Alu_Result(7 downto 0);
+                SR <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3
