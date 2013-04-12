@@ -80,13 +80,13 @@ begin
               -- LD A, B -t
               when X"78" =>
                 B <= A;
-              -- LD A, C
+              -- LD A, C -t
               when X"79" =>
                 A <= C;
-              --LD A, D
+              --LD A, D -t
               when X"7A" =>
                 A <= D;
-              --LD A, E
+              --LD A, E -t
               when X"7B" =>
                 A <= E;
               -- LD A, H -t
@@ -145,7 +145,7 @@ begin
                 Mem_Addr <= B & C;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-              -- LD (DE), A
+              -- LD (DE), A -t
               when X"12" =>
                 Mem_Addr <= D & E;
                 Mem_Write <= A;
@@ -287,7 +287,7 @@ begin
                 -- LD H, L -t
               when X"65" =>
                 H <= L;
-                -- LD, H, (HL)
+                -- LD, H, (HL) -to
               when X"66" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -333,12 +333,12 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), H
+                -- LD (HL), H -t
               when X"74" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), L
+                -- LD (HL), L -t
               when X"75" =>
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
