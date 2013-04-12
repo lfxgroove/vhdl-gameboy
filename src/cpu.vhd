@@ -95,7 +95,7 @@ begin
             case (Mem_Read) is
               -- OP-codes from page 69 in GBCPUman.
               -- LD A, A (empty implementation since it does not do anything
-              -- LD A, A
+              -- LD A, A -t
               when X"7F" =>
               -- LD A, B -t
               when X"78" =>
@@ -115,12 +115,12 @@ begin
               -- LD A, L -t
               when X"7D" =>
                 A <= L;
-              -- LD A, (BC)
+              -- LD A, (BC) -t
               when X"0A" =>
                 Mem_Addr <= B & C;
                 IR <= Mem_Read;
                 State <= Exec2;
-              -- LD A, (DE)
+              -- LD A, (DE) -t
               when X"1A" =>
                 Mem_Addr <= D & E;
                 IR <= Mem_Read;
@@ -193,7 +193,7 @@ begin
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-                -- LD A,(HL-)
+                -- LD A,(HL-) -t
               when X"3A" =>
                 IR <= Mem_Read;
                 Mem_Addr <= H & L;
@@ -307,7 +307,7 @@ begin
                 -- LD H, L -t
               when X"65" =>
                 H <= L;
-                -- LD, H, (HL) -to
+                -- LD, H, (HL) -t
               when X"66" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -370,7 +370,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 66-67
                 -- OP-code from page 73
-                -- LD A, (HL+)
+                -- LD A, (HL+) -t
               when X"2A" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -378,7 +378,7 @@ begin
                 H <= Tmp(15 downto 8);
                 L <= Tmp(7 downto 0);
                 -- OP-code from page 74
-                -- LD (HL+), A
+                -- LD (HL+), A -t
               when X"22" =>
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
@@ -577,7 +577,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
-                -- LD B, (HL) -t
+                -- LD B, (HL)
               when X"46" =>
                 B <= Mem_Read;
                 -- LD C, (HL)
@@ -589,7 +589,7 @@ begin
                 -- LD E, (HL)
               when X"5E" =>
                 E <= Mem_Read;
-                -- LD, H, (HL) -t
+                -- LD, H, (HL)
               when X"66" =>
                 H <= Mem_Read;
                 -- LD L, (HL)

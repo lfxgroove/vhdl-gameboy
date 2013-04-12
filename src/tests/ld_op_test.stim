@@ -25,7 +25,7 @@
 
 
 # default data 
-[C000] FF
+[C000] FF AA
 [C104] EE
 [C208] DD
 
@@ -291,6 +291,16 @@
 69 7D 02
   @check {
     [C104] 04
+  }
+}
+
+# Tests 7F
+@test {
+# LD A, A
+# LD (HL), A
+7F 77
+  @check {
+    [C000] 03
   }
 }
 
@@ -689,6 +699,62 @@
 # LD (BC), A
 01 01 02
   @check {
-    [C000] 80
+    [C104] 80
   }
 }
+
+# Tests 0A
+@test {
+# LD A, (BC)
+# LD (HL), A
+0A 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests 1A
+@test {
+# LD A, (DE)
+# LD (HL), A
+1A 77
+  @check {
+    [C000] DD
+  }
+}
+
+
+# Tests 2A
+@test {
+# LD A, (HL+) # A = FF, HL = C001
+# LD (HL), A
+2A 77
+  @check {
+    [C001] FF
+  }
+}
+
+
+# Tests 22
+@test {
+# LD (HL+), A
+# LD (HL), A
+22 77
+  @check {
+    [C000] 03
+    [C001] 03
+  }
+}
+
+# Tests 3A
+@test {
+# LD A, #01 # HL = C001
+# LD L, A
+# LD A, (HL-) # A = AA, HL = C000
+# LD (HL), A
+3E 01 6F 3A 77
+  @check {
+    [C000] AA
+  }
+}
+
