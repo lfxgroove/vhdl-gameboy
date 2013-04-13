@@ -1,6 +1,9 @@
 #pragma once
 
 #include <list>
+#include <iostream>
+#include "addrdata.hpp"
+#include "typedefs.hpp"
 
 class Test
 {
@@ -9,6 +12,17 @@ public:
   Test(const Test&);
   virtual ~Test();
   
+  void add_prepare(PrepareStatements val);
+  void add_test_addr_data(AddrData data);
+  void add_check_addr_data(AddrData data);
+  void reset();
+  
   bool run();
+  
+private:
+  friend std::ostream & operator<<(std::ostream &os, const Test& t);
+
+  PrepareStatements m_prepare;
+  AddrDatas m_test_addresses, m_check_addresses;
 };
 

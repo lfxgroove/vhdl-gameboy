@@ -17,6 +17,8 @@ public:
   
   inline bool is_identifier() const { return m_current_token == '@';};
   inline bool is_comment() const { return m_current_token == '#';};
+  inline bool is_start_addr() const { return m_current_token == '[';};
+  inline bool is_end_addr() const { return m_current_token == ']';};
   inline bool is_start_block() const { return m_current_token == '{';};
   inline bool is_end_block() const { return m_current_token == '}';};
   inline bool is_space() const { return m_current_token == ' ' || m_current_token == '\t';};
@@ -37,7 +39,18 @@ public:
   };
   
   inline bool has_token() const { return !!m_read_from;};
-  inline void next() { m_current_token = m_read_from.get(); std::cout << "Extracted: " << m_current_token << std::endl;};
+  void next() 
+  { 
+    m_current_token = m_read_from.get(); 
+    std::cout << "Extracted: " << m_current_token << std::endl;
+    //Think about this logic
+    ++m_pos_x;
+    if (is_end_of_line())
+      {
+	++m_pos_y;
+	m_pos_x = 1;
+      }
+  };
   
   inline int pos_x() const { return m_pos_x;};
   inline int pos_y() const { return m_pos_y;};

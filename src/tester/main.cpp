@@ -10,6 +10,7 @@ void run_test(const std::string& dir_name, const std::string& test_name)
 {
   Tokenizer t(dir_name + "/" + test_name + ".stim");
   Parser p(t);
+  // std::cout << "Skickar in: " << dir_name + "/" + test_name + ".stim" << std::endl;
   Tests to_run = p.parse();
 }
 
@@ -23,8 +24,11 @@ void print_usage(const char* name)
   cout << "           run tests for" << endl;
 }
 
-std::string find_test_name(const std::string& dir_name)
+std::string find_test_name(std::string& dir_name)
 {
+  if (dir_name.substr(dir_name.length()-1, dir_name.length()) == "/")
+    dir_name = dir_name.substr(0, dir_name.length() - 1);
+  
   std::string::size_type found;
   if ((found = dir_name.find_last_of("/")) != std::string::npos)
     {
