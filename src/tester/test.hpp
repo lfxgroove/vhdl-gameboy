@@ -21,7 +21,7 @@ public:
       && !m_test_addresses.empty()
       && !m_check_addresses.empty();
   };
-  bool run();
+  bool run() const;
   
 private:
   friend std::ostream & operator<<(std::ostream &os, const Test& t);

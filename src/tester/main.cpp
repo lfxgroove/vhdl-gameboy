@@ -12,6 +12,33 @@ void run_test(const std::string& dir_name, const std::string& test_name)
   Parser p(t);
   // std::cout << "Skickar in: " << dir_name + "/" + test_name + ".stim" << std::endl;
   Tests to_run = p.parse();
+  Tests faulty;
+  bool all_ok = true;
+  int i = 1;
+  std::cout << "Running test " << test_name << ":";
+  for (Tests::const_iterator it = to_run.begin();
+       it != to_run.end();
+       ++it, ++i)
+    {
+      if ((*it).run())
+	{
+	  std::cout << "1";
+	}
+      else
+	{
+	  all_ok = false;
+	  std::cout << "0";
+	  faulty.push_back(*it);
+	  // std::cout << "Test failed! Info: " << std::endl
+	  // 	    << *it << std::endl;
+	  break;
+	}
+    }
+  if (!all_ok)
+    {
+      std::cout << "Testing was interrupted by a/some faulty test/s" << std::endl;
+      std::cout << "Tests that failed: " << std::endl;
+    }
 }
 
 void print_usage(const char* name)

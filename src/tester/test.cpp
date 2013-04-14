@@ -29,7 +29,7 @@ void Test::reset()
   m_check_addresses.clear();
 }
 
-bool Test::run()
+bool Test::run() const
 {
   //Generate a file and give it to the vhdl program
   return false;

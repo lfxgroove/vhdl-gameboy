@@ -64,7 +64,7 @@ Tests Parser::parse()
 	    << "=======================" << std::endl;;
   std::cout << *this << std::endl;
   
-  return Tests();
+  return m_current_tests;
 }
 
 void Parser::add_test()
