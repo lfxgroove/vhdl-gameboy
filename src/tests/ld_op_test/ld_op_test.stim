@@ -1,0 +1,760 @@
+@prepare {
+# Set HL to adress X"C000"
+# LD A, #C0
+# LD H, A
+3E C0 67
+# LD A, #00
+# LD L, A
+3E 00 6F
+
+# Set BC to adress X"C104"
+# LD A, #C1
+# LD B, A
+3E D0 47
+# LD A, #04
+# LD C, A
+3E 01 4F
+
+# Set DE to adress X"C208"
+# LD A, #C2
+# LD D, A
+3E C2 57
+# LD A, #08
+# LD E, A
+3E 02 5F
+
+
+# default data 
+[C000] FF AA
+[C104] EE
+[C208] DD
+
+# LD A, #03
+3E 03
+
+## All registers now have unique values.
+## This makes it possible for tests to be short as operations
+## like:
+# LD A, B
+# LD (HL), A
+# now we know that if (HL) = C000 contains the value of B, that is "C1", then
+# the test came out positive. Else something went wrong.
+}
+
+# Testing the setup done by prepare
+@test { 
+  @check {
+    [C000] FF
+    [C104] EE
+    [C208] DD
+  }
+}
+
+# Testing the setup done by prepare
+@test { 
+# LD (HL), A
+# LD (BC), A
+# LD (DE), A
+77 02 12
+  @check {
+    [C000] 03
+    [C104] 03
+    [C208] 03
+  }
+}
+
+### Testing LD X, A
+### Testing LD (HL), X
+
+# Tests 77,3E
+# 3E is tested implicitly.
+@test { 
+# LD (HL), A
+77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests 47,70
+@test {
+# LD B, A
+# LD (HL), B
+47 70
+  @check {
+    [C000] 03
+  }
+}
+  
+# Tests 4F,71
+@test {
+# LD C, A
+# LD (HL), C
+4F 71
+  @check {
+    [C000] 03
+  }
+}
+# Tests 57,72
+@test {
+# LD D, A
+# LD (HL), D
+57 72
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests 5F,73
+@test {
+# LD E, A
+# LD (HL), E
+5F 73
+   @check {
+   [C000] 03
+   }
+}
+
+# Tests 67,7C,02
+@test {
+# LD H, A	- store 03 in H
+# LD A, #FF	- "destroy" A
+# LD A, H	- restore 03 to A
+# LD (BC), A	- (HL) = (BC) = C000
+67 3E FF 7C 02
+   @check {
+   [C104] 03
+   }
+}
+
+# Tests 6F
+@test {
+# LD L, A	- store 03 in A
+# LD A, #FF	- "destroy" A
+# LD A, L	- restore 03 to A
+# LD (BC), A	
+6F 3E FF 7C 02
+   @check {
+   [C102] 03
+   }
+}
+
+# Tests 74
+@test {
+# LD (HL), H	
+74
+   @check {
+   [C000] CO
+   }
+}
+
+# Tests 75
+@test {
+# LD (HL), L	
+75
+   @check {
+   [C000] 0O
+   }
+}
+
+
+### Testing LD X, B
+
+# Tests 40
+@test {
+# LD B, B
+# LD (HL), B
+40 70
+  @check {
+    [C000] C1
+  }
+}
+
+# Tests 48
+@test {
+# LD C, B
+# LD (HL), C
+48 71
+  @check {
+    [C000] C1
+  }
+}
+
+# Tests 50
+@test {
+# LD D, B
+# LD (HL), D
+50 72
+  @check {
+    [C000] C1
+  }
+}
+
+# Tests 58
+@test {
+# LD E, B
+# LD (HL), E
+58 73
+  @check {
+    [C000] C1
+  }
+}
+
+
+# Tests 60
+@test {
+# LD A, #C0
+# LD B, A
+# LD H, B
+# LD (HL), H
+3E C0 47 60 74
+  @check {
+    [C000] C0
+  }
+}
+
+
+# Tests 68
+@test {
+# LD A, #00
+# LD B, A
+# LD L, B
+# LD (HL), L
+3E 00 47 68 75
+  @check {
+    [C000] 00
+  }
+}
+
+
+### Testing LD X, C
+
+# Tests 41
+@test {
+# LD B, C
+# LD (HL), B
+41 70
+  @check {
+    [C000] 04
+  }
+}
+  
+# Tests 49
+@test {
+# LD C, C
+# LD (HL), C
+49 71
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 51
+@test {
+# LD D, C
+# LD (HL), D
+51 72
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 59
+@test {
+# LD E, C
+# LD (HL), E
+59 73
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 61
+@test {
+## C is 04..
+# LD H, C
+# LD A, H
+# LD (BC), A
+61 7C 02
+  @check {
+    [C104] 04
+  }
+}
+
+
+# Tests 69
+@test {
+## C is 04..
+# LD L, C
+# LD A, L
+# LD (BC), A
+69 7D 02
+  @check {
+    [C104] 04
+  }
+}
+
+# Tests 7F
+@test {
+# LD A, A
+# LD (HL), A
+7F 77
+  @check {
+    [C000] 03
+  }
+}
+
+
+### Testing LD X, D
+
+# Tests 42
+@test {
+# LD B, D
+# LD (HL), B
+42 70
+  @check {
+    [C000] C2
+  }
+}
+  
+# Tests 4A
+@test {
+# LD C, D
+# LD (HL), C
+4A 71
+  @check {
+    [C000] C2
+  }
+}
+
+# Tests 52
+@test {
+# LD D, D
+# LD (HL), D
+52 72
+  @check {
+    [C000] C2
+  }
+}
+
+# Tests 5A
+@test {
+# LD E, D
+# LD (HL), E
+5A 73
+  @check {
+    [C000] C2
+  }
+}
+
+
+# Tests 62
+@test {
+# LD A, #CO
+# LD D, A
+# LD H, D
+# LD (HL), H
+3E CO 57 62 74
+  @check {
+    [C000] CO
+  }
+}
+
+
+# Tests 6A
+@test {
+# LD A, #00
+# LD D, A
+# LD L, D
+# LD (HL), L
+3E 00 57 6A 75
+  @check {
+    [C000] 00
+  }
+}
+
+
+### Testing LD X, E
+
+# Tests 43
+@test {
+# LD B, E
+# LD (HL), B
+43 70
+  @check {
+    [C000] 08
+  }
+}
+  
+# Tests 4B
+@test {
+# LD C, E
+# LD (HL), C
+4B 71
+  @check {
+    [C000] 08
+  }
+}
+
+# Tests 53
+@test {
+# LD D, E
+# LD (HL), D
+53 72
+  @check {
+    [C000] 08
+  }
+}
+
+# Tests 5B
+@test {
+# LD E, E
+# LD (HL), E
+5B 73
+  @check {
+    [C000] 08
+  }
+}
+
+
+# Tests 63
+@test {
+# LD A, #CO
+# LD E, A
+# LD H, E
+# LD (HL), H
+3E 34 5F 63 74
+  @check {
+    [C000] 34
+  }
+}
+
+
+# Tests 6B
+@test {
+# LD A, #00
+# LD E, A
+# LD L, E
+# LD (HL), L
+3E 00 5F 6B 75
+  @check {
+    [C000] 00
+  }
+}
+
+
+### Testing LD X, H
+
+# Tests 44
+@test {
+# LD B, H
+# LD (HL), B
+44 70
+  @check {
+    [C000] C0
+  }
+}
+  
+# Tests 4C
+@test {
+# LD C, H
+# LD (HL), C
+4C 71
+  @check {
+    [C000] C0
+  }
+}
+
+# Tests 54
+@test {
+# LD D, H
+# LD (HL), D
+54 72
+  @check {
+    [C000] C0
+  }
+}
+
+# Tests 5C
+@test {
+# LD E, H
+# LD (HL), E
+5C 73
+  @check {
+    [C000] C0
+  }
+}
+
+
+# Tests 64
+@test {
+# LD H, H
+# LD (HL), H
+64 74
+  @check {
+    [C000] C0
+  }
+}
+
+
+# Tests 6C 
+@test {
+# LD L, H
+# LD (HL), L
+6C 75
+  @check {
+    [C000] C0
+  }
+}
+
+
+
+### Testing LD X, L
+
+# Tests 45
+@test {
+# LD B, L
+# LD (HL), B
+45 70
+  @check {
+    [C000] 00
+  }
+}
+  
+# Tests 4D
+@test {
+# LD C, L
+# LD (HL), C
+4D 71
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests 55
+@test {
+# LD D, L
+# LD (HL), D
+55 72
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests 5D
+@test {
+# LD E, L
+# LD (HL), E
+5D 73
+  @check {
+    [C000] 00
+  }
+}
+
+
+# Tests 65
+@test {
+# LD H, L
+# LD A, H
+# LD (BC), A
+65 7C 02
+  @check {
+    [C104] 00
+  }
+}
+
+# Tests 6D
+@test {
+# LD L, L
+# LD (HL), L
+6D 75
+  @check {
+    [C000] 00
+  }
+}
+
+
+### Testing LD X, (HL)
+
+# Tests 7E
+@test {
+# LD A, (HL) - (HL) contains FF
+# LD (BC), A
+7E 02
+  @check {
+    [C104] FF 
+  }
+}
+
+# Tests 46,12
+@test {
+# LD B, (HL)
+# LD A, B
+# LD (DE), A
+46 78 12
+  @check {
+    [C208] FF 
+  }
+}
+
+
+# Tests 4E
+@test {
+# LD C, (HL)
+# LD A, C
+# LD (DE), A
+4E 79 12
+  @check {
+    [C208] FF 
+  }
+}
+
+
+# Tests 56
+@test {
+# LD D, (HL)
+# LD A, D
+# LD (BC), A
+56 7A 12
+  @check {
+    [C104] FF 
+  }
+}
+
+# Tests 5E
+@test {
+# LD E, (HL)
+# LD A, E
+# LD (BC), A
+5E 7B 12
+  @check {
+    [C104] FF 
+  }
+}
+
+# Tests 66
+@test {
+# LD H, (HL)
+# LD A, H
+# LD (BC), A
+66 7C 02
+  @check {
+    [C104] FF 
+  }
+}
+
+# Tests 6E
+@test {
+# LD L, (HL)
+# LD A, L
+# LD (BC), A
+6E 7D 02
+  @check {
+    [C104] FF 
+  }
+}
+
+### Testing LD A, (C/D/E)
+
+# Tests 79
+@test {
+# LD A, C
+# LD (HL), A
+79 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests 7A
+@test {
+# LD A, D
+# LD (HL), A
+7A 77
+  @check {
+    [C000] C2
+  }
+}
+
+
+# Tests 7B
+@test {
+# LD A, E
+# LD (HL), A
+7B 77
+  @check {
+    [C000] 08
+  }
+}
+
+
+#### Testing LDs with OP codes between 01-3a
+## nn = two byte immediate value. (LS byte first.)
+## so if nn=01 then that really is 80???
+
+# Tests 01
+@test {
+# LD BC, 01
+# LD (BC), A
+01 01 02
+  @check {
+    [C104] 80
+  }
+}
+
+# Tests 0A
+@test {
+# LD A, (BC)
+# LD (HL), A
+0A 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests 1A
+@test {
+# LD A, (DE)
+# LD (HL), A
+1A 77
+  @check {
+    [C000] DD
+  }
+}
+
+
+# Tests 2A
+@test {
+# LD A, (HL+) # A = FF, HL = C001
+# LD (HL), A
+2A 77
+  @check {
+    [C001] FF
+  }
+}
+
+
+# Tests 22
+@test {
+# LD (HL+), A
+# LD (HL), A
+22 77
+  @check {
+    [C000] 03
+    [C001] 03
+  }
+}
+
+# Tests 3A
+@test {
+# LD A, #01 # HL = C001
+# LD L, A
+# LD A, (HL-) # A = AA, HL = C000
+# LD (HL), A
+3E 01 6F 3A 77
+  @check {
+    [C000] AA
+  }
+}
+
