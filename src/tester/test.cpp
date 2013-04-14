@@ -2,13 +2,7 @@
 
 
 Test::Test()
-{
-
-}
-Test::Test(const Test&)
-{
-    
-}
+{}
 
 Test::~Test()
 {}
@@ -20,7 +14,6 @@ void Test::add_prepare(PrepareStatements prep)
 
 void Test::add_check_addr_data(AddrData data)
 {
-  std::cout << "LAgger till: " << data << "......." << std::endl;
   m_check_addresses.push_back(data);
 }
 
@@ -44,14 +37,14 @@ bool Test::run()
 
 std::ostream & operator<<(std::ostream &os, const Test& t)
 {
-  os << "Test addresses and data: " << std::endl;
+  os << "  Test data:" << std::endl;
   for (AddrDatas::const_iterator it = t.m_test_addresses.begin();
        it != t.m_test_addresses.end();
        ++it)
     {
       os << *it << std::endl;
     }
-  os << "Check data: " << std::endl;
+  os << "  Check data: " << std::endl;
   for (AddrDatas::const_iterator it = t.m_check_addresses.begin();
        it != t.m_check_addresses.end();
        ++it)

@@ -17,6 +17,19 @@ const std::vector<char> Tokenizer::ALLOWED_BLOCK_DATA =
     'A', 'B', 'C', 'D', 'E', 'F', 
   };
 
+void Tokenizer::next()
+{
+  m_current_token = m_read_from.get(); 
+  // std::cout << "Extracted: " << m_current_token << std::endl;
+  //Think about this logic
+  ++m_pos_x;
+  if (is_end_of_line())
+    {
+      ++m_pos_y;
+      m_pos_x = 1;
+    }
+}
+
 Tokenizer::Tokenizer()
   : m_pos_x(1), m_pos_y(1)
 {}

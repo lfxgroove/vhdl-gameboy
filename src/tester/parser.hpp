@@ -41,6 +41,14 @@ private:
   void parse_addr();
   void parse_byte();
   
+  //New things :)
+  void parse_test();
+  void parse_check();
+  void parse_prepare();
+  
+  void add_test();
+  
+  void add_addr();
   void update_addr();
 
   //Debug

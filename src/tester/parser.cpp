@@ -24,7 +24,7 @@ Tests Parser::parse()
 {
   while (m_tokenizer.has_token())
     {
-      m_tokenizer.next();
+      // m_tokenizer.next();
       if (m_tokenizer.is_comment())
       	{
 	  parse_comment();
@@ -44,10 +44,21 @@ Tests Parser::parse()
 	  m_tokenizer.next();
 	  switch (m_block)
 	    {
-	      
+	    case BLOCK_TEST:
+	      parse_test();
+	      break;
+	    case BLOCK_CHECK:
+	      parse_check();
+	      m_block = BLOCK_UNDEFINED;
+	      m_current_test.add_prepare(m_prepare);
+	      add_test();
+	      break;
+	    case BLOCK_PREPARE:
+	      parse_prepare();
+	      break;
 	    }
-	  // parse_block();
 	}
+      m_tokenizer.next();
     }
   
   std::cout << "Debug output: " << std::endl
@@ -57,6 +68,108 @@ Tests Parser::parse()
   return Tests();
 }
 
+void Parser::add_test()
+{
+  if (m_current_test.has_data())
+    {
+      m_current_tests.push_back(m_current_test);
+      m_current_test.reset();
+    }
+  else
+    {
+      std::cout << "DEBUG: Test has no data, do you have an empty @test block?" << std::endl;
+    }
+}
+
+void Parser::add_addr()
+{
+  if (!m_current_addr.empty())
+    {
+      //Should have if here to check which block we are in
+      if (m_block == BLOCK_CHECK)
+	m_current_test.add_check_addr_data(m_current_addr);
+      else if(m_block == BLOCK_TEST)
+	m_current_test.add_test_addr_data(m_current_addr);
+      
+      m_current_addr.reset();
+    }
+}
+
+void Parser::parse_test()
+{
+  //We expect to find a @check sooner or later
+  while (!m_tokenizer.is_end_block())
+    {
+      if (m_tokenizer.is_identifier())
+      	{
+	  //Remember to add the last adr parsed
+	  //to the data.
+	  add_addr();
+	  //Kludge..
+	  m_tokenizer.next();
+	  parse_identifier();
+	  break;
+      	}
+      else
+	{
+	  if (m_tokenizer.is_start_addr())
+	    {
+	      add_addr();
+	      m_tokenizer.next();
+	      parse_addr();
+	    }
+	  else
+	    {
+	      parse_byte();
+	    }
+	}
+      m_tokenizer.next();
+    }
+  //Add the last one aswell
+  //This should'nt be reached to often
+  add_addr();
+}
+
+void Parser::parse_check()
+{
+  while (!m_tokenizer.is_end_block())
+    {
+      if (m_tokenizer.is_start_addr())
+	{
+	  add_addr();
+	  m_tokenizer.next();
+	  parse_addr();
+	}
+      else
+	{
+	  parse_byte();
+	}
+      m_tokenizer.next();
+    }
+  add_addr();
+  //Now we should find another end block that closes the test
+  while (m_tokenizer.has_token())
+    {
+      if (m_tokenizer.is_end_block())
+	break;
+      m_tokenizer.next();
+    }
+  if (!m_tokenizer.has_token())
+    {
+      std::cout << "DEBUG: You forgot to close either @test or @check" << std::endl;
+    }
+}
+
+//The prepare block just holds bytes.
+void Parser::parse_prepare()
+{
+  while (!m_tokenizer.is_end_block())
+    {
+      parse_byte();
+      m_tokenizer.next();
+    }
+}
+
 std::ostream & operator<<(std::ostream& os, const Parser& p)
 {
   os << "Prepare block: " << std::endl;
@@ -64,7 +177,9 @@ std::ostream & operator<<(std::ostream& os, const Parser& p)
        it != p.m_prepare.end();
        ++it)
     {
-      os << (int) *it << " ";
+      os << std::setbase(16) << std::showbase << std::setw(2) << (int) *it << " "
+	 << std::resetiosflags(std::ios_base::basefield | 
+			       std::ios_base::adjustfield);
     }
   os << std::endl;
   

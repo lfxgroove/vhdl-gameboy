@@ -39,18 +39,7 @@ public:
   };
   
   inline bool has_token() const { return !!m_read_from;};
-  void next() 
-  { 
-    m_current_token = m_read_from.get(); 
-    std::cout << "Extracted: " << m_current_token << std::endl;
-    //Think about this logic
-    ++m_pos_x;
-    if (is_end_of_line())
-      {
-	++m_pos_y;
-	m_pos_x = 1;
-      }
-  };
+  void next();
   
   inline int pos_x() const { return m_pos_x;};
   inline int pos_y() const { return m_pos_y;};
