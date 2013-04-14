@@ -35,26 +35,24 @@ public:
   virtual ~Parser();
   Tests parse();
 private:
+  //Used for more general things
   void parse_identifier();
-  void parse_block(bool recurse = false);
   void parse_comment();
   void parse_addr();
   void parse_byte();
-  
-  //New things :)
+  //Used for the three possible blocks
   void parse_test();
   void parse_check();
   void parse_prepare();
-  
+  //To keep the internal structure going
   void add_test();
-  
   void add_addr();
-  void update_addr();
-
+  
   //Debug
   friend std::ostream & operator<<(std::ostream &os, const Parser& t);
   
   //Should probably be replaced with an enum..
+  //m_block is that enum, but it still relies on these.
   static const std::string PREPARE_IDENTIFIER;
   static const std::string TEST_IDENTIFIER;
   static const std::string CHECK_IDENTIFIER;

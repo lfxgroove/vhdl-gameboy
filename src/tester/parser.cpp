@@ -36,7 +36,6 @@ Tests Parser::parse()
       		    << m_tokenizer.pos_x() << ":" <<m_tokenizer.pos_y() << std::endl;
 	  m_tokenizer.next();
 	  parse_identifier();
-	  update_addr();
       	}
       
       if (m_tokenizer.is_start_block())
@@ -100,6 +99,8 @@ void Parser::parse_test()
   //We expect to find a @check sooner or later
   while (!m_tokenizer.is_end_block())
     {
+      if (m_tokenizer.is_comment())
+	parse_comment();
       if (m_tokenizer.is_identifier())
       	{
 	  //Remember to add the last adr parsed
@@ -126,7 +127,6 @@ void Parser::parse_test()
       m_tokenizer.next();
     }
   //Add the last one aswell
-  //This should'nt be reached to often
   add_addr();
 }
 
@@ -134,6 +134,9 @@ void Parser::parse_check()
 {
   while (!m_tokenizer.is_end_block())
     {
+      if (m_tokenizer.is_comment())
+	parse_comment();
+      
       if (m_tokenizer.is_start_addr())
 	{
 	  add_addr();
@@ -150,6 +153,9 @@ void Parser::parse_check()
   //Now we should find another end block that closes the test
   while (m_tokenizer.has_token())
     {
+      if (m_tokenizer.is_comment())
+	parse_comment();
+      
       if (m_tokenizer.is_end_block())
 	break;
       m_tokenizer.next();
@@ -222,7 +228,7 @@ void Parser::parse_addr()
 	  std::string damp = hex_data.str();
 	  tmp << std::hex << damp;
 	  tmp >> data;
-	  std::cout << "Data:" << data << std::endl;
+	  // std::cout << "Data:" << data << std::endl;
 	  num_in_row = 0;
 	  hex_data.str("");
 	  tmp.str("");
@@ -249,7 +255,7 @@ void Parser::parse_byte()
 	  std::string damp = hex_data.str();
 	  tmp << std::hex << damp;
 	  tmp >> data;
-	  std::cout << "Data:" << data << std::endl;
+	  // std::cout << "Data:" << data << std::endl;
 	  num_in_row = 0;
 	  hex_data.str("");
 	  tmp.str("");
@@ -259,93 +265,6 @@ void Parser::parse_byte()
 	    m_current_addr.add_byte((byte) data);
 	}
       m_tokenizer.next();
-    }
-}
-
-void Parser::update_addr()
-{
-  if (!m_current_addr.empty())
-    {
-      if (m_block == BLOCK_TEST)
-	{
-	  m_current_test.add_test_addr_data(m_current_addr);
-	  m_current_addr.reset();
-	  std::cout << "JAK ER I BLOCK TEST" << std::endl;
-	}
-      else if (m_block == BLOCK_CHECK)
-	{
-	  m_current_test.add_check_addr_data(m_current_addr);
-	  m_current_addr.reset();
-	  std::cout << "JAK ER I BLOCK CHECK" << std::endl;
-	}
-      else
-	{
-	  std::cout << "JAK ER I INGET BLOCK" << std::endl;
-	}
-    }
-}
-
-void Parser::parse_block(bool recurse /* = false */)
-{
-  if (m_state != STATE_NEED_START_BLOCK)
-    {
-      std::cout << "DEBUG: Start block without any identifier, stupid?" << std::endl;
-    }
-  m_state = STATE_NEED_END_BLOCK;
-  while (!m_tokenizer.is_end_block())
-    {
-      if (m_tokenizer.is_start_addr() && 
-	  (m_identifier == TEST_IDENTIFIER || m_identifier == CHECK_IDENTIFIER))
-	{
-	  m_state = STATE_IN_ADDR;
-	  m_tokenizer.next();
-	  parse_addr();
-	}
-      else if (m_tokenizer.is_identifier())
-	{
-	  update_addr();
-	  m_tokenizer.next();
-	  parse_identifier();
-	  if (m_identifier != CHECK_IDENTIFIER)
-	    {
-	      std::cout << "DEBUG: only @check is allowed in substatements (" 
-			<< m_tokenizer.pos_x() << "," << m_tokenizer.pos_y() << ")" 
-			<< std::endl;
-	    }
-	  while (m_tokenizer.is_space())
-	    m_tokenizer.next();
-	  if (m_tokenizer.is_start_block())
-	    {
-	      m_tokenizer.next();
-	      m_state = STATE_IN_CHECK;
-	    }
-	  else
-	    {
-	      std::cout << "DEBUG: should open a block after identifier (" 
-			<< m_tokenizer.pos_x() << "," << m_tokenizer.pos_y() << ")"
-			<< std::endl;
-	    }
-	}
-      else if (m_tokenizer.is_good_block_data())
-	{
-	  parse_byte();
-	}
-      else if (m_tokenizer.is_comment())
-	{
-	  parse_comment();
-	}
-      else
-	{
-	  if (!m_tokenizer.is_space() && !m_tokenizer.is_end_of_line())
-	    std::cout << "DEBUG: Bad token in file(" << m_tokenizer.pos_x() << "," << m_tokenizer.pos_y() << "):" << m_tokenizer.current() << ":" << std::endl;
-	}
-      m_tokenizer.next();
-    }
-  m_state = STATE_NEED_IDENTIFIER;
-  if (m_block == BLOCK_CHECK)
-    {
-      m_current_tests.push_back(m_current_test);
-      m_current_test.reset();
     }
 }
 
