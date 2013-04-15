@@ -130,7 +130,7 @@ begin
                 Mem_Addr <= H & L;
                 IR <= Mem_Read;
                 State <= Exec2;
-              -- LD A, (nn), two byte immediate value
+              -- LD A, (nn) -t
               when X"FA" =>
                 Mem_Addr <= PC;
                 IR <= Mem_Read;
@@ -175,7 +175,7 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= A;
                 Mem_Write_Enable <= '1';
-                -- LD (nn), A
+                -- LD (nn), A -t
               when X"EA" =>
                 Mem_Addr <= PC;
                 IR <= Mem_Read;
@@ -183,12 +183,12 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 69 --
                 -- OP-codes from page 70
-                -- LD A,(C)
+                -- LD A,(C+$FF00)
               when X"F2" =>
                 IR <= Mem_Read;
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 State <= Exec2;
-                -- LD(C),A
+                -- LD(C+$FF00),A
               when X"E2" =>
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 Mem_Write <= A;
@@ -397,27 +397,27 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 75
                 -- OP-codes from page 76
-                -- LD BC,nn
+                -- LD BC,nn -t
               when X"01" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD DE,nn
+                -- LD DE,nn -t
               when X"11" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD HL,nn
+                -- LD HL,nn -t
               when X"21" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD SP,nn
+                -- LD SP,nn -t
               when X"31" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD SP, HL
+                -- LD SP, HL -t
               when X"F9" =>
                 SP <= H & L;
                 -- END op-codes from page 76
@@ -428,7 +428,7 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- OP codes from page 78
-                -- LD (nn), SP
+                -- LD (nn), SP -t
               when X"08" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -440,21 +440,21 @@ begin
                 Mem_Addr <= Tmp;
                 SP <= Tmp;
                 State <= Exec2;
-                -- PUSH BC
+                -- PUSH BC -t
               when X"C5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= B;
                 Mem_Addr <= Tmp;
                 SP <= Tmp;
                 State <= Exec2;
-                -- PUSH DE
+                -- PUSH DE -t
               when X"D5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= D;
                 Mem_Addr <= Tmp;
                 SP <= Tmp;
                 State <= Exec2;
-                -- PUSH HL
+                -- PUSH HL -t
               when X"E5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= H;
@@ -468,17 +468,17 @@ begin
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
-                -- POP BC
+                -- POP BC -t
               when X"C1" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
-                -- POP DE
+                -- POP DE -t
               when X"D1" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
-                -- POP HL
+                -- POP HL -t
               when X"E1" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
@@ -543,7 +543,7 @@ begin
           when Exec2 =>
             State <= Waiting;
             case (IR) is
-              -- LD A,(C)
+              -- LD A,(C+$FF00)
               when X"F2" =>
                 A <= Mem_Read;
               -- LD A, (BC)
