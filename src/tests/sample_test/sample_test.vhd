@@ -143,27 +143,30 @@ begin
     Reset <= '0';
     wait until rising_edge(Clk);
     
-    for I in 1 to 60 loop
+    --for I in 1 to 60 loop
+    for I in 1 to 200 loop
       wait until rising_edge(Clk);
     end loop; 
 
     Cpu_Allowed <= '0';
-    Internal_Mem_Addr <= X"C000";
+    --Internal_Mem_Addr <= X"C000";
     wait until rising_edge(Clk);
+    --wait until rising_edge(Clk);
     
     Curr_Addr := X"C000";
     loop
       exit when Curr_Addr = X"C060";
-      wait until rising_edge(Clk);
+      --wait until rising_edge(Clk);
       
       Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
       
       wait until rising_edge(Clk);
+      wait until rising_edge(Clk);
       
       Data_Byte(7 downto 0) := Mem_Read(7 downto 0);
       Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);
-      
-      wait until rising_edge(Clk);
+
+      --wait until rising_edge(Clk);
       
       write(Out_Line, Data_Byte);
       writeline(Out_File, Out_Line);
