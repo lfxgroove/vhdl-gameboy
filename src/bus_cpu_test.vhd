@@ -85,6 +85,14 @@ begin
     Rom_Write <= X"A0";
     wait until rising_edge(Clk);
 
+    Rom_Addr <= X"0152";
+    Rom_Write <= X"77";
+    wait until rising_edge(Clk);
+
+    Rom_Addr <= X"0153";
+    Rom_Write <= X"3E";
+    wait until rising_edge(Clk);
+
     Rom_Write_Enable <= '0';
     wait until rising_edge(Clk);
     wait until rising_edge(Clk);

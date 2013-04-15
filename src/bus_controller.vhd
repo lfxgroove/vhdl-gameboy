@@ -43,65 +43,115 @@ begin
     end if;
   end process;
 
+  -- Process for writing to ram and other things...
   process (Clk)
   begin
     if rising_edge(Clk) then
-      if Mem_Addr < X"4000" then
-        -- Addresses 0-100 contains interrupt vectors.
-        -- User program area. The ROM inserted into the unit.
-        -- NOTE: Address X100 is the actual starting address, but
-        -- since it is only three bytes before some data required
-        -- by the boot-loader, it usually only contains the instruction
-        -- JMP 0x150, which is where the predefined things end.
-        Mem_Read <= Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))));
-      elsif Mem_Addr < X"8000" then
-        -- The addresses 4000-7FFF is switchable in som ROMS, implement!
-        Mem_Read <= Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))));
-      elsif Mem_Addr < X"9800" then
-        -- Character data. Send to GPU.
-        Mem_Read <= X"00";
-      elsif Mem_Addr < X"9C00" then
-        -- Character codes (BG data 1). Send to GPU.
-        Mem_Read <= X"00";
-      elsif Mem_Addr < X"A000" then
-        -- Character codes (BG data 2). Send to GPU.
-        Mem_Read <= X"00";
-      elsif Mem_Addr < X"C000" then
-        -- External expansion working RAM 8KB.
-        if Mem_Write_Enable = '1' then
+      if Mem_Write_Enable = '1' then
+        if Mem_Addr < X"4000" then
+          -- Addresses 0-100 contains interrupt vectors.
+          -- User program area. The ROM inserted into the unit.
+          -- NOTE: Address X100 is the actual starting address, but
+          -- since it is only three bytes before some data required
+          -- by the boot-loader, it usually only contains the instruction
+          -- JMP 0x150, which is where the predefined things end.
+          -- No writing allowed here!
+        elsif Mem_Addr < X"8000" then
+          -- The addresses 4000-7FFF is switchable in som ROMS, implement!
+          -- No writing allowed here!
+        elsif Mem_Addr < X"9800" then
+          -- Character data. Send to GPU.
+          -- Not implemented yet!
+        elsif Mem_Addr < X"9C00" then
+          -- Character codes (BG data 1). Send to GPU.
+          -- Not implemented yet!
+        elsif Mem_Addr < X"A000" then
+          -- Character codes (BG data 2). Send to GPU.
+          -- Not implemented yet!
+        elsif Mem_Addr < X"C000" then
+          -- External expansion working RAM 8KB.
           External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0)))) <= Mem_Write;
-        else
-          Mem_Read <= External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
-        end if;
-      elsif Mem_Addr < X"E000" then
-        -- Unit working ram 8KB.
-        if Mem_Write_Enable = '1' then
+        elsif Mem_Addr < X"E000" then
+          -- Unit working ram 8KB.
           Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0)))) <= Mem_Write;
+        elsif Mem_Addr < X"FE00" then
+          -- Prohibited. Undefined value!
+        elsif Mem_Addr < X"FEA0" then
+          -- OAM memory, send to GPU.
+        elsif Mem_Addr < X"FF00" then
+          -- Prohibited. Undefined value!
+        elsif Mem_Addr < X"FF80" then
+          -- Port mode registers (input).
+          -- Control registers.
+          -- Sound register.
+        elsif Mem_Addr < X"FFFE" then
+          -- Working stack and RAM.
+          Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0)))) <= Mem_Write;
         else
-          Mem_Read <= Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
+          -- Undefined.
         end if;
-      elsif Mem_Addr < X"FE00" then
-        -- Prohibited. Undefined value!
-      elsif Mem_Addr < X"FEA0" then
-        -- OAM memory, send to GPU.
-        Mem_Read <= X"00";
-      elsif Mem_Addr < X"FF00" then
-        -- Prohibited. Undefined value!
-      elsif Mem_Addr < X"FF80" then
-        -- Port mode registers (input).
-        -- Control registers.
-        -- Sound register.
-        Mem_Read <= X"00";
-      elsif Mem_Addr < X"FFFE" then
-        -- Working stack and RAM.
-        if Mem_Write_Enable = '1' then
-          External_Ram(to_integer(unsigned(Mem_Addr(6 downto 0)))) <= Mem_Write;
-        else
-          Mem_Read <= External_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))));
-        end if;
-      else
-        -- Undefined.
       end if;
     end if;
-  end process;  
+  end process;
+
+  -- Reading memory:
+  Mem_Read <=
+    -- Addresses 0-100 contains interrupt vectors.
+    -- User program area. The ROM inserted into the unit.
+    -- NOTE: Address X100 is the actual starting address, but
+    -- since it is only three bytes before some data required
+    -- by the boot-loader, it usually only contains the instruction
+    -- JMP 0x150, which is where the predefined things end.
+    Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
+    when Mem_Addr < X"4000" else
+
+    -- The addresses 4000-7FFF is switchable in som ROMS, implement!
+    Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
+    when Mem_Addr < X"8000" else
+
+    -- Character data. Send to GPU.
+    X"00"
+    when Mem_Addr < X"9800" else
+
+    -- Character codes (BG data 1). Send to GPU.
+    X"00"
+    when Mem_Addr < X"9C00" else
+
+    -- Character codes (BG data 2). Send to GPU.
+    X"00"
+    when Mem_Addr < X"A000" else
+
+    -- External expansion working RAM 8KB.
+    External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
+    when Mem_Addr < X"C000" else
+
+    -- Unit working RAM 8KB.
+    Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
+    when Mem_Addr < X"E000" else
+
+    -- Prohibited. Undefined value (mirror of internal ram!).
+    X"00"
+    when Mem_Addr < X"FE00" else
+
+    -- OAM memory, sent to GPU
+    X"00"
+    when Mem_Addr < X"FEA0" else
+
+    -- Prohibited, undefined value!
+    X"00"
+    when Mem_Addr < X"FF00" else
+
+    -- Port mode registers (input).
+    -- Control registers.
+    -- Sound registers.
+    X"00"
+    when Mem_Addr < X"FF80" else
+
+    -- Working stack and RAM.
+    Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))))
+    when Mem_Addr < X"FFFE" else
+
+    -- Undefined. (0xFFFE-0xFFFF)
+    X"FF";
+
 end Bus_Controller_Behaviour;
