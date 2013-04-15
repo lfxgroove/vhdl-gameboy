@@ -84,7 +84,6 @@ begin
           -- Port mode registers (input).
           -- Control registers.
           -- Sound register.
-          Mem_Read <= X"00";
         elsif Mem_Addr < X"FFFE" then
           -- Working stack and RAM.
           Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0)))) <= Mem_Write;
