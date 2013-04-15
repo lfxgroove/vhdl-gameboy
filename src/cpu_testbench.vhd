@@ -1,10 +1,10 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity Cpu_Test is
-end Cpu_Test;
+entity Cpu_Testbench is
+end Cpu_Testbench;
 
-architecture Behavior of Cpu_Test is
+architecture Behavior of Cpu_Testbench is
 -- Component Decalaration
   component Cpu
   port(Clk, Reset : in std_logic;

@@ -38,15 +38,15 @@ begin
   A_Nibble <= "0" & A(3 downto 0);
   B_Nibble <= "0" & B(3 downto 0);
   Result_Nibble <=
-    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "00" else
-    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "01" else
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "00" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "01" else
     "00000";
 
   A_Byte <= "0" & A(7 downto 0);
   B_Byte <= "0" & B(7 downto 0);
   Result_Byte <=
-    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "00" else
-    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "01" else
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "00" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "01" else
     "000000000";
 
   Tmp_Result <=
