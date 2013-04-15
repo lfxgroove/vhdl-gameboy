@@ -7,14 +7,19 @@ const std::string Parser::CHECK_IDENTIFIER = "check";
 Parser::Parser() 
   : m_block(BLOCK_UNDEFINED),
     m_state(STATE_NEED_IDENTIFIER),
-    m_has_prev_addr(false)
+    m_has_prev_addr(false),
+    m_in_addr(false)
 {}
 
-Parser::Parser(Tokenizer& t)
+Parser::Parser(Tokenizer& t, const std::string& base_path)
   : m_block(BLOCK_UNDEFINED),
     m_state(STATE_NEED_IDENTIFIER),
+    m_current_test(base_path),
     m_tokenizer(t),
-    m_has_prev_addr(false)
+    //TODO: Remove m_has_prev_addr,  not used anymore
+    m_has_prev_addr(false),
+    m_in_addr(false),
+    m_base_path(base_path)
 {}
 
 Parser::Parser(const Parser& rhs)
@@ -44,12 +49,16 @@ Tests Parser::parse()
 	  switch (m_block)
 	    {
 	    case BLOCK_TEST:
+	      //Make sure that we add that last one,
+	      //and more importantly reset
+	      add_prep_addr();
 	      parse_test();
 	      break;
 	    case BLOCK_CHECK:
 	      parse_check();
 	      m_block = BLOCK_UNDEFINED;
 	      m_current_test.add_prepare(m_prepare);
+	      m_current_test.set_prep_addrs(m_prepare_addrs);
 	      add_test();
 	      break;
 	    case BLOCK_PREPARE:
@@ -84,7 +93,6 @@ void Parser::add_addr()
 {
   if (!m_current_addr.empty())
     {
-      //Should have if here to check which block we are in
       if (m_block == BLOCK_CHECK)
 	m_current_test.add_check_addr_data(m_current_addr);
       else if(m_block == BLOCK_TEST)
@@ -166,6 +174,16 @@ void Parser::parse_check()
     }
 }
 
+void Parser::add_prep_addr()
+{
+  if (!m_current_addr.empty() && m_in_addr)
+    {
+      std::cout << "LAgger till: " << m_current_addr << "till prep" << std::endl;
+      m_prepare_addrs.push_back(m_current_addr);
+      m_current_addr.reset();
+    }
+}
+
 //The prepare block just holds bytes.
 void Parser::parse_prepare()
 {
@@ -174,14 +192,29 @@ void Parser::parse_prepare()
       if (m_tokenizer.is_comment())
 	  parse_comment();
       
-      parse_byte();
+      if (m_tokenizer.is_start_addr())
+	{
+	  m_in_addr = true;
+	  add_prep_addr();
+	  m_tokenizer.next();
+	  parse_addr();
+	  // add_addr();
+	  // m_tokenizer.next();
+	  // parse_addr();
+	}
+      else
+	{
+	  parse_byte();
+	}
+      
+      // parse_byte();
       m_tokenizer.next();
     }
 }
 
 std::ostream & operator<<(std::ostream& os, const Parser& p)
 {
-  os << "Prepare block: " << std::endl;
+  os << "Prepare block (0x150): " << std::endl;
   for (PrepareStatements::const_iterator it = p.m_prepare.begin();
        it != p.m_prepare.end();
        ++it)
@@ -191,6 +224,14 @@ std::ostream & operator<<(std::ostream& os, const Parser& p)
 			       std::ios_base::adjustfield);
     }
   os << std::endl;
+  
+  os << "Prepare blocks with addrs: " << std::endl;
+  for (AddrDatas::const_iterator it = p.m_prepare_addrs.begin();
+       it != p.m_prepare_addrs.end();
+       ++it)
+    {
+      os << *it << std::endl;
+    }
   
   os << "Test blocks: " << std::endl;
   int i = 1;
@@ -262,10 +303,21 @@ void Parser::parse_byte()
 	  num_in_row = 0;
 	  hex_data.str("");
 	  tmp.str("");
-	  if (m_block == BLOCK_PREPARE)
-	    m_prepare.push_back((byte) data);
+	  if (m_block == BLOCK_PREPARE && !m_in_addr)
+	    {
+	      // std::cout << "Lagger till: " << int(data) << " till prep" << std::endl;
+	      m_prepare.push_back((byte) data);
+	    }
+	  else if (m_block == BLOCK_PREPARE && m_in_addr)
+	    {
+	      // std::cout << "Lagger till: " << int(data) << " till prep addr" << std::endl;
+	      m_current_addr.add_byte(byte(data));
+	    }
 	  else if (m_block == BLOCK_CHECK || m_block == BLOCK_TEST)
-	    m_current_addr.add_byte((byte) data);
+	    {
+	      // std::cout << "Lagger till: " << int(data) << " till check/test" << std::endl;
+	      m_current_addr.add_byte((byte) data);
+	    }
 	}
       m_tokenizer.next();
     }
@@ -282,6 +334,7 @@ void Parser::parse_identifier()
   std::cout << "Hittade identifier: " << m_current_data.str() <<  ":" << std::endl;
   m_identifier = m_current_data.str();
   m_current_data.str("");
+  //TODO: Remove m_state, m_block superseedes it
   m_state = STATE_NEED_START_BLOCK;
   
   m_prev_block = m_block;

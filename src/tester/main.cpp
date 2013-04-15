@@ -9,18 +9,19 @@
 void run_test(const std::string& dir_name, const std::string& test_name)
 {
   Tokenizer t(dir_name + "/" + test_name + ".stim");
-  Parser p(t);
+  Parser p(t, dir_name  + "/");
+  std::cout << "Skickade in: " << dir_name + "/" << " som base path" << std::endl;
   // std::cout << "Skickar in: " << dir_name + "/" + test_name + ".stim" << std::endl;
   Tests to_run = p.parse();
   Tests faulty;
   bool all_ok = true;
   int i = 1;
   std::cout << "Running test " << test_name << ":";
-  for (Tests::const_iterator it = to_run.begin();
+  for (Tests::iterator it = to_run.begin();
        it != to_run.end();
        ++it, ++i)
     {
-      if ((*it).run())
+      if ((*it).run(test_name))
 	{
 	  std::cout << "1";
 	}
@@ -31,13 +32,14 @@ void run_test(const std::string& dir_name, const std::string& test_name)
 	  faulty.push_back(*it);
 	  // std::cout << "Test failed! Info: " << std::endl
 	  // 	    << *it << std::endl;
-	  break;
+	  // break;
 	}
     }
   if (!all_ok)
     {
       std::cout << "Testing was interrupted by a/some faulty test/s" << std::endl;
       std::cout << "Tests that failed: " << std::endl;
+      //TODO: Show them.
     }
 }
 
@@ -49,6 +51,10 @@ void print_usage(const char* name)
   cout << "Usage: " << name << " options " << endl;
   cout << "-d DIRNAME denotes which dir you would like to " << endl;
   cout << "           run tests for" << endl;
+  // cout << "-t         run the feed part of a test, ie, feed " << endl;
+  // cout << "           a file to the testbench and capture   " << endl;
+  // cout << "           output. " << endl;
+  // cout << "-i         run the diff part of the program 
 }
 
 std::string find_test_name(std::string& dir_name)
