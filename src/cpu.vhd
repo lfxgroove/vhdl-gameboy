@@ -11,12 +11,10 @@ entity Cpu is
 end Cpu;
 
 architecture Cpu_Implementation of Cpu is
-  -- General purpose registers
+  -- General purpose registers. The F register is the flags register.
   signal A, B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
-  -- Status register. Look at the ALU below.
-  signal SR : std_logic_vector(7 downto 0) := X"00";
   -- Stack pointer and program counter
-  signal SP, PC : std_logic_vector(15 downto 0);
+  signal SP, PC : std_logic_vector(15 downto 0) := X"0000";
 
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
   type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4);
@@ -35,23 +33,27 @@ architecture Cpu_Implementation of Cpu is
   component Alu
     port(A, B : in std_logic_vector(15 downto 0);
          Mode : in std_logic_vector(1 downto 0);
+         Flags_In : in std_logic_vector(7 downto 0);
          Result : out std_logic_vector(15 downto 0);
          Flags : out std_logic_vector(7 downto 0));
   end component;
 
   -- Signals to the ALU
   signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
+  signal Alu_Flags_In : std_logic_vector(7 downto 0);
   signal Alu_Mode : std_logic_vector(1 downto 0);
   signal Alu_Flags : std_logic_vector(7 downto 0);
   -- Modes for the alu.
   constant Alu_Add : std_logic_vector(1 downto 0) := "00";
   constant Alu_Sub : std_logic_vector(1 downto 0) := "01";
+  constant Alu_Add_Carry : std_logic_vector(1 downto 0) := "10";
 begin
 
   Alu_Ports : Alu port map(
     A => Alu_A,
     B => Alu_B,
     Mode => Alu_Mode,
+    Flags_In => Alu_Flags_In,
     Result => Alu_Result,
     Flags => Alu_Flags);
 
@@ -537,6 +539,66 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 80
+                -- OP-codes from page 81
+                -- ADC A, A
+              when X"8F" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, B
+              when X"88" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, C
+              when X"89" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, D
+              when X"8A" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, E
+              when X"8B" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, H
+              when X"8C" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, L
+              when X"8D" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- ADC A, (HL)
+              when X"8E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- ADC A, #
+              when X"CE" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 81
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -699,31 +761,31 @@ begin
                 -- ADD A, A
               when X"87" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, B
               when X"80" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, C
               when X"81" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, D
               when X"82" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, E
               when X"83" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, H
               when X"84" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- ADD A, L
               when X"85" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- Add A, (HL)
               when X"86" =>
                 Alu_A <= X"00" & A;
@@ -734,6 +796,50 @@ begin
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & Mem_Read;
                 State <= Exec3;
+
+                -- ADC A, A
+              when X"8F" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, B
+              when X"88" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, C
+              when X"89" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, D
+              when X"8A" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, E
+              when X"8B" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, H
+              when X"8C" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, L
+              when X"8D" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, (HL)
+              when X"8E" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+                -- ADC A, #
+              when X"CE" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -767,8 +873,8 @@ begin
               when X"F8" =>
                 H <= Alu_Result(15 downto 8);
                 L <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
-                SR(7 downto 6) <= "00"; --Always zero
+                F <= Alu_Flags;
+                F(7 downto 6) <= "00"; --Always zero
                 -- LD (nn), SP
               when X"08" =>
                 Tmp_Addr(15 downto 8) <= Mem_Read;
@@ -793,11 +899,19 @@ begin
                 -- Add A, (HL)
               when X"86" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
                 -- Add A, #
               when X"C6" =>
                 A <= Alu_Result(7 downto 0);
-                SR <= Alu_Flags;
+                F <= Alu_Flags;
+                -- ADC A, (HL)
+              when X"8E" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADC A, #
+              when X"CE" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3

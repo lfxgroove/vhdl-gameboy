@@ -17,11 +17,12 @@ use IEEE.numeric_std.all;
 -- Mode: The modes accepted by the ALU is:
 -- 00: Addition
 -- 01: Subtraction
--- 10: Not implemented yet
+-- 10: Addition with carry from Flags_In
 -- 11: Not implemented yet
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
        Mode : in std_logic_vector(1 downto 0);
+       Flags_In : in std_logic_vector(7 downto 0);
        Result : out std_logic_vector(15 downto 0);
        Flags : out std_logic_vector(7 downto 0));
 end Alu;
@@ -40,6 +41,7 @@ begin
   Result_Nibble <=
     std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "00" else
     std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "01" else
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
     "00000";
 
   A_Byte <= "0" & A(7 downto 0);
@@ -47,11 +49,13 @@ begin
   Result_Byte <=
     std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "00" else
     std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "01" else
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
     "000000000";
 
   Tmp_Result <=
     std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "00" else
     std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "01" else
+    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
     X"0000";
   Result <= Tmp_Result;
 
