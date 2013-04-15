@@ -5,7 +5,8 @@ function simulate {
     time=$2
     echo "Simulating for ${time}..."
     #Same for this, do _NOT_ move that little ieee part...
-    ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=${time} --disp-time
+    #TODO: Add ability to use --disp-time as a flag
+    ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=${time}
 }
 
 function show_help {
