@@ -8,3 +8,4 @@ Makefile
 *.vcd
 *.cf
 implemented_op_codes.txt
+build/
