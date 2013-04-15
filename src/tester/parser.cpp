@@ -171,6 +171,9 @@ void Parser::parse_prepare()
 {
   while (!m_tokenizer.is_end_block())
     {
+      if (m_tokenizer.is_comment())
+	  parse_comment();
+      
       parse_byte();
       m_tokenizer.next();
     }
