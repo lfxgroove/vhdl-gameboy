@@ -35,7 +35,8 @@ architecture Cpu_Implementation of Cpu is
          Mode : in std_logic_vector(3 downto 0);
          Flags_In : in std_logic_vector(7 downto 0);
          Result : out std_logic_vector(15 downto 0);
-         Flags : out std_logic_vector(7 downto 0));
+         Flags : out std_logic_vector(7 downto 0);
+         High_Flags : in std_logic);
   end component;
 
   -- Signals to the ALU
@@ -43,6 +44,7 @@ architecture Cpu_Implementation of Cpu is
   signal Alu_Flags_In : std_logic_vector(7 downto 0);
   signal Alu_Mode : std_logic_vector(3 downto 0);
   signal Alu_Flags : std_logic_vector(7 downto 0);
+  signal Alu_High_Flags : std_logic;
   -- Modes for the alu.
   constant Alu_Add : std_logic_vector(3 downto 0) := "0000";
   constant Alu_Sub : std_logic_vector(3 downto 0) := "0001";
@@ -64,7 +66,7 @@ begin
     Flags => Alu_Flags);
 
   -- 
-  process(Clk)
+  process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
@@ -77,7 +79,8 @@ begin
         A <= X"03";
         B <= X"00";
       else
-        
+        -- Reset the high flags, since most instructions assume it is set to zero.
+        Alu_High_Flags <= '0';
         Waited_Clks <= std_logic_vector(unsigned(Waited_Clks) + 1);
         -- Each cycle, clear the write flag to the memory, to avoid
         -- unintentional writes to the memory.
@@ -1026,7 +1029,42 @@ begin
                 Mem_Addr <= H & L;
                 State <= Exec2;
                 -- END op-codes from page 89
-
+                -- OP-codes from page 90
+                -- ADD HL, BC
+              when X"09" =>
+                Alu_A <= H & L;
+                Alu_B <= B & C;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, DE
+              when X"19" =>
+                Alu_A <= H & L;
+                Alu_B <= D & E;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, HL
+              when X"29" =>
+                Alu_A <= H & L;
+                Alu_B <= H & L;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, SP
+              when X"39" =>
+                Alu_A <= H & L;
+                Alu_B <= SP;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- END op-codes from page 90
+                -- OP-code from page 91
+                -- ADD SP, n (n = signed byte)
+              when X"E8" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1582,7 +1620,35 @@ begin
                 Alu_Flags_In <= F;
                 State <= Exec3;
 
+                -- ADD HL, BC
+              when X"09" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, DE
+              when X"19" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, HL
+              when X"29" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, SP
+              when X"39" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
 
+                -- ADD SP, n (High or low flags????)
+              when X"E8" =>
+                Alu_A <= SP;
+                Alu_B(6 downto 0) <= Mem_Read(6 downto 0);
+                Alu_B(15 downto 7) <= (others => Mem_Read(7));
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '0';  -- My guess. Check!
+                State <= Exec3;
 
               when others =>
             end case; -- End case Exec2
@@ -1723,6 +1789,13 @@ begin
                 Mem_Write <= Alu_Result(7 downto 0);
                 Mem_Write_Enable <= '1';
                 F <= Alu_Flags;
+
+                -- ADD SP, n
+              when X"E8" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
 
               when others =>
             end case; -- End case Exec3
