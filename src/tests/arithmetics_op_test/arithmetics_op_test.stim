@@ -194,7 +194,7 @@ C6 77
 }
 
 
-# Tests 88 - CALC: 03+C1+(carry = 1) = C4 
+# Tests 88 - CALC: 03+C1+(carry = 1) = C5 
 @test { 
 # LD A, #FF
 # ADD A, B - FF+C1 will make carry = 1
@@ -361,10 +361,111 @@ C6 77
 }
 
 
+### Testing ADC A, n
+# Subtract n from A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if no borrow from bit 4.
+# C - Set if no borrow.
 
 
+# Tests 90 - CALC: C5-C1 = 04
+@test { 
+# LD A, #C5
+# SUB A, B
+# LD (HL), A
+C5 90 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 91 - CALC: C5-04 = C1
+@test { 
+# LD A, #C5
+# SUB A, C
+# LD (HL), A
+C5 91 77
+  @check {
+    [C000] C1
+  }
+}
+
+# Tests 92 - CALC: C5-C2 = 03
+@test { 
+# LD A, #C5
+# SUB A, D
+# LD (HL), A
+C5 92 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests 93 - CALC: C5-08 = BD
+@test { 
+# LD A, #C5
+# SUB A, E
+# LD (HL), A
+C5 93 77
+  @check {
+    [C000] BD
+  }
+}
+
+# Tests 94 - CALC: C5-C0 = 05
+@test { 
+# LD A, #C5
+# SUB A, H
+# LD (HL), A
+C5 94 77
+  @check {
+    [C000] 05
+  }
+}
+
+# Tests 95 - CALC: C5-00 = C5
+@test { 
+# LD A, #C5
+# SUB A, L
+# LD (HL), A
+C5 95 77
+  @check {
+    [C000] C5
+  }
+}
+
+# Tests 96 - CALC: C5-FF = C6
+@test { 
+# LD A, #C5
+# SUB A, (HL)
+# LD (HL), A
+C5 96 77
+  @check {
+    [C000] C6
+  }
+}
+
+# Tests 97 - CALC: 03-03 = 00
+@test { 
+# SUB A, A
+# LD (HL), A
+97 77
+  @check {
+    [C000] 00
+  }
+}
 
 
-
-
+# Tests D6 - CALC: 03-CE = 35
+@test { 
+# SUB A, #CE
+# LD (HL), A
+D6 CE 77
+  @check {
+    [C000] 35
+  }
+}
 

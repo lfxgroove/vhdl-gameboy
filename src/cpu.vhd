@@ -600,53 +600,53 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 81
                 -- OP-codes from page 82
-                -- SUB A, A
+                -- SUB A, A -t
               when X"97" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, B
+                -- SUB A, B -t
               when X"90" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, C
+                -- SUB A, C -t
               when X"91" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, D
+                -- SUB A, D -t
               when X"92" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, E
+                -- SUB A, E -t
               when X"93" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, H
+                -- SUB A, H -t
               when X"94" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, L
+                -- SUB A, L -t
               when X"95" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- SUB A, (HL)
+                -- SUB A, (HL) -t
               when X"96" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- SUB A, #
+                -- SUB A, # -t
               when X"D6" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);

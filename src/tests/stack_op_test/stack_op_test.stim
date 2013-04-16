@@ -1,0 +1,157 @@
+@prepare {
+# Set HL to adress X"C000"
+# LD A, #C0
+# LD H, A
+3E C0 67
+# LD A, #00
+# LD L, A
+3E 00 6F
+
+# Set BC to adress X"C104"
+# LD A, #C1
+# LD B, A
+3E D0 47
+# LD A, #04
+# LD C, A
+3E 01 4F
+
+# Set DE to adress X"C208"
+# LD A, #C2
+# LD D, A
+3E C2 57
+# LD A, #08
+# LD E, A
+3E 02 5F
+
+
+# default data 
+[C000] FF AA
+[C104] EE
+[C208] DD
+
+# LD A, #03
+3E 03
+
+## All registers now have unique values.
+## This makes it possible for tests to be short as operations
+## like:
+# LD A, B
+# LD (HL), A
+# now we know that if (HL) = C000 contains the value of B, that is "C1", then
+# the test came out positive. Else something went wrong.
+}
+
+# Testing the setup done by prepare
+@test { 
+  @check {
+    [C000] FF
+    [C104] EE
+    [C208] DD
+  }
+}
+
+# Testing the setup done by prepare
+@test { 
+# LD (HL), A
+# LD (BC), A
+# LD (DE), A
+77 02 12
+  @check {
+    [C000] 03
+    [C104] 03
+    [C208] 03
+  }
+}
+
+## Testing PUSH and POP
+
+
+# Tests C1,D5
+@test {
+# PUSH DE - C2 08 to the stack
+# POP BC  - C2 08
+# LD (HL), B - C2
+# LD (DE), C - 08
+D5 C1 70 71
+  @check {
+    [C000] C2
+    [C208] 08
+  }
+}
+
+
+# Tests E5
+@test {
+# PUSH HL - C0 00 to the stack
+# POP BC  - C0 00
+# LD (HL), B - C0
+# LD (DE), C - 00
+E5 C1 70 71
+  @check {
+    [C000] C0
+    [C208] 00
+  }
+}
+
+
+# Tests D1
+@test {
+# PUSH HL - C0 00 to the stack
+# POP DE  - C0 00
+# LD (HL), D - C0
+# LD A, E
+# LD (BC), A - 00
+E5 D1 72 7B 02
+  @check {
+    [C000] C0
+    [C208] 00
+  }
+}
+
+# Tests C5
+@test {
+# PUSH BC - C1 04 to the stack
+# POP DE  - C1 04
+# LD (HL), D - C1
+# LD A, E
+# LD (DE), A - 04
+C5 D1 72 7B 12
+  @check {
+    [C000] C1
+    [C208] 04
+  }
+}
+
+# Tests E1
+@test {
+# PUSH BC - C1 04 to the stack
+# POP HL  - C1 04
+# LD A, H
+# LD (BC), A - C1
+# LD A, L
+# LD (DE), A - 04
+C5 E1 7C 02 7D 12 
+  @check {
+    [C104] C1
+    [C208] 04
+  }
+}
+
+# Tests E1
+@test {
+# PUSH BC - C1 04 to the stack
+# POP HL  - C1 04
+# LD A, H
+# LD (BC), A - C1
+# LD A, L
+# LD (DE), A - 04
+C5 E1 7C 02 7D 12 
+  @check {
+    [C104] C1
+    [C208] 04
+  }
+}
+
+
+
+
