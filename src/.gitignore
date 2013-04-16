@@ -1,6 +1,7 @@
 GameBoyGay/
 *~
 *.mpf
+*.o
 *#
 Makefile
 *.wlf
@@ -9,3 +10,4 @@ Makefile
 *.cf
 implemented_op_codes.txt
 build/
+./*_test

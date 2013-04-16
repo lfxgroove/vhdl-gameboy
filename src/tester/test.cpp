@@ -1,8 +1,11 @@
 #include "test.hpp"
 
-
 Test::Test()
 {}
+
+Test::Test(const std::string& base_path)
+  : m_base_path(base_path)
+{}  
 
 Test::~Test()
 {}
@@ -22,16 +25,127 @@ void Test::add_test_addr_data(AddrData data)
   m_test_addresses.push_back(data);
 }
 
+void Test::set_prep_addrs(AddrDatas data)
+{
+  m_prep_addresses = data;
+}
+
 void Test::reset()
 {
   m_prepare.clear();
   m_test_addresses.clear();
   m_check_addresses.clear();
+  m_prep_addresses.clear();
 }
 
-bool Test::run() const
+bool Test::run(const std::string& name)
 {
   //Generate a file and give it to the vhdl program
+  TestFile tf(this);
+  
+  tf.generate_input();
+  tf.fill(m_base_path + "/stimulus/feed.txt");
+  
+  //Run the simulation which creates output
+  std::string test_name = name;
+  std::transform(test_name.begin(), test_name.begin()+1, test_name.begin(), ::toupper);
+  for (std::string::iterator it = test_name.begin();
+       it != test_name.end();
+       ++it)
+    {
+      if ((*it) == '_')
+	std::transform(it+1, it+2, it+1, ::toupper);
+    }
+  std::string arg = "ghdl --elab-run --ieee=synopsys " 
+    + test_name + 
+    " --vcd=" + test_name + ".vcd --stop-time=10us";
+  std::system(arg.c_str());
+  
+  return check(m_base_path + "/results/results.txt");
+}
+
+void Test::read_num_lines(int num_lines, std::ifstream& file)
+{
+  std::array<char, 9> read_to;
+  for (int i = 0; i < num_lines; ++i)
+    file.getline(&read_to[0], 9);
+}
+
+//TODO: FIx this function
+int Test::to_dec(const std::string& bin)
+{
+  int res = 0;
+  // int power = bin.size();
+  int power = 4;
+  for (std::string::const_iterator it = bin.begin();
+       it != bin.end() - 4;
+       ++it)
+    {
+      if (*it == '1')
+	{
+	  res += std::pow(2, power);
+	}
+      --power;
+    }
+
+  int res2 = 0;
+  // int power = bin.size();
+  power = 4;
+  for (std::string::const_iterator it = bin.begin() + 4;
+       it != bin.end();
+       ++it)
+    {
+      if (*it == '1')
+	{
+	  res2 += std::pow(2, power);
+	}
+      --power;
+    }
+  std::cout << bin << std::dec << " blir " << res << " och " << res2 << std::endl;
+  return res;
+}
+
+bool Test::check(const std::string& results_path)
+{
+  //Open the file
+  std::ifstream file;
+  file.open(results_path);
+  if (!file.is_open())
+    {
+      std::cout << "DEBUG: Couldn't open " << results_path << std::endl;
+    }
+  
+  m_check_addresses.sort();
+  
+  for (AddrDatas::const_iterator it = m_check_addresses.begin();
+       it != m_check_addresses.end();
+       ++it)
+    {
+      int addr = it->get_addr();
+      if (addr < BASE_CHECK_OFFSET)
+	{
+	  std::cout << "DEBUG: You are trying to check a value outside" 
+		    << " of RAM (0xC000). That won't happen lad" << std::endl;
+	  continue;
+	}
+      read_num_lines(addr - BASE_CHECK_OFFSET, file);
+      //next line to read is the one we want to check first
+      const ByteList& bytes = it->get_bytes();
+      int i = 0;
+      for (ByteList::const_iterator it = bytes.begin();
+	   it != bytes.end();
+	   ++it, ++i)
+	{
+	  // 8 + nul
+	  std::array<char, 9> read_to;
+	  file.getline(&read_to[0], 9);
+	  std::cout << "Read data (" << std::hex << addr + i << "): " << &read_to[0] << std::endl;
+	  std::string data;
+	  std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
+	  to_dec(data);
+	}
+    }
+  
   return false;
 }
 

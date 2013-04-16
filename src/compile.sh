@@ -5,6 +5,7 @@ function simulate {
     time=$2
     echo "Simulating for ${time}..."
     #Same for this, do _NOT_ move that little ieee part...
+    #TODO: Add ability to use --disp-time as a flag
     ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=${time}
 }
 
@@ -13,10 +14,6 @@ function show_help {
     echo "Workflow: First time, run with r to start gtkwave, then run without r and hit Ctrl+Shift+R to reload"
     exit
 }
-
-if [ $# -lt 2 ]; then
-    show_help
-fi
 
 model_name=$1
 time=$2
