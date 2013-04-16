@@ -1172,6 +1172,59 @@ begin
                 Interrupts_Enabled <= '1';
                 -- END op-codes from page 98
 
+                -- OP-codes from page 99
+                -- RLCA
+              when X"07" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= A(7);
+                F(4) <= A(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLA
+              when X"17" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= F(4);
+                F(4) <= A(7);
+                F(6 downto 5) <= "00";
+                if A(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- END op-codes from page 99
+
+                -- OP-codes from page 100
+                -- RRCA
+              when X"0F" =>
+                A(6 downto 0) <= A(7 downto 1);
+                A(7) <= A(0);
+                F(4) <= A(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRA
+              when X"1F" =>
+                A(6 downto 0) <= A(7 downto 1);
+                A(7) <= F(4);
+                F(4) <= A(0);
+                F(6 downto 5) <= "00";
+                if A(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- END op-codes from page 100
+
+
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
