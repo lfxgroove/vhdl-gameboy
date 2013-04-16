@@ -1,0 +1,1064 @@
+@prepare {
+# Set HL to adress X"C000"
+# LD A, #C0
+# LD H, A
+3E C0 67
+# LD A, #00
+# LD L, A
+3E 00 6F
+
+# Set BC to adress X"C104"
+# LD A, #C1
+# LD B, A
+3E D0 47
+# LD A, #04
+# LD C, A
+3E 01 4F
+
+# Set DE to adress X"C208"
+# LD A, #C2
+# LD D, A
+3E C2 57
+# LD A, #08
+# LD E, A
+3E 02 5F
+
+
+# default data 
+[C000] FF
+[C104] EE
+[C208] DD
+
+# LD A, #03
+3E 03
+
+}
+
+
+### Testing ADD A, n
+# Add n to A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if carry from bit 3.
+# C - Set if carry from bit 7.
+
+# Tests 80 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD B, A
+# LD A, #0A
+# ADD A, B
+# LD (HL), A
+35 01 47 35 0A 80 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 81 - CALC: 80+00
+@test { 
+# LD A, #80
+# LD C, A
+# LD A, #00
+# ADD A, C
+# LD (HL), A
+35 80 4F 35 00 81 77
+  @check {
+    [C000] 80
+  }
+}
+
+
+# Tests 82 - CALC: FF+01=00 THIS IS CORRECT RIGHT? 
+@test { 
+# LD A, #FF
+# LD D, A
+# LD A, #01
+# ADD A, D
+# LD (HL), A
+35 FF 57 35 01 82 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests 83 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD E, A
+# LD A, #0A
+# ADD A, E
+# LD (HL), A
+35 01 47 35 0A 83 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 84 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD H, A
+# LD A, #0A
+# ADD A, H
+# LD (HL), A
+35 01 47 35 0A 84 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests 85 - CALC: 0A+01 
+@test { 
+# LD A, #01
+# LD L, A
+# LD A, #0A
+# ADD A, L
+# LD (HL), A
+35 01 47 35 0A 85 77
+  @check {
+    [C000] 0B
+  }
+}
+
+
+# Tests 86 - CALC: 01+01 
+@test { 
+# LD A, #01
+# LD (HL), A
+# ADD A, (HL) # 1+1
+# LD (HL), A
+35 01 77 86 77
+  @check {
+    [C000] 02
+  }
+}
+
+# Tests 87 - CALC: 02+02 
+@test { 
+# LD A, #02
+# ADD A, A # 2+2
+# LD (HL), A
+35 01 87 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests C6 - CALC: 03+0F=12 
+@test { 
+# ADD A, #0F
+# LD (HL), A
+C6 77
+  @check {
+    [C000] 12
+  }
+}
+
+
+### Testing ADC A, n
+# Add n + Carry flag to A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if carry from bit 3.
+# C - Set if carry from bit 7.
+
+
+# Tests 88 - CALC: 03+C1+(carry = 0) = C4 
+@test { 
+# ADD A, B - see to that carry = 0
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+80 3E 03 88 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests 88 - CALC: 03+C1+(carry = 1) = C4 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E 03 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+
+# Tests 88 - CALC: 03+C1+(carry = 1) = C5 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E 03 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+
+# Tests 88 - CALC: FF+C1+(carry = 1) = C1 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #FF - restore A to a high value FF
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E FF 88 77
+  @check {
+    [C000] C1
+  }
+}
+
+
+# Tests 88 - CALC: FF+C1+(carry = 0) = C0 
+@test { 
+# ADD A, B - 03+C1 will make carry = 0
+# LD A, #FF - restore A to a high value FF
+# ADC A, B
+# LD (HL), A
+80 3E FF 88 77
+  @check {
+    [C000] C0
+  }
+}
+
+## tests for 88 were more in detail, 89-8F are going to be simpler
+
+
+# Tests 89 - CALC: 03+04+(carry = 1) = 08
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, C
+# LD (HL), A
+3E FF 80 3E 03 89 77
+  @check {
+    [C000] 08
+  }
+}
+
+
+# Tests 8A - CALC: 03+C2+(carry = 1) = C6
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, D
+# LD (HL), A
+3E FF 80 3E 03 8A 77
+  @check {
+    [C000] C6
+  }
+}
+
+
+# Tests 8B - CALC: 03+08+(carry = 1) = 0C
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, E
+# LD (HL), A
+3E FF 80 3E 03 8B 77
+  @check {
+    [C000] 0C
+  }
+}
+
+
+# Tests 8C - CALC: 03+C0+(carry = 1) = C4
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, H
+# LD (HL), A
+3E FF 80 3E 03 8C 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests 8D - CALC: 03+00+(carry = 1) = 04
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, L
+# LD (HL), A
+3E FF 80 3E 03 8D 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests 8E - CALC: 03+FF+(carry = 1) = 03
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, (HL)
+# LD (HL), A
+3E FF 80 3E 03 8E 77
+  @check {
+    [C000] 03
+  }
+}
+
+
+# Tests 8F - CALC: 03+03+(carry = 1) = 07
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, A
+# LD (HL), A
+3E FF 80 3E 03 8F 77
+  @check {
+    [C000] 07
+  }
+}
+
+
+# Tests CE - CALC: 03+01+(carry = 1) = 05
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, #01
+# LD (HL), A
+3E FF 80 3E 03 CE 01 77
+  @check {
+    [C000] 05
+  }
+}
+
+# Tests CE - CALC: 3C+FF+(carry = 1) = 3C
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #3C - set A to given value
+# ADC A, #FF
+# LD (HL), A
+3E FF 80 3E 3C CE FF 77
+  @check {
+    [C000] 3C
+  }
+}
+
+
+### Testing SUB A, n
+# Subtract n from A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if no borrow from bit 4.
+# C - Set if no borrow.
+
+
+# Tests 90 - CALC: C5-C1 = 04
+@test { 
+# LD A, #C5
+# SUB A, B
+# LD (HL), A
+C5 90 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 91 - CALC: C5-04 = C1
+@test { 
+# LD A, #C5
+# SUB A, C
+# LD (HL), A
+C5 91 77
+  @check {
+    [C000] C1
+  }
+}
+
+# Tests 92 - CALC: C5-C2 = 03
+@test { 
+# LD A, #C5
+# SUB A, D
+# LD (HL), A
+C5 92 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests 93 - CALC: C5-08 = BD
+@test { 
+# LD A, #C5
+# SUB A, E
+# LD (HL), A
+C5 93 77
+  @check {
+    [C000] BD
+  }
+}
+
+# Tests 94 - CALC: C5-C0 = 05
+@test { 
+# LD A, #C5
+# SUB A, H
+# LD (HL), A
+C5 94 77
+  @check {
+    [C000] 05
+  }
+}
+
+# Tests 95 - CALC: C5-00 = C5
+@test { 
+# LD A, #C5
+# SUB A, L
+# LD (HL), A
+C5 95 77
+  @check {
+    [C000] C5
+  }
+}
+
+# Tests 96 - CALC: C5-FF = C6
+@test { 
+# LD A, #C5
+# SUB A, (HL)
+# LD (HL), A
+C5 96 77
+  @check {
+    [C000] C6
+  }
+}
+
+# Tests 97 - CALC: 03-03 = 00
+@test { 
+# SUB A, A
+# LD (HL), A
+97 77
+  @check {
+    [C000] 00
+  }
+}
+
+
+# Tests D6 - CALC: 03-CE = 35
+@test { 
+# SUB A, #CE
+# LD (HL), A
+D6 CE 77
+  @check {
+    [C000] 35
+  }
+}
+
+
+### Testing SUB A, n
+# Subtract n + Carry flag from A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if no borrow from bit 4.
+# C - Set if no borrow.
+
+
+# Tests 98 - CALC: C5-C1+(carry=0) = 04
+@test { 
+# ADD A, B - see to that carry = 0
+# LD A, #C5
+# SBC A, B
+# LD (HL), A
+80 3E C5 98 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests 98 - CALC: C5-C1+(carry=1) = 05
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5 - restore A
+# SBC A, B
+# LD (HL), A
+3E FF 80 3E C5 98 77
+  @check {
+    [C000] 05
+  }
+}
+
+## 99-9F are tested in less detail 
+
+# Tests 99 - CALC: C5-04+(carry=1) = C2
+@test {
+# LD A, #FF
+# ADD A, B - see to that carry = 1 
+# LD A, #C5
+# SBC A, C
+# LD (HL), A
+3E FF 80 3E C5 99 77
+  @check {
+    [C000] C2
+  }
+}
+
+# Tests 9A - CALC: C5-C2+(carry=1) = 04
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5
+# SBC A, D
+# LD (HL), A
+3E FF 80 3E C5 9A 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 9B - CALC: C5-08+(carry=1) = BE
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5
+# SBC A, E
+# LD (HL), A
+3E FF 80 3E C5 9B 77
+  @check {
+    [C000] BE
+  }
+}
+
+# Tests 9C - CALC: C5-C0+(carry=1) = 06
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5
+# SBC A, H
+# LD (HL), A
+3E FF 80 3E C5 9C 77
+  @check {
+    [C000] 06
+  }
+}
+
+# Tests 9D - CALC: C5-00+(carry=1) = C6
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5
+# SBC A, L
+# LD (HL), A
+3E FF 80 3E C5 9D 77
+  @check {
+    [C000] C6
+  }
+}
+
+# Tests 9E - CALC: C5-FF+(carry=1) = C7
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# LD A, #C5
+# SBC A, (HL)
+# LD (HL), A
+3E FF 80 3E C5 9E 77
+  @check {
+    [C000] C7
+  }
+}
+
+# Tests 9F - CALC: 03-03+(carry=1) = 01
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# SBC A, A
+# LD (HL), A
+3E FF 80 9F 77
+  @check {
+    [C000] 01
+  }
+}
+
+
+# Tests D6 - CALC: 03-CE+(carry=1) = 36
+@test { 
+# LD A, #FF
+# ADD A, B - see to that carry = 1
+# SBC A, #CE
+# LD (HL), A
+3E FF 80 D6 CE 77
+  @check {
+    [C000] 36
+  }
+}
+
+### Testing CP A, n
+#Compare A with n. This is basically an A - n
+#subtraction instruction but the results are thrown
+#away.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero. (SET if A = n)
+# N - set.
+# H - Set if no borrow from bit 4.
+# C - Set if no borrow. (set if A < n)
+
+
+# Tests B7,B8,B9,BA,BB,BC,BD,BE,BF
+@test { 
+# CP A, B
+# CP A, C
+# CP A, D
+# CP A, E
+# CP A, H
+# CP A, L
+# CP A, (HL)
+# CP A, A
+# LD (HL), A
+B7 B8 B9 BA BB BC BD BE BF 77
+  @check {
+    [C000] 03
+  }
+}
+
+### Testing AND A, n
+# Logically AND n with A, result in A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set.
+# C - Reset.
+
+
+# Tests A0 - CALC: 03 & FF = 03
+@test { 
+# LD A, #FF
+# LD B, A
+# LD A, #03
+# AND A, B
+# LD (HL), A
+3E FF 47 3E 03 80 A0 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests A0 - CALC: 03 & 00 = 00
+@test { 
+# LD A, #00
+# LD B, A
+# LD A, #03
+# AND A, B
+# LD (HL), A
+3E 00 47 3E 03 80 A0 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests A0 - CALC: FF & FF = FF
+@test { 
+# LD A, #FF
+# LD B, A
+# AND A, B
+# LD (HL), A
+3E FF 47 80 A0 77
+  @check {
+    [C000] FF
+  }
+}
+
+
+# Tests A0 - CALC: FA & 84 = 80
+@test { 
+# LD A, #FA
+# LD B, A
+# LD A, #84
+# AND A, B
+# LD (HL), A
+3E FA 47 3E 84 80 A0 77
+  @check {
+    [C000] 80
+  }
+}
+ 
+## A0 was tested in more detail than A1-A7
+
+
+# Tests A1 - CALC: 03 & 04 = 00
+@test { 
+# AND A, C
+# LD (HL), A
+A1 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests A2 - CALC: 03 & C2 = 02
+@test { 
+# AND A, D
+# LD (HL), A
+A2 77
+  @check {
+    [C000] 02
+  }
+}
+
+# Tests A3 - CALC: 03 & 08 = 00
+@test { 
+# AND A, E
+# LD (HL), A
+A3 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests A4 - CALC: 03 & C0 = 00
+@test { 
+# AND A, H
+# LD (HL), A
+A4 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests A5 - CALC: 03 & 01 = 01
+@test { 
+# AND A, L
+# LD (HL), A
+A5 77
+  @check {
+    [C000] 01
+  }
+}
+
+
+# Tests A6 - CALC: 03 & FF = 03
+@test { 
+# AND A, (HL)
+# LD (HL), A
+A6 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests A7 - CALC: 03 & 03 = 03
+@test { 
+# AND A, A
+# LD (HL), A
+A7 77
+  @check {
+    [C000] 03
+  }
+}
+
+### Testing OR A, n
+# Logical OR n with register A, result in A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Reset.
+# C - Reset.
+
+
+# Tests B0 - CALC: 03 OR C1 = C3
+@test { 
+# OR A, B
+# LD (HL), A
+B0 77
+  @check {
+    [C000] C3
+  }
+}
+
+# Tests B0 - CALC: 83 OR FF = FF
+@test { 
+# LD A, #FF
+# LD B, A
+# LD A, #83
+# OR A, B
+# LD (HL), A
+3E FF 47 3E 83 B0 77
+  @check {
+    [C000] 7C
+  }
+}
+
+
+# Tests B0 - CALC: 0F OR F0 = FF
+@test { 
+# LD A, #0F
+# LD B, A
+# LD A, #F0
+# OR A, B
+# LD (HL), A
+3E 0F 47 3E F0 B0 77
+  @check {
+    [C000] FF
+  }
+}
+
+# Tests B0 - CALC: 00 OR 00 = 00
+@test { 
+# LD A, #00
+# LD B, A
+# OR A, B
+# LD (HL), A
+3E 00 47 B0 77
+  @check {
+    [C000] 00
+  }
+}
+
+## less tested B1-B7
+
+
+# Tests B1 - CALC: 03 OR 04 = 07
+@test { 
+# OR A, C
+# LD (HL), A
+B1 77
+  @check {
+    [C000] 07
+  }
+}
+
+# Tests B2 - CALC: 03 OR C2 = C3
+@test { 
+# OR A, D
+# LD (HL), A
+B2 77
+  @check {
+    [C000] C3
+  }
+}
+
+# Tests B3 - CALC: 03 OR 08 = 0B
+@test { 
+# OR A, E
+# LD (HL), A
+B3 77
+  @check {
+    [C000] 0B
+  }
+}
+
+# Tests B4 - CALC: 03 OR C0 = C3
+@test { 
+# OR A, H
+# LD (HL), A
+B4 77
+  @check {
+    [C000] C3
+  }
+}
+
+# Tests B5 - CALC: 03 OR 00 = 03
+@test { 
+# OR A, L
+# LD (HL), A
+B5 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests B6 - CALC: 03 OR FF = FF
+@test { 
+# OR A, (HL)
+# LD (HL), A
+B6 77
+  @check {
+    [C000] FF
+  }
+}
+
+# Tests B7 - CALC: 03 OR 03 = 03
+@test { 
+# OR A, A
+# LD (HL), A
+B7 77
+  @check {
+    [C000] 03
+  }
+}
+
+### Testing XOR A, n
+# Logical exclusive OR n with register A, result in A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Reset.
+# C - Reset.
+
+
+# Tests A8 - CALC: 03 xor C1 = C2
+@test { 
+# XOR A, B
+# LD (HL), A
+A8 77
+  @check {
+    [C000] C2
+  }
+}
+
+# Tests A8 - CALC: 83 xor FF = 7C
+@test { 
+# LD A, #FF
+# LD B, A
+# LD A, #83
+# XOR A, B
+# LD (HL), A
+3E FF 47 3E 83 A8 77
+  @check {
+    [C000] 7C
+  }
+}
+
+
+# Tests A8 - CALC: 0F xor F0 = FF
+@test { 
+# LD A, #0F
+# LD B, A
+# LD A, #F0
+# XOR A, B
+# LD (HL), A
+3E 0F 47 3E F0 A8 77
+  @check {
+    [C000] FF
+  }
+}
+
+# Tests A8 - CALC: 00 xor 00 = 00
+@test { 
+# LD A, #00
+# LD B, A
+# XOR A, B
+# LD (HL), A
+3E 00 47 A8 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests A8 - CALC: DE xor C7 = 19
+@test { 
+# LD A, #DE
+# LD B, A
+# LD A, #C7
+# XOR A, B
+# LD (HL), A
+3E DE 47 3E C7 A8 77
+  @check {
+    [C000] 19
+  }
+}
+
+
+## less tested A9-AF
+
+# Tests A9 - CALC: DC xor 04 = D8
+@test { 
+# LD A, #DC
+# XOR A, C
+# LD (HL), A
+3E DC A9 77
+  @check {
+    [C000] D8
+  }
+}
+
+# Tests AA - CALC: DC xor C2 = 1E
+@test { 
+# LD A, #DC
+# XOR A, D
+# LD (HL), A
+3E DC AA 77
+  @check {
+    [C000] 1E
+  }
+}
+
+# Tests AB - CALC: DC xor 08 = D4
+@test { 
+# LD A, #DC
+# XOR A, E
+# LD (HL), A
+3E DC AB 77
+  @check {
+    [C000] D4
+  }
+}
+
+# Tests AC - CALC: DC xor C0 = 1C
+@test { 
+# LD A, #DC
+# XOR A, H
+# LD (HL), A
+3E DC AC 77
+  @check {
+    [C000] 1C
+  }
+}
+
+# Tests AD - CALC: DC xor 00 = DC
+@test { 
+# LD A, #DC
+# XOR A, L
+# LD (HL), A
+3E DC AD 77
+  @check {
+    [C000] DC
+  }
+}
+
+# Tests AE - CALC: DC xor FF = 23
+@test { 
+# LD A, #DC
+# XOR A, (HL)
+# LD (HL), A
+3E DC AE 77
+  @check {
+    [C000] FF
+  }
+}
+
+
+# Tests AF - CALC: DC xor DC = 00
+@test { 
+# LD A, #DC
+# XOR A, A
+# LD (HL), A
+3E DC AF 77
+  @check {
+    [C000] 00
+  }
+}
+
+

@@ -687,272 +687,272 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 82
                 -- OP-codes from page 83
-                -- SBC A, A
+                -- SBC A, A -t
               when X"9F" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, B
+                -- SBC A, B -tested - tested more in detail than 99-9F
               when X"98" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, C
+                -- SBC A, C -t
               when X"99" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, D
+                -- SBC A, D -t
               when X"9A" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, E
+                -- SBC A, E -t
               when X"9B" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, H
+                -- SBC A, H -t
               when X"9C" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, L
+                -- SBC A, L -t
               when X"9D" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, (HL)
+                -- SBC A, (HL) -t
               when X"9E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- SBC A, #
+                -- SBC A, # -t
               when X"DE" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 83
                 -- OP-codes from page 84
-                -- AND A, A
+                -- AND A, A -t
               when X"A7" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, B
+                -- AND A, B -tested - tested in more detail than A1-A7
               when X"A0" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, C
+                -- AND A, C -t
               when X"A1" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, D
+                -- AND A, D -t
               when X"A2" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, E
+                -- AND A, E -t
               when X"A3" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, H
+                -- AND A, H -t
               when X"A4" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, L
+                -- AND A, L -t
               when X"A5" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, (HL)
+                -- AND A, (HL) -t
               when X"A6" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- AND A, #
+                -- AND A, # -t
               when X"E6" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 84
                 -- OP-codes from page 85
-                -- OR A, A
+                -- OR A, A -t
               when X"B7" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, B
+                -- OR A, B -tested - tested in more detail than B1-B7
               when X"B0" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, C
+                -- OR A, C -t
               when X"B1" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, D
+                -- OR A, D -t
               when X"B2" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, E
+                -- OR A, E -t
               when X"B3" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, H
+                -- OR A, H -t
               when X"B4" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, L
+                -- OR A, L -t
               when X"B5" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, (HL)
+                -- OR A, (HL) -t
               when X"B6" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- OR A, #
+                -- OR A, # -t
               when X"F6" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 85
                 -- OP-codes from page 86
-                -- XOR A, A
+                -- XOR A, A -t
               when X"AF" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, B
+                -- XOR A, B  -tested - tested in more detail than A9-AF
               when X"A8" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, C
+                -- XOR A, C -t
               when X"A9" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, D
+                -- XOR A, D -t
               when X"AA" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, E
+                -- XOR A, E -t
               when X"AB" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, H
+                -- XOR A, H -t
               when X"AC" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, L
+                -- XOR A, L -t
               when X"AD" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, (HL)
+                -- XOR A, (HL) -t
               when X"AE" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- XOR A, #
+                -- XOR A, # -t
               when X"EE" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 86
                 -- OP-codes from page 87
-                -- CP A, A
+                -- CP A, A -(only tested if this does not destory A)
               when X"BF" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, B
+                -- CP A, B -(only tested if this does not destory A)
               when X"B8" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, C
+                -- CP A, C -(only tested if this does not destory A)
               when X"B9" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, D
+                -- CP A, D -(only tested if this does not destory A)
               when X"BA" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, E
+                -- CP A, E -(only tested if this does not destory A)
               when X"BB" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, H
+                -- CP A, H -(only tested if this does not destory A)
               when X"BC" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, L
+                -- CP A, L -(only tested if this does not destory A)
               when X"BD" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, (HL)
+                -- CP A, (HL) -(only tested if this does not destory A)
               when X"BE" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- CP A, #
+                -- CP A, # -(only tested if this does not destory A)
               when X"FE" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
