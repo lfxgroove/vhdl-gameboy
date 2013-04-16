@@ -17,7 +17,8 @@ architecture Cpu_Implementation of Cpu is
   signal SP, PC : std_logic_vector(15 downto 0) := X"0000";
 
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
-  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4);
+  -- Halted is a state used when the CPU should wait for interrupts.
+  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4, Halted);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -28,6 +29,8 @@ architecture Cpu_Implementation of Cpu is
   signal Tmp_8bit : std_logic_vector(7 downto 0);
   -- Instruction Register
   signal IR : std_logic_vector(7 downto 0);
+  -- Interrupts enabled.
+  signal Interrupts_Enabled : std_logic := '0';
 
   -- ALU instantiation.
   component Alu
@@ -97,6 +100,7 @@ begin
         SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";
+        Interrupts_Enabled <= '0';      -- Assumed value.
       else
         -- Reset the high flags, since most instructions assume it is set to zero.
         Alu_High_Flags <= '0';
@@ -111,6 +115,8 @@ begin
               State <= Fetch;
               Waited_Clks <= X"0000";
             end if;
+          when Waiting =>
+            -- TODO: Wait for interrupt.
           when Fetch =>
             Mem_Addr <= PC;
             State <= Exec;
@@ -1125,7 +1131,11 @@ begin
                 -- DEC SP
               when X"3B" =>
                 SP <= std_logic_vector(unsigned(SP) - 1);
-                -- END op-codes from page 92
+                -- END op-codes from page 93
+                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE STOP should be here
+              when X"10" =>
+                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE SWP should be here
+              when X"CB" =>
                 -- OP-codes from page 95
                 -- DAA (not implemented in daa_logic)
               when X"27" =>
@@ -1137,7 +1147,30 @@ begin
                 A <= not A;
                 F(6 downto 5) <= "11";
                 -- END op-codes from  page 95
-
+                -- OP-codes from page 96
+                -- CCF
+              when X"3F" =>
+                F(6 downto 5) <= "00";
+                F(4) <= not F(4);
+              when X"37" =>
+                F(6 downto 5) <= "00";
+                F(4) <= '1';
+                -- END op-codes from page 96
+                -- OP-codes from page 97
+                -- NOP
+              when X"00" =>
+                -- HALT
+              when X"76" =>
+                State <= Halted;
+                -- END op-codes from page 97
+                -- OP-codes from page 98
+                -- DI
+              when X"F3" =>
+                Interrupts_Enabled <= '0';
+                -- EI
+              when X"FB" =>
+                Interrupts_Enabled <= '1';
+                -- END op-codes from page 98
 
               when others =>
                 --FAKKA UR TOTALT OCH D
