@@ -6,7 +6,7 @@
 #include "parser.hpp"
 #include "tokenizer.hpp"
 
-void run_test(const std::string& dir_name, const std::string& test_name)
+void run_test(const std::string& dir_name, const std::string& test_name, int test_num)
 {
   Tokenizer t(dir_name + "/" + test_name + ".stim");
   Parser p(t, dir_name  + "/");
@@ -17,46 +17,58 @@ void run_test(const std::string& dir_name, const std::string& test_name)
   bool all_ok = true;
   int i = 1;
   int num_tests = to_run.size();
-  std::cout << "Running " << num_tests << " tests for " << test_name << ": " << std::endl;
-  //Todo: run one test only with something like this and command line parameter
-  // if (to_run.front().run(test_name))
-  //   {
-  //     std::cout << "OK" << std::endl;
-  //   }
-  // else
-  //   {
-  //     std::cout << "NEIN" << std::endl;
-  //     std::cout << to_run.front().diff() << std::endl 
-  // 		<< to_run.front() << std::endl;
-  //   }
-  for (Tests::iterator it = to_run.begin();
-       it != to_run.end();
-       ++it, ++i) 
+  if (test_num != -1)
     {
-      std::cout << "Test " << i << " of " << num_tests << ":" << std::flush;
-      if ((*it).run(test_name))
-  	{
-  	  std::cout << "OK" << std::endl;
-  	}
-      else
-  	{
-  	  all_ok = false;
-  	  std::cout << "FAIL, here's some info:" << std::endl;
-  	  faulty.push_back(*it);
-  	  std::cout << it->diff() << std::endl;
-  	  std::cout << "Here's the test: " << std::endl;
-  	  std::cout << *it << std::endl;
-  	  // std::cout << "Test failed! Info: " << std::endl
-  	  // 	    << *it << std::endl;
-  	}
+      std::cout << "Running test " << test_num << " of " 
+		<< num_tests << " for " << test_name << ": " << std::endl;
+      for (Tests::iterator it = to_run.begin();
+	   it != to_run.end();
+	   ++it, ++i) 
+	{
+	  if (i == test_num) 
+	    {
+	      if ((*it).run(test_name))
+		{
+		  std::cout << "OK" << std::endl;
+		}
+	      else
+		{
+		  all_ok = false;
+		  std::cout << "FAIL, here's some info:" << std::endl;
+		  faulty.push_back(*it);
+		  std::cout << it->diff() << std::endl;
+		  std::cout << "Here's the test: " << std::endl;
+		  std::cout << *it << std::endl;
+		}
+	    }
+	  else
+	    if (i > test_num)
+	      break;
+	}
     }
-  // std::cout << std::endl;
-  // if (!all_ok)
-  //   {
-  //     std::cout << "Testing was interrupted by a/some faulty test/s" << std::endl;
-  //     std::cout << "Tests that failed: " << std::endl;
-  //     //TODO: Show them.
-  //   }
+  else
+    {
+      std::cout << "Running " << num_tests << " tests for " << test_name << ": " << std::endl;
+      for (Tests::iterator it = to_run.begin();
+	   it != to_run.end();
+	   ++it, ++i) 
+	{
+	  std::cout << "Test " << i << " of " << num_tests << ":" << std::flush;
+	  if ((*it).run(test_name))
+	    {
+	      std::cout << "OK" << std::endl;
+	    }
+	  else
+	    {
+	      all_ok = false;
+	      std::cout << "FAIL, here's some info:" << std::endl;
+	      faulty.push_back(*it);
+	      std::cout << it->diff() << std::endl;
+	      std::cout << "Here's the test: " << std::endl;
+	      std::cout << *it << std::endl;
+	    }
+	}
+    }
 }
 
 void print_usage(const char* name)
@@ -67,10 +79,9 @@ void print_usage(const char* name)
   cout << "Usage: " << name << " options " << endl;
   cout << "-d DIRNAME denotes which dir you would like to " << endl;
   cout << "           run tests for" << endl;
-  // cout << "-t         run the feed part of a test, ie, feed " << endl;
-  // cout << "           a file to the testbench and capture   " << endl;
-  // cout << "           output. " << endl;
-  // cout << "-i         run the diff part of the program 
+  cout << "-n NUMBER  runs a certain test for the given DIRNAME" << endl;
+  cout << "           ie: tester -n 10 -d tests/derp_test/ would" << endl;
+  cout << "           run the tenth test in tests/derp_test/derp_test.stim" << endl;
 }
 
 std::string find_test_name(std::string& dir_name)
@@ -100,7 +111,8 @@ int main(int argc, char** argv)
     }
   
   std::string dir_name, test_name;
-  bool dir_found = false;
+  int test_num = -1;
+  bool dir_found = false, num_found = false;
   
   for (int i = 1; i < argc; ++i)
     {
@@ -108,6 +120,14 @@ int main(int argc, char** argv)
 	{
 	  dir_name = argv[++i];
 	  dir_found = true;
+	}
+      else if (strcmp(argv[i], "-n") == 0)
+	{
+	  std::stringstream ss;
+	  ss << argv[++i];
+	  ss >> test_num;
+	  if (test_num > 0)
+	    num_found = true;
 	}
     }
   
@@ -118,6 +138,15 @@ int main(int argc, char** argv)
       return 0;
     }
   
+  if (num_found && !dir_found)
+    {
+      std::cout << "Error: You must supply the -d option if using -n" << std::endl;
+      print_usage(argv[0]);
+      return 0;
+    }
+  
+  //Add a check that we are in the src dir and nothing else!
+  
   test_name = find_test_name(dir_name);
   if (test_name == "")
     return 0;
@@ -125,7 +154,7 @@ int main(int argc, char** argv)
   std::cout << "Dir name is: " << dir_name << std::endl;
   std::cout << "Test name is:" << test_name << std::endl;
   
-  run_test(dir_name, test_name);
+  run_test(dir_name, test_name, test_num);
 
   return 0;
 }
