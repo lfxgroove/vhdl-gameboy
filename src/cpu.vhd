@@ -1066,6 +1066,49 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
 
+                -- OP-codes from page 92
+                -- INC BC
+              when X"03" =>
+                Tmp := std_logic_vector(unsigned(B & C) + 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- INC DE
+              when X"13" =>
+                Tmp := std_logic_vector(unsigned(D & E) + 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- INC HL
+              when X"23" =>
+                Tmp := std_logic_vector(unsigned(H & L) + 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- INC SP
+              when X"33" =>
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                -- END op-codes from page 92
+
+                -- OP-codes from page 93
+                -- DEC BC
+              when X"0B" =>
+                Tmp := std_logic_vector(unsigned(B & C) - 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- DEC DE
+              when X"1B" =>
+                Tmp := std_logic_vector(unsigned(D & E) - 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- DEC HL
+              when X"2B" =>
+                Tmp := std_logic_vector(unsigned(H & L) - 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- DEC SP
+              when X"3B" =>
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                -- END op-codes from page 92
+
+
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
