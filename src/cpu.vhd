@@ -540,60 +540,60 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 80
                 -- OP-codes from page 81
-                -- ADC A, A
+                -- ADC A, A -t
               when X"8F" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, B
+                -- ADC A, B -tested - tested more in detail than 89-8f
               when X"88" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, C
+                -- ADC A, C -t
               when X"89" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, D
+                -- ADC A, D -t
               when X"8A" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, E
+                -- ADC A, E -t
               when X"8B" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, H
+                -- ADC A, H -t
               when X"8C" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, L
+                -- ADC A, L -t
               when X"8D" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, (HL)
+                -- ADC A, (HL) -t
               when X"8E" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- ADC A, #
+                -- ADC A, # -t
               when X"CE" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
