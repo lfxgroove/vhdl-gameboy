@@ -43,7 +43,7 @@ architecture Behavior of Ld_Op_Test is
   signal Cpu_Allowed : std_logic;
   signal Internal_Mem_Addr : std_logic_vector(15 downto 0);
   signal Internal_Mem_Write : std_logic_vector(7 downto 0);
-  signal Internal_Mem_Write_Enable : std_logic;
+  signal Internal_Mem_Write_Enable : std_logic := '0';
   
 begin
 -- compnent instantiation
@@ -147,7 +147,8 @@ begin
     
     Curr_Addr := X"C000";
     loop
-      exit when Curr_Addr = X"C400";
+      --exit when Curr_Addr = X"C400";
+      exit when Curr_Addr = X"FFFF";
       
       Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
       
