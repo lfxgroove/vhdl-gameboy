@@ -10,8 +10,9 @@ all: main
 clean:
 	rm -f *.o $(PROG_NAME)
 
-main: main.o tokenizer.o parser.o test.o addrdata.o testfile.o
-	$(CC) $(LDFLAGS) main.o tokenizer.o parser.o test.o addrdata.o testfile.o -o $(PROG_NAME)
+main: main.o tokenizer.o parser.o test.o addrdata.o testfile.o util.o
+	$(CC) $(LDFLAGS) main.o tokenizer.o parser.o test.o addrdata.o testfile.o  util.o \
+	-o $(PROG_NAME)
 
 addrdata.o: addrdata.cpp
 	$(CC) $(CFLAGS) addrdata.cpp
@@ -30,3 +31,6 @@ test.o: test.cpp
 
 testfile.o: testfile.cpp
 	$(CC) $(CFLAGS) testfile.cpp
+
+util.o: util.cpp
+	$(CC) $(CFLAGS) util.cpp
