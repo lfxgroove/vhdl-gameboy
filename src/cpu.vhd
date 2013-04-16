@@ -51,6 +51,7 @@ architecture Cpu_Implementation of Cpu is
   constant Alu_And : std_logic_vector(2 downto 0) := "100";
   constant Alu_Or : std_logic_vector(2 downto 0) := "101";
   constant Alu_Xor : std_logic_vector(2 downto 0) := "110";
+  constant Alu_Inc : std_logic_vector(2 downto 0) := "111";
 begin
 
   Alu_Ports : Alu port map(
@@ -927,9 +928,55 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- END op-codes from page 82
-
-
+                -- END op-codes from page 87
+                -- OP-codes from page 88
+                -- INC A
+              when X"3C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC B
+              when X"04" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC C
+              when X"0C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC D
+              when X"14" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC E
+              when X"1C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC H
+              when X"24" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC L
+              when X"2C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC (HL)
+              when X"34" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- END op-codes from page 88
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1415,6 +1462,42 @@ begin
                 Alu_Mode <= Alu_Sub;
                 State <= Exec3;
 
+                -- INC A
+              when X"3C" =>
+                F <= Alu_Flags;
+                A <= Alu_Result(7 downto 0);
+                -- INC B
+              when X"04" =>
+                F <= Alu_Flags;
+                B <= Alu_Result(7 downto 0);
+                -- INC C
+              when X"0C" =>
+                F <= Alu_Flags;
+                C <= Alu_Result(7 downto 0);
+                -- INC D
+              when X"14" =>
+                F <= Alu_Flags;
+                D <= Alu_Result(7 downto 0);
+                -- INC E
+              when X"1C" =>
+                F <= Alu_Flags;
+                E <= Alu_Result(7 downto 0);
+                -- INC H
+              when X"24" =>
+                F <= Alu_Flags;
+                H <= Alu_Result(7 downto 0);
+                -- INC L
+              when X"2C" =>
+                F <= Alu_Flags;
+                L <= Alu_Result(7 downto 0);
+                -- INC (HL)
+              when X"34" =>
+                Alu_A <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -1541,6 +1624,12 @@ begin
               when X"FE" =>
                 F <= Alu_Flags;
 
+                -- INC (HL)
+              when X"34" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= Alu_Result(7 downto 0);
+                Mem_Write_Enable <= '1';
+                F <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3

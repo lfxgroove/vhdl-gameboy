@@ -22,6 +22,7 @@ use IEEE.numeric_std.all;
 -- 100: And (bitwise)
 -- 101: Or (bitwise)
 -- 110: Xor (bitwise)
+-- 111: Increase A (does not affect C flag).
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
        Mode : in std_logic_vector(2 downto 0);
@@ -58,6 +59,7 @@ begin
     "10000" when Mode = "100" else
     "00000" when Mode = "101" else
     "00000" when Mode = "110" else
+    std_logic_vector(unsigned(A_Nibble) + 1) when Mode = "111" else
     "00000";
 
   A_Byte <= "0" & A(7 downto 0);
@@ -70,6 +72,8 @@ begin
     "000000000" when Mode = "100" else
     "000000000" when Mode = "101" else
     "000000000" when Mode = "110" else
+    -- Inc does not affect C. Insert it into MSB
+    Carry_Flag & "00000000" when Mode = "111" else
     "000000000";
 
   Tmp_Result <=
@@ -80,6 +84,7 @@ begin
     A and B when Mode = "100" else
     A or B when Mode = "101" else
     A xor B when Mode = "110" else
+    std_logic_vector(unsigned(A) + 1) when Mode = "111" else
     X"0000";
   Result <= Tmp_Result;
 
