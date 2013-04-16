@@ -10,10 +10,10 @@
 # Set BC to adress X"C104"
 # LD A, #C1
 # LD B, A
-3E D0 47
+3E C1 47
 # LD A, #04
 # LD C, A
-3E 01 4F
+3E 04 4F
 
 # Set DE to adress X"C208"
 # LD A, #C2
@@ -21,7 +21,7 @@
 3E C2 57
 # LD A, #08
 # LD E, A
-3E 02 5F
+3E 08 5F
 
 
 # default data 
