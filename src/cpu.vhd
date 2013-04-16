@@ -1283,6 +1283,35 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 113
+                -- OP-code from page 114
+                -- CALL nn
+              when X"CD" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- OP-codes from page 115
+                -- CALL NZ, nn
+              when X"C4" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- CALL Z, nn
+              when X"CC" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- CALL NC, nn
+              when X"D4" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- CALL C, nn
+              when X"DC" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+
+                -- END op-codes from page 115
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1922,6 +1951,39 @@ begin
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
                 end if;
 
+                -- CALL nn
+              when X"CD" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+
+                -- CALL NZ, nn
+              when X"C4" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- CALL Z, nn
+              when X"CC" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- CALL NC, nn
+              when X"D4" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- CALL C, nn
+              when X"DC" =>
+                Tmp_Addr(7 downto 0) <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -2092,6 +2154,62 @@ begin
                   PC <= Mem_Read & Tmp_8Bit;
                 end if;
 
+                -- CALL nn
+              when X"CD" =>
+                Tmp_Addr(15 downto 8) <= Mem_Read;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Write_Enable <= '1';
+                State <= Exec4;
+
+                -- CALL NZ, nn
+              when X"C4" =>
+                if F(7) = '0' then
+                  Tmp_Addr(15 downto 8) <= Mem_Read;
+                  Tmp := std_logic_vector(unsigned(SP) - 1);
+                  SP <= Tmp;
+                  Mem_Addr <= Tmp;
+                  Mem_Write <= PC(15 downto 8);
+                  Mem_Write_Enable <= '1';
+                  State <= Exec4;
+                end if;
+                -- CALL Z, nn
+              when X"CC" =>
+                if F(7) = '1' then
+                  Tmp_Addr(15 downto 8) <= Mem_Read;
+                  Tmp := std_logic_vector(unsigned(SP) - 1);
+                  SP <= Tmp;
+                  Mem_Addr <= Tmp;
+                  Mem_Write <= PC(15 downto 8);
+                  Mem_Write_Enable <= '1';
+                  State <= Exec4;
+                end if;
+                -- CALL NC, nn
+              when X"D4" =>
+                if F(4) = '0' then
+                  Tmp_Addr(15 downto 8) <= Mem_Read;
+                  Tmp := std_logic_vector(unsigned(SP) - 1);
+                  SP <= Tmp;
+                  Mem_Addr <= Tmp;
+                  Mem_Write <= PC(15 downto 8);
+                  Mem_Write_Enable <= '1';
+                  State <= Exec4;
+                end if;
+                -- CALL C, nn
+              when X"DC" =>
+                if F(4) = '1' then
+                  Tmp_Addr(15 downto 8) <= Mem_Read;
+                  Tmp := std_logic_vector(unsigned(SP) - 1);
+                  SP <= Tmp;
+                  Mem_Addr <= Tmp;
+                  Mem_Write <= PC(15 downto 8);
+                  Mem_Write_Enable <= '1';
+                  State <= Exec4;
+                end if;
+
+
               when others =>
             end case; -- End case Exec3
 
@@ -2106,6 +2224,48 @@ begin
                 Mem_Addr <= std_logic_vector(unsigned(Tmp_Addr) + 1);
                 Mem_Write <= SP(15 downto 8);
                 Mem_Write_Enable <= '1';
+                -- CALL nn
+              when X"CD" =>
+                PC <= Tmp_Addr;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Write_Enable <= '1';
+
+                -- CALL NZ, nn
+              when X"C4" =>
+                PC <= Tmp_Addr;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Write_Enable <= '1';
+                -- CALL Z, nn
+              when X"CC" =>
+                PC <= Tmp_Addr;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Write_Enable <= '1';
+                -- CALL NC, nn
+              when X"D4" =>
+                PC <= Tmp_Addr;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Write_Enable <= '1';
+                -- CALL C, nn
+              when X"DC" =>
+                PC <= Tmp_Addr;
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Addr <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Write_Enable <= '1';
+
               when others =>
             end case;
           when others =>
