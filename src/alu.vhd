@@ -18,7 +18,7 @@ use IEEE.numeric_std.all;
 -- 00: Addition
 -- 01: Subtraction
 -- 10: Addition with carry from Flags_In
--- 11: Not implemented yet
+-- 11: Subtraction with carry from Flags_In
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
        Mode : in std_logic_vector(1 downto 0);
@@ -33,30 +33,35 @@ architecture Alu_Implementation of Alu is
   -- The lower bytes of A and B, filled with a leading zero.
   signal A_Byte, B_Byte, Result_Byte : std_logic_vector(8 downto 0);
 
+  -- Easier access to the carry flag.
+  signal Carry_Flag : std_logic_vector(0 downto 0) := "0";
+
   -- Temporary result
   signal Tmp_Result : std_logic_vector(15 downto 0);
 begin
+  Carry_Flag <= Flags_In(4 downto 4);
+
   A_Nibble <= "0" & A(3 downto 0);
   B_Nibble <= "0" & B(3 downto 0);
   Result_Nibble <=
     std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "00" else
     std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "01" else
-    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
-    "00000";
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "10" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "11";
 
   A_Byte <= "0" & A(7 downto 0);
   B_Byte <= "0" & B(7 downto 0);
   Result_Byte <=
     std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "00" else
     std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "01" else
-    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
-    "000000000";
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "10" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "11";
 
   Tmp_Result <=
     std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "00" else
     std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "01" else
-    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Flags_In(4 downto 4))) when Mode = "10" else
-    X"0000";
+    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Carry_Flag)) when Mode = "10" else
+    std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "11";
   Result <= Tmp_Result;
 
   Flags(3 downto 0) <= "0000";
