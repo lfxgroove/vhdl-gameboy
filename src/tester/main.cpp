@@ -16,33 +16,28 @@ void run_test(const std::string& dir_name, const std::string& test_name)
   Tests faulty;
   bool all_ok = true;
   int i = 1;
-  std::cout << "Running test " << test_name << ":";
-  if (to_run.front().run(test_name))
+  int num_tests = to_run.size();
+  std::cout << "Running " << num_tests << " tests for " << test_name << ": " << std::endl;
+  for (Tests::iterator it = to_run.begin();
+       it != to_run.end();
+       ++it, ++i) 
     {
-      std::cout << "1";
+      std::cout << "Test " << i << " of " << num_tests << ":" << std::flush;
+      if ((*it).run(test_name))
+	{
+	  std::cout << "OK" << std::endl;
+	}
+      else
+	{
+	  all_ok = false;
+	  std::cout << "FAIL, here's some info:" << std::endl;
+	  faulty.push_back(*it);
+	  std::cout << it->diff();
+	  // std::cout << "Test failed! Info: " << std::endl
+	  // 	    << *it << std::endl;
+	}
     }
-  else
-    {
-      std::cout << "0";
-    }
-  // for (Tests::iterator it = to_run.begin();
-  //      it != to_run.end();
-  //      ++it, ++i) 
-  //   {
-  //     if ((*it).run(test_name))
-  // 	{
-  // 	  std::cout << "1";
-  // 	}
-  //     else
-  // 	{
-  // 	  all_ok = false;
-  // 	  std::cout << "0";
-  // 	  faulty.push_back(*it);
-  // 	  // std::cout << "Test failed! Info: " << std::endl
-  // 	  // 	    << *it << std::endl;
-  // 	  // break;
-  // 	}
-  //   }
+  std::cout << std::endl;
   // if (!all_ok)
   //   {
   //     std::cout << "Testing was interrupted by a/some faulty test/s" << std::endl;
