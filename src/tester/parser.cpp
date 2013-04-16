@@ -27,6 +27,7 @@ Parser::Parser(const Parser& rhs)
 
 Tests Parser::parse()
 {
+  std::cout << "Parsing tests.. " << std::flush;
   while (m_tokenizer.has_token())
     {
       // m_tokenizer.next();
@@ -69,9 +70,10 @@ Tests Parser::parse()
       m_tokenizer.next();
     }
   
-  std::cout << "Debug output: " << std::endl
-  	    << "=======================" << std::endl;;
-  std::cout << *this << std::endl;
+  std::cout << " done" << std::endl;
+  // std::cout << "Debug output: " << std::endl
+  // 	    << "=======================" << std::endl;;
+  // std::cout << *this << std::endl;
   
   return m_current_tests;
 }
