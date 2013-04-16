@@ -58,7 +58,8 @@ bool Test::run(const std::string& name)
     }
   std::string arg = "ghdl --elab-run --ieee=synopsys " 
     + test_name + 
-    " --vcd=" + test_name + ".vcd --stop-time=1000us > /dev/null 2>&1";
+    //1600 us will be enough for now, might be subject to change..
+    " --vcd=" + test_name + ".vcd --stop-time=1600us > /dev/null 2>&1";
   std::system(arg.c_str());
   
   return check(m_base_path + "/results/results.txt");
@@ -118,7 +119,8 @@ bool Test::check(const std::string& results_path)
 	  std::string data;
 	  std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
 	  data = data.substr(0, data.size() - 1);
-	  // std::cout << "Strangens langd: " << data.size() << " och innehall:" << data << ":" << std::endl;
+	  // std::cout << "Strangens langd: " << data.size() 
+	  //           << " och innehall:" << data << ":" << std::endl;
 	  //Get the data that we should diff against
 	  if (data != Util::to_bin(int(*it)))
 	    {
