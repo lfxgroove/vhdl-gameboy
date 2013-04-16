@@ -599,6 +599,60 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 81
+                -- OP-codes from page 82
+                -- SUB A, A
+              when X"97" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, B
+              when X"90" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, C
+              when X"91" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, D
+              when X"92" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, E
+              when X"93" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, H
+              when X"94" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, L
+              when X"95" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- SUB A, (HL)
+              when X"96" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- SUB A, #
+              when X"D6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 82
+                
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -790,11 +844,13 @@ begin
               when X"86" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add;
                 State <= Exec3;
                 -- Add A, #
               when X"C6" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Add;
                 State <= Exec3;
 
                 -- ADC A, A
@@ -838,6 +894,47 @@ begin
                 Alu_B <= X"00" & Mem_Read;
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
+                State <= Exec3;
+
+                -- SUB A, A
+              when X"97" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, B
+              when X"90" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, C
+              when X"91" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, D
+              when X"92" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, E
+              when X"93" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, H
+              when X"94" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, L
+              when X"95" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, (HL)
+              when X"96" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec3;
+                -- SUB A, #
+              when X"D6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub;
                 State <= Exec3;
 
               when others =>
@@ -896,11 +993,11 @@ begin
               when X"E1" =>
                 H <= Mem_Read;
               when X"85" =>
-                -- Add A, (HL)
+                -- ADD A, (HL)
               when X"86" =>
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
-                -- Add A, #
+                -- ADD A, #
               when X"C6" =>
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
@@ -912,6 +1009,16 @@ begin
               when X"CE" =>
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
+
+                -- SUB A, (HL)
+              when X"96" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SUB A, #
+              when X"D6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
 
               when others =>
             end case; -- End case Exec3
