@@ -115,7 +115,7 @@ begin
               State <= Fetch;
               Waited_Clks <= X"0000";
             end if;
-          when Waiting =>
+          when Halted =>
             -- TODO: Wait for interrupt.
           when Fetch =>
             Mem_Addr <= PC;
@@ -399,8 +399,8 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), n -t
-              when X"76" =>
+                -- LD (HL), n
+              when X"36" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
