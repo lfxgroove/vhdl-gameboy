@@ -21,6 +21,7 @@ use IEEE.numeric_std.all;
 -- 011: Subtraction with carry from Flags_In
 -- 100: And (bitwise)
 -- 101: Or (bitwise)
+-- 110: Xor (bitwise)
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
        Mode : in std_logic_vector(2 downto 0);
@@ -54,8 +55,9 @@ begin
     std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "010" else
     std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "011" else
     -- H should be set when AND-ing.
-    A_Nibble and B_Nibble or "10000" when Mode = "100" else
-    A_Nibble or B_Nibble when Mode = "101" else
+    "10000" when Mode = "100" else
+    "00000" when Mode = "101" else
+    "00000" when Mode = "110" else
     "00000";
 
   A_Byte <= "0" & A(7 downto 0);
@@ -65,8 +67,9 @@ begin
     std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "001" else
     std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "010" else
     std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "011" else
-    A_Byte and B_Byte when Mode = "100" else
-    A_Byte or B_Byte when Mode = "101" else
+    "000000000" when Mode = "100" else
+    "000000000" when Mode = "101" else
+    "000000000" when Mode = "110" else
     "000000000";
 
   Tmp_Result <=
@@ -76,6 +79,7 @@ begin
     std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "011" else
     A and B when Mode = "100" else
     A or B when Mode = "101" else
+    A xor B when Mode = "110" else
     X"0000";
   Result <= Tmp_Result;
 
