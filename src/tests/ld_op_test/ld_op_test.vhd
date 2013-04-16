@@ -6,66 +6,67 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-entity Sample_Test is
-end Sample_Test;
+entity Ld_Op_Test is
+end Ld_Op_Test;
   
-architecture Behavior of Sample_Test is
+architecture Behavior of Ld_Op_Test is
 -- Component Decalaration
-  component Cpu
-  port(Clk, Reset : in std_logic;
-       Mem_Write : out std_logic_vector(7 downto 0);
-       Mem_Read : in std_logic_vector(7 downto 0);
-       Mem_Addr : out std_logic_vector(15 downto 0);
-       Mem_Write_Enable : out std_logic);
-  end component;
 
   component Bus_Controller
     port(Clk, Reset : in std_logic;
+         Mem_Write : in std_logic_vector(7 downto 0);
+         Mem_Read : out std_logic_vector(7 downto 0);
+         Mem_Addr : in std_logic_vector(15 downto 0);
+         Mem_Write_Enable : in std_logic;
          Rom_Write_Enable : in std_logic;
          Rom_Addr : in std_logic_vector(15 downto 0);
-         Rom_Write : in std_logic_vector(7 downto 0);
-         --These are unused but needed to be bound/connected
-         Mem_Write : in std_logic_vector(7 downto 0);
-         Mem_Addr : in std_logic_vector(15 downto 0);
-         Mem_Read : out std_logic_vector(7 downto 0);
-         Mem_Write_Enable : in std_logic);
-  end component;    
+         Rom_Write : in std_logic_vector(7 downto 0));
+  end component;
+
+  component Cpu
+    port(Clk, Reset : in std_logic;
+         Mem_Write : out std_logic_vector(7 downto 0);
+         Mem_Read : in std_logic_vector(7 downto 0);
+         Mem_Addr : out std_logic_vector(15 downto 0);
+         Mem_Write_Enable : out std_logic);
+  end component;
   
   signal Clk, Reset, Bus_Reset : std_logic;
-  signal Mem_Write : std_logic_vector(7 downto 0);
-  signal Mem_Read : std_logic_vector(7 downto 0);
-  signal Mem_Addr : std_logic_vector(15 downto 0);
-  signal Mem_Write_Enable : std_logic;
-  signal Rom_Write_Enable : std_logic;
+  signal Mem_Write, Cpu_Mem_Write : std_logic_vector(7 downto 0) := X"00";
+  signal Mem_Read : std_logic_vector(7 downto 0) := X"00";
+  signal Mem_Addr, Cpu_Mem_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal Mem_Write_Enable, Cpu_Mem_Write_Enable : std_logic := '0';
+  signal Rom_Write_Enable : std_logic := '0';
   signal Rom_Addr : std_logic_vector(15 downto 0);
   signal Rom_Write : std_logic_vector(7 downto 0);
   
-  signal Bus_Mem_Write : std_logic_vector(7 downto 0);
-  signal Bus_Mem_Addr : std_logic_vector(15 downto 0);
-  signal Bus_Mem_Read : std_logic_vector(7 downto 0);
-  signal Bus_Mem_Write_Enable : std_logic;
+  signal Cpu_Allowed : std_logic;
+  signal Internal_Mem_Addr : std_logic_vector(15 downto 0);
+  signal Internal_Mem_Write : std_logic_vector(7 downto 0);
+  signal Internal_Mem_Write_Enable : std_logic;
   
 begin
 -- compnent instantiation
-  Cpu_Ports : Cpu port map(
+  Bus_Ports : Bus_Controller port map(
     Clk => Clk,
-    Reset => Reset,
+    Reset => Bus_Reset,
     Mem_Write => Mem_Write,
     Mem_Read => Mem_Read,
     Mem_Addr => Mem_Addr,
-    Mem_Write_Enable => Mem_Write_Enable);
-  
-  Rom_Port : Bus_Controller port map (
-    Clk => Clk,
-    Reset => Bus_Reset,
+    Mem_Write_Enable => Mem_Write_Enable,
     Rom_Write_Enable => Rom_Write_Enable,
     Rom_Addr => Rom_Addr,
-    Rom_Write => Rom_Write,
-    --These are unused but needed to be bound/connected
-    Mem_Read => Bus_Mem_Read,
-    Mem_Write => Bus_Mem_Write,
-    Mem_Addr => Bus_Mem_Addr,
-    Mem_Write_Enable => Bus_Mem_Write_Enable);
+    Rom_Write => Rom_Write);
+
+  Cpu_Ports : Cpu port map(
+    Clk => Clk,
+    Reset => Reset,
+    Mem_Write => Cpu_Mem_Write,
+    --Mem_Write => Mem_Write,
+    Mem_Read => Mem_Read,
+    Mem_Addr => Cpu_Mem_Addr,
+    Mem_Write_Enable => Cpu_Mem_Write_Enable);
+    --Mem_Write_Enable => Mem_Write_Enable);
   
   Clk_Gen : process
   begin
@@ -77,49 +78,91 @@ begin
     end loop;
   end process;
   
+  Mem_Addr <= Cpu_Mem_Addr when Cpu_Allowed = '1' else
+              Internal_Mem_Addr;   
+              --Internal_Read_Addr;
+
+  Mem_Write_Enable <= Cpu_Mem_Write_Enable when Cpu_Allowed = '1' else
+                      Internal_Mem_Write_Enable;
+
+  Mem_Write <= Cpu_Mem_Write when Cpu_Allowed = '1' else
+               Internal_Mem_Write;
+  
   Stimuli_Generator : process
     variable In_Line, Out_Line : line;
     variable Curr_Addr : std_logic_vector(15 downto 0) := X"0150";
     variable Data_Byte : std_logic_vector(7 downto 0);
-    file In_File : text open read_mode is "tests/sample_test/stimulus/feed.txt";
-    file Out_File : text open write_mode is "tests/sample_test/results/results.txt";
+    file In_File : text open read_mode is "tests/ld_op_test/stimulus/feed.txt";
+    file Out_File : text open write_mode is "tests/ld_op_test/results/results.txt";
   begin
+    Cpu_Allowed <= '1';
   --writes one byte at a time to the memory
-    --The following line gives this warning:
-    --(assertion warning): NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
-    Rom_Write_Enable <= '1';
-    Reset <= '1';
-    Bus_Reset <= '1';
-    wait for 500 ns;
-    Bus_Reset <= '0';
     
+    Reset <= '1';
+    --Bus_Reset <= '1';
+    wait for 50 ns;
+    
+    --Bus_Reset <= '0';
+    --wait until rising_edge(Clk);
+    
+    wait until rising_edge(Clk);  
+    
+    Cpu_Allowed <= '0';
     loop
       exit when endfile(In_File);
       readline(In_File, In_Line);
       read(In_Line, Data_Byte);
       
-      Rom_Addr <= Curr_Addr;
-      Rom_Write(7 downto 0) <= std_logic_vector(Data_Byte(7 downto 0));
-      Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);
+      wait until rising_edge(Clk);
+
+      if Curr_Addr < X"8000" then
+        Rom_Write <= std_logic_vector(Data_Byte(7 downto 0));
+        Rom_Addr <= Curr_Addr;
+        Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);
+        Rom_Write_Enable <= '1';
+      else
+        Internal_Mem_Write <= std_logic_vector(Data_Byte(7 downto 0));
+        Internal_Mem_Addr <= Curr_Addr;
+        Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);
+        Internal_Mem_Write_Enable <= '1';
+      end if;
       
       wait until rising_edge(Clk);
     end loop;
+
+    Internal_Mem_Write_Enable <= '0';
     Rom_Write_Enable <= '0';
+    wait until rising_edge(Clk);
     
-    Reset <= '1';
-    wait for 100 ns;
     Reset <= '0';
-    for I in 1 to 300 loop
-      wait until rising_edge(clk);
+    Cpu_Allowed <= '1';
+    wait until rising_edge(Clk);
+    
+    --for I in 1 to 60 loop
+    for I in 1 to 200 loop
+      wait until rising_edge(Clk);
     end loop; 
     
-    Curr_Addr := X"0150";
+    Cpu_Allowed <= '0';
+    --Internal_Mem_Addr <= X"C000";
+    wait until rising_edge(Clk);
+    --wait until rising_edge(Clk);
+    
+    Curr_Addr := X"C000";
     loop
-      exit when Curr_Addr = X"0200";
-      Bus_Mem_Write_Enable <= '0';
-      Bus_Mem_Addr <= Curr_Addr;
-      Data_Byte(7 downto 0) := Bus_Mem_Read(7 downto 0);
+      exit when Curr_Addr = X"C400";
+      --wait until rising_edge(Clk);
+      
+      Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
+      
+      wait until rising_edge(Clk);
+      --wait until rising_edge(Clk);
+      
+      Data_Byte(7 downto 0) := Mem_Read(7 downto 0);
       Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);
+
+      --wait until rising_edge(Clk);
+      
       write(Out_Line, Data_Byte);
       writeline(Out_File, Out_Line);
     end  loop;        
