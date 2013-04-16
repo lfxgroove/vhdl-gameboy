@@ -107,8 +107,12 @@ void outputList(const Instructions &instr, ostream &to) {
   for (Instructions::const_iterator i = instr.begin(); i != instr.end(); i++) {
     to << setw(2) << setfill('0') << hex << i->opcode;
     to << ", " << i->mnemonic;
+    // int iImplementedOps, iNrOfTests; <- duno where it is best to put this rly ^^
+    //    iImplementedOps++;
     if (i->tested) {
+      // insert a fixed spacing here so everything goes neatly in one row, please
       to << ", tested";
+      // iNrOfTests++;
     }
     to << endl;
   }
@@ -154,7 +158,8 @@ int main(int argc, char *argv[]) {
     std::sort(i.begin(), i.end(), &opcodeComp);
     break;
   }
-
+    //    cout << iNrOfTests << " out of " << iImplementedOps << " are being tested"
+   //	 << endl;
   if (outputFile == "") {
     outputList(i, cout);
   } else {
