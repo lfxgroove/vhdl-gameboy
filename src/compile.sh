@@ -29,7 +29,7 @@ if [ $# -eq 1 ]; then
     if [ $1 = "t" ]; then
 	#Test everything
 	for dir in tests/*; do
-	    if [ ${dir} != "tests/bin" ]; then
+	    if [ ${dir} != "tests/bin" -a ${dir} != "tests/sample_test" ]; then
 		test_name=`echo ${dir} | sed 's/\(\|_\)test\(s\|\)\(\|_\)//g' | sed 's/\///g'`
 		echo "Compiling test: ${test_name}"
 		ghdl -a --ieee=synopsys ${dir}/${test_name}_test.vhd || exit
@@ -47,7 +47,7 @@ fi
 
 if [ $# -eq 2 ]; then
     if [ $2 = "t" ]; then
-        #Run individual test
+        #Run individual test file
 	test_name=${model_name}
 	test_path=${model_name}_test
 	echo "Compiling and running test ${test_name}"
