@@ -15,13 +15,14 @@ use IEEE.numeric_std.all;
 -- Bit 4: C - Set if a carry occurred from the last byte.
 --
 -- Mode: The modes accepted by the ALU is:
--- 00: Addition
--- 01: Subtraction
--- 10: Addition with carry from Flags_In
--- 11: Subtraction with carry from Flags_In
+-- 000: Addition
+-- 001: Subtraction
+-- 010: Addition with carry from Flags_In
+-- 011: Subtraction with carry from Flags_In
+-- 100: And (bitwise)
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
-       Mode : in std_logic_vector(1 downto 0);
+       Mode : in std_logic_vector(2 downto 0);
        Flags_In : in std_logic_vector(7 downto 0);
        Result : out std_logic_vector(15 downto 0);
        Flags : out std_logic_vector(7 downto 0));
@@ -38,37 +39,51 @@ architecture Alu_Implementation of Alu is
 
   -- Temporary result
   signal Tmp_Result : std_logic_vector(15 downto 0);
+
+  -- Temp flags
+  signal Z, N, H, C : std_logic;
 begin
   Carry_Flag <= Flags_In(4 downto 4);
 
   A_Nibble <= "0" & A(3 downto 0);
   B_Nibble <= "0" & B(3 downto 0);
   Result_Nibble <=
-    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "00" else
-    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "01" else
-    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "10" else
-    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "11";
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "000" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "001" else
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "010" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "011" else
+    A_Nibble and B_Nibble when Mode = "100" else
+    "00000";
 
   A_Byte <= "0" & A(7 downto 0);
   B_Byte <= "0" & B(7 downto 0);
   Result_Byte <=
-    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "00" else
-    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "01" else
-    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "10" else
-    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "11";
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "000" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "001" else
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "010" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "011" else
+    A_Byte and B_Byte when Mode = "100" else
+    "000000000";
 
   Tmp_Result <=
-    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "00" else
-    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "01" else
-    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Carry_Flag)) when Mode = "10" else
-    std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "11";
+    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "000" else
+    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "001" else
+    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Carry_Flag)) when Mode = "010" else
+    std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "011" else
+    A and B when Mode = "100" else
+    X"0000";
   Result <= Tmp_Result;
 
+  C <= Result_Byte(8);
+  H <= Result_Nibble(4);
+  N <= '1' when Mode = "001" else
+       '0';
+  Z <= '1' when Tmp_Result = X"0000" else
+       '0';
+
   Flags(3 downto 0) <= "0000";
-  Flags(4) <= Result_Byte(8);
-  Flags(5) <= Result_Nibble(4);
-  Flags(6) <= '1' when Mode = "01" else
-              '0';
-  Flags(7) <= '1' when Tmp_Result = X"0000" else
-              '0';
+  Flags(4) <= C;
+  Flags(5) <= H;
+  Flags(6) <= N;
+  Flags(7) <= Z;
 end Alu_Implementation;
