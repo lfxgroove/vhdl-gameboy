@@ -1261,6 +1261,28 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 112
+                -- OP-codes from page 113
+                -- JR NZ, n
+              when X"20" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JR Z, n
+              when X"28" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JR NC, n
+              when X"30" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JR C, n
+              when X"38" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 113
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1879,6 +1901,26 @@ begin
                 -- JR n
               when X"18" =>
                 PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
+                -- JR NZ, n
+              when X"20" =>
+                if F(7) = '0' then
+                  PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
+                end if;
+                -- JR Z, n
+              when X"28" =>
+                if F(7) = '1' then
+                  PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
+                end if;
+                -- JR NC, n
+              when X"30" =>
+                if F(4) = '0' then
+                  PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
+                end if;
+                -- JR C, n
+              when X"38" =>
+                if F(4) = '1' then
+                  PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
+                end if;
 
               when others =>
             end case; -- End case Exec2
@@ -2031,17 +2073,24 @@ begin
                 PC <= Mem_Read & Tmp_8Bit;
                 -- JP NZ,nn
               when X"C2" =>
-                PC <= Mem_Read & Tmp_8Bit;
+                if F(7) = '0' then
+                  PC <= Mem_Read & Tmp_8Bit;
+                end if;
                 -- JP Z,nn
               when X"CA" =>
-                PC <= Mem_Read & Tmp_8Bit;
+                if F(7) = '1' then
+                  PC <= Mem_Read & Tmp_8Bit;
+                end if;
                 -- JP NC,nn
               when X"D2" =>
-                PC <= Mem_Read & Tmp_8Bit;
+                if F(4) = '0' then
+                  PC <= Mem_Read & Tmp_8Bit;
+                end if;
                 -- JP C,nn
               when X"DA" =>
-                PC <= Mem_Read & Tmp_8Bit;
-
+                if F(4) = '1' then
+                  PC <= Mem_Read & Tmp_8Bit;
+                end if;
 
               when others =>
             end case; -- End case Exec3
