@@ -14,6 +14,8 @@ fi
 
 mkdir tests/${1}_test
 cp tests/sample_test/sample_test.vhd tests/${1}_test/${1}_test.vhd
+sed -i "s/HOWDAREYOUCALLMEFAT/${1}_Test/g" tests/${1}_test/${1}_test.vhd
+sed -i "s/YOUWONTGETTHEHORSE/${1}_test/g" tests/${1}_test/${1}_test.vhd
 mkdir tests/${1}_test/{results,stimulus}
 touch tests/${1}_test/${1}_test.stim
 echo "#This is where your code goes, dont forget:" >> tests/${1}_test/${1}_test.stim
