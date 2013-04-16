@@ -55,6 +55,18 @@ architecture Cpu_Implementation of Cpu is
   constant Alu_Xor : std_logic_vector(3 downto 0) := "0110";
   constant Alu_Inc : std_logic_vector(3 downto 0) := "0111";
   constant Alu_Dec : std_logic_vector(3 downto 0) := "1000";
+
+  -- DAA instantiation
+  component Daa_Logic is
+    port (Input : in std_logic_vector(7 downto 0);
+          Flags : in std_logic_vector(7 downto 0);
+          Flags_Out : out std_logic_vector(7 downto 0);
+          Output : out std_logic_vector(7 downto 0));
+  end component;
+
+  signal Daa_Flags : std_logic_vector(7 downto 0);
+  signal Daa_Output : std_logic_vector(7 downto 0);
+
 begin
 
   Alu_Ports : Alu port map(
@@ -65,6 +77,12 @@ begin
     Result => Alu_Result,
     Flags => Alu_Flags,
     High_Flags => Alu_High_Flags);
+
+  Daa_Ports : Daa_Logic port map(
+    Input => A,
+    Flags => F,
+    Flags_Out => Daa_Flags,
+    Output => Daa_Output);
 
   -- 
   process (Clk)
@@ -1109,8 +1127,10 @@ begin
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 -- END op-codes from page 92
                 -- OP-codes from page 95
-                -- DAA
+                -- DAA (not implemented in daa_logic)
               when X"27" =>
+                F <= Daa_Flags;
+                A <= Daa_Output;
                 
                 -- CPL (set N and H flag)
               when X"2F" =>

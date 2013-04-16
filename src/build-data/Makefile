@@ -33,7 +33,7 @@ XILINX_INIT = source /sw/xilinx/ise_12.4i/ISE_DS/settings32.sh;
 PART=xc6slx16-3-csg324
 
 
-lab.%: S=cpu.vhd bus_controller.vhd alu.vhd
+lab.%: S=cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd
 lab.%: T=cpu_testbench.vhd
 lab.%: U=lab.ucf
 
