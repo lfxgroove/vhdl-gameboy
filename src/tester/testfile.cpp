@@ -14,6 +14,10 @@ void TestFile::generate_input()
     }
   
   generate_test_data();
+  // if (generate_test_data())
+  //   std::cout << "Det gick bra" << std::endl;
+  // else
+  //   std::cout << "Det gick inte bra" << std::endl;
 }
 
 void TestFile::pad_addr(int to)
@@ -114,7 +118,7 @@ void TestFile::fill(const std::string& file_name)
       std::cout << "DEBUG: Couldn't open " << file_name << " for filling" << std::endl;
       return;
     }
-
+  
   for (ByteList::const_iterator it = m_bytes.begin(); 
        it != m_bytes.end();
        ++it)

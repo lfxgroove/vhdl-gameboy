@@ -56,43 +56,25 @@ bool Test::run(const std::string& name)
       if ((*it) == '_')
 	std::transform(it+1, it+2, it+1, ::toupper);
     }
-  // std::string arg = "ghdl --elab-run --ieee=synopsys " 
-  //   + test_name + 
-  //   " --vcd=" + test_name + ".vcd --stop-time=10us";
-  // std::system(arg.c_str());
+  std::string arg = "ghdl --elab-run --ieee=synopsys " 
+    + test_name + 
+    " --vcd=" + test_name + ".vcd --stop-time=1000us > /dev/null 2>&1";
+  std::system(arg.c_str());
   
-  // return check(m_base_path + "/results/results.txt");
+  return check(m_base_path + "/results/results.txt");
 }
 
-//TODO: FIx this function
-// int Test::to_dec(const std::string& bin)
-// {
-//   int res = 0;
-//   int power = bin.size() - 1;
-//   for (std::string::const_iterator it = bin.begin();
-//        it != bin.end();
-//        ++it)
-//     {
-//       if (*it == '1')
-// 	{
-// 	  res += std::pow(2, power);
-// 	}
-//       --power;
-//     }
-//   std::cout << bin << std::hex << " blir " << res << std::endl;
-//   return res;
-// }
 
 void Test::read_num_lines(int num_lines, std::ifstream& file, int& curr_line)
 {
   std::array<char, 9> read_to;
-  std::cout << "Laser bort " << std::dec << num_lines << " rader" << std::endl;
+  // std::cout << "Laser bort " << std::dec << num_lines << " rader" << std::endl;
   for (int i = 0; i < num_lines; ++i, ++curr_line)
     {
-      std::cout << std::dec <<  i;
+      // std::cout << std::dec <<  i;
       file.getline(&read_to[0], 9);
     }
-  std::cout << std::endl;
+  // std::cout << std::endl;
 }
 
 bool Test::check(const std::string& results_path)
@@ -108,6 +90,7 @@ bool Test::check(const std::string& results_path)
   m_check_addresses.sort();
   
   int curr_line = 0;
+  bool all_ok = true;
   for (AddrDatas::const_iterator it = m_check_addresses.begin();
        it != m_check_addresses.end();
        ++it)
@@ -131,25 +114,21 @@ bool Test::check(const std::string& results_path)
 	  // 8 + nul
 	  std::array<char, 9> read_to;
 	  file.getline(&read_to[0], 9);
-	  std::cout << "Read data (" << std::hex << addr + i << "): " << &read_to[0] << std::endl;
+	  // std::cout << "Read data (" << std::hex << addr + i << "): " << &read_to[0] << std::endl;
 	  std::string data;
 	  std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
 	  data = data.substr(0, data.size() - 1);
-	  std::cout << "Strangens langd: " << data.size() << " och innehall:" << data << ":" << std::endl;
+	  // std::cout << "Strangens langd: " << data.size() << " och innehall:" << data << ":" << std::endl;
 	  //Get the data that we should diff against
 	  if (data != Util::to_bin(int(*it)))
 	    {
-	      std::cout << "NEIN";
+	      all_ok = false;
+	      m_diff.add_diff({data, Util::to_bin(int(*it)), addr + i});
 	    }
-	  else
-	    {
-	      std::cout << "JAWOHL";
-	    }
-	  std::cout << " RAD: " << curr_line << " DATA: " << Util::to_bin(int(*it)) << std::endl;
+	  // std::cout << " RAD: " << curr_line << " DATA: " << Util::to_bin(int(*it)) << std::endl;
 	}
     }
-  
-  return false;
+  return all_ok;
 }
 
 std::ostream & operator<<(std::ostream &os, const Test& t)
