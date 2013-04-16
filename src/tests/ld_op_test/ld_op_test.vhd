@@ -147,7 +147,6 @@ begin
     
     Curr_Addr := X"C000";
     loop
-      --exit when Curr_Addr = X"C400";
       exit when Curr_Addr = X"FFFF";
       
       Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
