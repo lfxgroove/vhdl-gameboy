@@ -8,7 +8,7 @@
 
 struct DiffInfo
 {
-  std::string expected, found;
+  std::string found, expected;
   int addr;
 };
 

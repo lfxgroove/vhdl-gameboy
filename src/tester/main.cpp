@@ -18,26 +18,39 @@ void run_test(const std::string& dir_name, const std::string& test_name)
   int i = 1;
   int num_tests = to_run.size();
   std::cout << "Running " << num_tests << " tests for " << test_name << ": " << std::endl;
+  //Todo: run one test only with something like this and command line parameter
+  // if (to_run.front().run(test_name))
+  //   {
+  //     std::cout << "OK" << std::endl;
+  //   }
+  // else
+  //   {
+  //     std::cout << "NEIN" << std::endl;
+  //     std::cout << to_run.front().diff() << std::endl 
+  // 		<< to_run.front() << std::endl;
+  //   }
   for (Tests::iterator it = to_run.begin();
        it != to_run.end();
        ++it, ++i) 
     {
       std::cout << "Test " << i << " of " << num_tests << ":" << std::flush;
       if ((*it).run(test_name))
-	{
-	  std::cout << "OK" << std::endl;
-	}
+  	{
+  	  std::cout << "OK" << std::endl;
+  	}
       else
-	{
-	  all_ok = false;
-	  std::cout << "FAIL, here's some info:" << std::endl;
-	  faulty.push_back(*it);
-	  std::cout << it->diff();
-	  // std::cout << "Test failed! Info: " << std::endl
-	  // 	    << *it << std::endl;
-	}
+  	{
+  	  all_ok = false;
+  	  std::cout << "FAIL, here's some info:" << std::endl;
+  	  faulty.push_back(*it);
+  	  std::cout << it->diff() << std::endl;
+  	  std::cout << "Here's the test: " << std::endl;
+  	  std::cout << *it << std::endl;
+  	  // std::cout << "Test failed! Info: " << std::endl
+  	  // 	    << *it << std::endl;
+  	}
     }
-  std::cout << std::endl;
+  // std::cout << std::endl;
   // if (!all_ok)
   //   {
   //     std::cout << "Testing was interrupted by a/some faulty test/s" << std::endl;
