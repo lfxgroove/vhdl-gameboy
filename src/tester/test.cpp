@@ -56,32 +56,14 @@ bool Test::run(const std::string& name)
       if ((*it) == '_')
 	std::transform(it+1, it+2, it+1, ::toupper);
     }
-  // std::string arg = "ghdl --elab-run --ieee=synopsys " 
-  //   + test_name + 
-  //   " --vcd=" + test_name + ".vcd --stop-time=10us";
-  // std::system(arg.c_str());
+  std::string arg = "ghdl --elab-run --ieee=synopsys " 
+    + test_name + 
+    " --vcd=" + test_name + ".vcd --stop-time=1000us";
+  std::system(arg.c_str());
   
-  // return check(m_base_path + "/results/results.txt");
+  return check(m_base_path + "/results/results.txt");
 }
 
-//TODO: FIx this function
-// int Test::to_dec(const std::string& bin)
-// {
-//   int res = 0;
-//   int power = bin.size() - 1;
-//   for (std::string::const_iterator it = bin.begin();
-//        it != bin.end();
-//        ++it)
-//     {
-//       if (*it == '1')
-// 	{
-// 	  res += std::pow(2, power);
-// 	}
-//       --power;
-//     }
-//   std::cout << bin << std::hex << " blir " << res << std::endl;
-//   return res;
-// }
 
 void Test::read_num_lines(int num_lines, std::ifstream& file, int& curr_line)
 {
