@@ -30,7 +30,7 @@
 [C000] FF AA
 [C104] EE
 [C208] DD
-
+[FF80] A0 A1 A2 A3 A4 A5
 
 ## All registers now have unique values.
 ## This makes it possible for tests to be short as operations
@@ -46,7 +46,8 @@
   @check {
     [C000] FF
     [C104] EE
-    [C208] DD
+    [C208] DD 3E 03
+    [FF80] A0 A1 A2 A3 A4 A5
   }
 }
 
@@ -157,6 +158,15 @@
    }
 }
 
+
+# Tests 76
+@test {
+# LD (HL), n	
+76 E4
+   @check {
+   [C000] E4
+   }
+}
 
 ### Testing LD X, B
 
@@ -831,7 +841,7 @@ FA 00 C0 02
 @test {
 # LD SP, nn (nn=3412)
 # LD (nn), SP (nn=00C1)
-08 34 12 31 00 C1 
+31 34 12 08 00 C1 
   @check {
     [C100] 12 34
   }
@@ -842,8 +852,59 @@ FA 00 C0 02
 @test {
 # LD SP, HL (C000)
 # LD (nn), SP (nn=00C1)
-F9 31 00 C1 
+F9 08 00 C1 
   @check {
     [C100] C1 00
   }
 }
+
+
+# Tests F8 CALC: SP+n=ABCD+02=ABCF
+@test {
+# LD SP, nn (nn=DCAB)
+# LD HL, SP+n
+# LD (nn), SP (nn=00C1)
+31 DC AB F8 02 08 00 C1 
+  @check {
+    [C100] AB CF
+  }
+}
+
+
+## Testing LDs with weird X"FF00" values and stuff
+# [FF00] A0 A1 A2 A3 A4 A5
+## OBS values have to be between FF80-FFFD
+
+# Tests F0 CALC: FF00+81=FF81 -> (FF81) = A1
+@test {
+# LD A, ($FF00+n)
+# LD (HL), A
+F0 81 77
+  @check {
+    [C000] A1
+  }
+}
+
+# Tests F2 CALC: 04+FF00=FF04 -> (FF84) = A4
+@test {
+# LD A, #84
+# LD C, A
+# LD A, (C+$FF00)
+# LD (HL), A
+3E 84 4F F2 77
+  @check {
+    [C000] A4
+  }
+}
+
+# Tests E0 
+@test {
+# LD (n+$FF00), A
+E0 80 
+  @check {
+    [FF80] 03
+  }
+}
+
+
+

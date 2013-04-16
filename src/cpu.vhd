@@ -32,25 +32,29 @@ architecture Cpu_Implementation of Cpu is
   -- ALU instantiation.
   component Alu
     port(A, B : in std_logic_vector(15 downto 0);
-         Mode : in std_logic_vector(2 downto 0);
+         Mode : in std_logic_vector(3 downto 0);
          Flags_In : in std_logic_vector(7 downto 0);
          Result : out std_logic_vector(15 downto 0);
-         Flags : out std_logic_vector(7 downto 0));
+         Flags : out std_logic_vector(7 downto 0);
+         High_Flags : in std_logic);
   end component;
 
   -- Signals to the ALU
   signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
   signal Alu_Flags_In : std_logic_vector(7 downto 0);
-  signal Alu_Mode : std_logic_vector(2 downto 0);
+  signal Alu_Mode : std_logic_vector(3 downto 0);
   signal Alu_Flags : std_logic_vector(7 downto 0);
+  signal Alu_High_Flags : std_logic;
   -- Modes for the alu.
-  constant Alu_Add : std_logic_vector(2 downto 0) := "000";
-  constant Alu_Sub : std_logic_vector(2 downto 0) := "001";
-  constant Alu_Add_Carry : std_logic_vector(2 downto 0) := "010";
-  constant Alu_Sub_Carry : std_logic_vector(2 downto 0) := "011";
-  constant Alu_And : std_logic_vector(2 downto 0) := "100";
-  constant Alu_Or : std_logic_vector(2 downto 0) := "101";
-  constant Alu_Xor : std_logic_vector(2 downto 0) := "110";
+  constant Alu_Add : std_logic_vector(3 downto 0) := "0000";
+  constant Alu_Sub : std_logic_vector(3 downto 0) := "0001";
+  constant Alu_Add_Carry : std_logic_vector(3 downto 0) := "0010";
+  constant Alu_Sub_Carry : std_logic_vector(3 downto 0) := "0011";
+  constant Alu_And : std_logic_vector(3 downto 0) := "0100";
+  constant Alu_Or : std_logic_vector(3 downto 0) := "0101";
+  constant Alu_Xor : std_logic_vector(3 downto 0) := "0110";
+  constant Alu_Inc : std_logic_vector(3 downto 0) := "0111";
+  constant Alu_Dec : std_logic_vector(3 downto 0) := "1000";
 begin
 
   Alu_Ports : Alu port map(
@@ -62,7 +66,7 @@ begin
     Flags => Alu_Flags);
 
   -- 
-  process(Clk)
+  process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
@@ -75,7 +79,8 @@ begin
         A <= X"03";
         B <= X"00";
       else
-        
+        -- Reset the high flags, since most instructions assume it is set to zero.
+        Alu_High_Flags <= '0';
         Waited_Clks <= std_logic_vector(unsigned(Waited_Clks) + 1);
         -- Each cycle, clear the write flag to the memory, to avoid
         -- unintentional writes to the memory.
@@ -189,7 +194,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 69 --
                 -- OP-codes from page 70
-                -- LD A,(C+$FF00)
+                -- LD A,(C+$FF00) -t
               when X"F2" =>
                 IR <= Mem_Read;
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
@@ -369,7 +374,7 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), n
+                -- LD (HL), n -t
               when X"76" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -391,12 +396,12 @@ begin
                 Tmp := std_logic_vector(unsigned(H & L) + 1);
                 Mem_Write <= A;
                 -- OP-codes from page 75
-                -- LD ($FF00+n), A
+                -- LD ($FF00+n), A -t
               when X"E0" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD A, ($FF00+n)
+                -- LD A, ($FF00+n) -t
               when X"F0" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -428,7 +433,7 @@ begin
                 SP <= H & L;
                 -- END op-codes from page 76
                 -- OP code from page 77
-                -- LD HL, SP+n
+                -- LD HL, SP+n -t
               when X"F8" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -875,6 +880,233 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 86
+                -- OP-codes from page 87
+                -- CP A, A
+              when X"BF" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, B
+              when X"B8" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, C
+              when X"B9" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, D
+              when X"BA" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, E
+              when X"BB" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, H
+              when X"BC" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, L
+              when X"BD" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec2;
+                -- CP A, (HL)
+              when X"BE" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- CP A, #
+              when X"FE" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 87
+                -- OP-codes from page 88
+                -- INC A
+              when X"3C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC B
+              when X"04" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC C
+              when X"0C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC D
+              when X"14" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC E
+              when X"1C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC H
+              when X"24" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC L
+              when X"2C" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- INC (HL)
+              when X"34" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- END op-codes from page 88
+                -- OP-codes from page 89
+                -- DEC A
+              when X"3D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC B
+              when X"05" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC C
+              when X"0D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC D
+              when X"15" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC E
+              when X"1D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC H
+              when X"25" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC L
+              when X"2D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC (HL)
+              when X"35" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- END op-codes from page 89
+                -- OP-codes from page 90
+                -- ADD HL, BC
+              when X"09" =>
+                Alu_A <= H & L;
+                Alu_B <= B & C;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, DE
+              when X"19" =>
+                Alu_A <= H & L;
+                Alu_B <= D & E;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, HL
+              when X"29" =>
+                Alu_A <= H & L;
+                Alu_B <= H & L;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, SP
+              when X"39" =>
+                Alu_A <= H & L;
+                Alu_B <= SP;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- END op-codes from page 90
+                -- OP-code from page 91
+                -- ADD SP, n (n = signed byte)
+              when X"E8" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+
+                -- OP-codes from page 92
+                -- INC BC
+              when X"03" =>
+                Tmp := std_logic_vector(unsigned(B & C) + 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- INC DE
+              when X"13" =>
+                Tmp := std_logic_vector(unsigned(D & E) + 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- INC HL
+              when X"23" =>
+                Tmp := std_logic_vector(unsigned(H & L) + 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- INC SP
+              when X"33" =>
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                -- END op-codes from page 92
+
+                -- OP-codes from page 93
+                -- DEC BC
+              when X"0B" =>
+                Tmp := std_logic_vector(unsigned(B & C) - 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- DEC DE
+              when X"1B" =>
+                Tmp := std_logic_vector(unsigned(D & E) - 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- DEC HL
+              when X"2B" =>
+                Tmp := std_logic_vector(unsigned(H & L) - 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- DEC SP
+              when X"3B" =>
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                -- END op-codes from page 92
 
 
               when others =>
@@ -1327,6 +1559,139 @@ begin
                 Alu_Mode <= Alu_Xor;
                 State <= Exec3;
 
+                -- CP A, A
+              when X"BF" =>
+                F <= Alu_Flags;
+                -- CP A, B
+              when X"B8" =>
+                F <= Alu_Flags;
+                -- CP A, C
+              when X"B9" =>
+                F <= Alu_Flags;
+                -- CP A, D
+              when X"BA" =>
+                F <= Alu_Flags;
+                -- CP A, E
+              when X"BB" =>
+                F <= Alu_Flags;
+                -- CP A, H
+              when X"BC" =>
+                F <= Alu_Flags;
+                -- CP A, L
+              when X"BD" =>
+                F <= Alu_Flags;
+                -- CP A, (HL)
+              when X"BE" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec3;
+                -- CP A, #
+              when X"FE" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub;
+                State <= Exec3;
+
+                -- INC A
+              when X"3C" =>
+                F <= Alu_Flags;
+                A <= Alu_Result(7 downto 0);
+                -- INC B
+              when X"04" =>
+                F <= Alu_Flags;
+                B <= Alu_Result(7 downto 0);
+                -- INC C
+              when X"0C" =>
+                F <= Alu_Flags;
+                C <= Alu_Result(7 downto 0);
+                -- INC D
+              when X"14" =>
+                F <= Alu_Flags;
+                D <= Alu_Result(7 downto 0);
+                -- INC E
+              when X"1C" =>
+                F <= Alu_Flags;
+                E <= Alu_Result(7 downto 0);
+                -- INC H
+              when X"24" =>
+                F <= Alu_Flags;
+                H <= Alu_Result(7 downto 0);
+                -- INC L
+              when X"2C" =>
+                F <= Alu_Flags;
+                L <= Alu_Result(7 downto 0);
+                -- INC (HL)
+              when X"34" =>
+                Alu_A <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Inc;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
+                -- DEC A
+              when X"3D" =>
+                F <= Alu_Flags;
+                A <= Alu_Result(7 downto 0);
+                -- DEC B
+              when X"05" =>
+                F <= Alu_Flags;
+                B <= Alu_Result(7 downto 0);
+                -- DEC C
+              when X"0D" =>
+                F <= Alu_Flags;
+                C <= Alu_Result(7 downto 0);
+                -- DEC D
+              when X"15" =>
+                F <= Alu_Flags;
+                D <= Alu_Result(7 downto 0);
+                -- DEC E
+              when X"1D" =>
+                F <= Alu_Flags;
+                E <= Alu_Result(7 downto 0);
+                -- DEC H
+              when X"25" =>
+                F <= Alu_Flags;
+                H <= Alu_Result(7 downto 0);
+                -- DEC L
+              when X"2D" =>
+                F <= Alu_Flags;
+                L <= Alu_Result(7 downto 0);
+                -- DEC (HL)
+              when X"35" =>
+                Alu_A <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
+                -- ADD HL, BC
+              when X"09" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, DE
+              when X"19" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, HL
+              when X"29" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, SP
+              when X"39" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
+                -- ADD SP, n (High or low flags????)
+              when X"E8" =>
+                Alu_A <= SP;
+                Alu_B(6 downto 0) <= Mem_Read(6 downto 0);
+                Alu_B(15 downto 7) <= (others => Mem_Read(7));
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '0';  -- My guess. Check!
+                State <= Exec3;
 
               when others =>
             end case; -- End case Exec2
@@ -1445,6 +1810,33 @@ begin
                 -- XOR A, #
               when X"EE" =>
                 A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
+                -- CP A, (HL)
+              when X"BE" =>
+                F <= Alu_Flags;
+                -- CP A, #
+              when X"FE" =>
+                F <= Alu_Flags;
+
+                -- INC (HL)
+              when X"34" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= Alu_Result(7 downto 0);
+                Mem_Write_Enable <= '1';
+                F <= Alu_Flags;
+
+                -- DEC (HL)
+              when X"35" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= Alu_Result(7 downto 0);
+                Mem_Write_Enable <= '1';
+                F <= Alu_Flags;
+
+                -- ADD SP, n
+              when X"E8" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
 
 
