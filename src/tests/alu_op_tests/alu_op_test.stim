@@ -1061,4 +1061,161 @@ A8 77
   }
 }
 
+## Testing all INC and DEC commands
+### Testing XOR A, n
+# Increment/decrement register n.
+
+
+# Tests 03
+@test { 
+# INC BC
+# LD (BC), A
+03 02
+  @check {
+    [C105] 03
+  }
+}
+
+# Tests 04
+@test { 
+# INC B
+# LD (BC), A
+04 02
+  @check {
+    [C204] 03
+  }
+}
+
+# Tests 05
+@test { 
+# DEC B
+# LD (BC), A
+05 02
+  @check {
+    [C004] 03
+  }
+}
+
+# Tests 0B
+@test { 
+# DEC BC
+# LD (BC), A
+0B 02
+  @check {
+    [C103] 03
+  }
+}
+
+# Tests 0C
+@test { 
+# INC C
+# LD (BC), A
+0C 02
+  @check {
+    [C105] 03
+  }
+}
+
+# Tests 0D
+@test { 
+# DEC C
+# LD (BC), A
+0D 02
+  @check {
+    [C103] 03
+  }
+}
+
+# Tests 13
+@test { 
+# INC DE
+# LD (DE), A
+13 12
+  @check {
+    [C209] 03
+  }
+}
+
+# Tests 14
+@test { 
+# INC D
+# LD (DE), A
+14 12
+  @check {
+    [C308] 03
+  }
+}
+
+# Tests 15
+@test { 
+# DEC D
+# LD (DE), A
+15 12
+  @check {
+    [C108] 03
+  }
+}
+
+# Tests 1B
+@test { 
+# DEC DE
+# LD (DE), A
+1B 12
+  @check {
+    [C207] 03
+  }
+}
+
+# Tests 1C
+@test { 
+# INC E
+# LD (DE), A
+1C 12
+  @check {
+    [C309] 03
+  }
+}
+
+# Tests 1D
+@test { 
+# DEC E
+# LD (DE), A
+1D 12
+  @check {
+    [C307] 03
+  }
+}
+
+# Tests 23
+@test { 
+# INC HL
+# LD (HL), A
+23 77
+  @check {
+    [C001] 03
+  }
+}
+
+# Tests 24
+@test { 
+# INC H
+# LD (HL), A
+24 77
+  @check {
+    [C100] 03
+  }
+}
+
+# Tests 25
+@test {
+# LD A, #C5
+# LD H, A 
+# DEC H
+# LD (HL), A
+3E C5 67 25 77
+  @check {
+    [C400] 03
+  }
+}
+ 
 

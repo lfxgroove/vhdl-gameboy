@@ -159,10 +159,10 @@
 }
 
 
-# Tests 76
+# Tests 36
 @test {
 # LD (HL), n	
-76 E4
+36 E4
    @check {
    [C000] E4
    }
