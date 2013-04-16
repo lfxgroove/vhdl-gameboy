@@ -1251,6 +1251,16 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 111
+                -- OP-codes from page 112
+                -- JP (HL)
+              when X"E9" =>
+                PC <= H & L;
+                -- JR n (relative jump, n signed, relative first byte of next instr)
+              when X"18" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 112
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1866,7 +1876,9 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
-
+                -- JR n
+              when X"18" =>
+                PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
 
               when others =>
             end case; -- End case Exec2
