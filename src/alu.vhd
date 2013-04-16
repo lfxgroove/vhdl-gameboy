@@ -15,17 +15,18 @@ use IEEE.numeric_std.all;
 -- Bit 4: C - Set if a carry occurred from the last byte.
 --
 -- Mode: The modes accepted by the ALU is:
--- 000: Addition
--- 001: Subtraction
--- 010: Addition with carry from Flags_In
--- 011: Subtraction with carry from Flags_In
--- 100: And (bitwise)
--- 101: Or (bitwise)
--- 110: Xor (bitwise)
--- 111: Increase A (does not affect C flag).
+-- 0000: Addition
+-- 0001: Subtraction
+-- 0010: Addition with carry from Flags_In
+-- 0011: Subtraction with carry from Flags_In
+-- 0100: And (bitwise)
+-- 0101: Or (bitwise)
+-- 0110: Xor (bitwise)
+-- 0111: Increase A (does not affect C flag).
+-- 1000: Decrease A (does not affect C flag).
 entity Alu is
   port(A, B : in std_logic_vector(15 downto 0);
-       Mode : in std_logic_vector(2 downto 0);
+       Mode : in std_logic_vector(3 downto 0);
        Flags_In : in std_logic_vector(7 downto 0);
        Result : out std_logic_vector(15 downto 0);
        Flags : out std_logic_vector(7 downto 0));
@@ -51,40 +52,44 @@ begin
   A_Nibble <= "0" & A(3 downto 0);
   B_Nibble <= "0" & B(3 downto 0);
   Result_Nibble <=
-    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "000" else
-    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "001" else
-    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "010" else
-    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "011" else
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble)) when Mode = "0000" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble)) when Mode = "0001" else
+    std_logic_vector(unsigned(A_Nibble) + unsigned(B_Nibble) + unsigned(Carry_Flag)) when Mode = "0010" else
+    std_logic_vector(unsigned(A_Nibble) - unsigned(B_Nibble) - unsigned(Carry_Flag)) when Mode = "0011" else
     -- H should be set when AND-ing.
-    "10000" when Mode = "100" else
-    "00000" when Mode = "101" else
-    "00000" when Mode = "110" else
-    std_logic_vector(unsigned(A_Nibble) + 1) when Mode = "111" else
+    "10000" when Mode = "0100" else
+    "00000" when Mode = "0101" else
+    "00000" when Mode = "0110" else
+    std_logic_vector(unsigned(A_Nibble) + 1) when Mode = "0111" else
+    std_logic_vector(unsigned(A_Nibble) - 1) when Mode = "1000" else
     "00000";
 
   A_Byte <= "0" & A(7 downto 0);
   B_Byte <= "0" & B(7 downto 0);
   Result_Byte <=
-    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "000" else
-    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "001" else
-    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "010" else
-    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "011" else
-    "000000000" when Mode = "100" else
-    "000000000" when Mode = "101" else
-    "000000000" when Mode = "110" else
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte)) when Mode = "0000" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte)) when Mode = "0001" else
+    std_logic_vector(unsigned(A_Byte) + unsigned(B_Byte) + unsigned(Carry_Flag)) when Mode = "0010" else
+    std_logic_vector(unsigned(A_Byte) - unsigned(B_Byte) - unsigned(Carry_Flag)) when Mode = "0011" else
+    "000000000" when Mode = "0100" else
+    "000000000" when Mode = "0101" else
+    "000000000" when Mode = "0110" else
     -- Inc does not affect C. Insert it into MSB
-    Carry_Flag & "00000000" when Mode = "111" else
+    Carry_Flag & "00000000" when Mode = "0111" else
+    -- Dec does not affect C. Insert it into MSB
+    Carry_Flag & "00000000" when Mode = "1000" else
     "000000000";
 
   Tmp_Result <=
-    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "000" else
-    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "001" else
-    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Carry_Flag)) when Mode = "010" else
-    std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "011" else
-    A and B when Mode = "100" else
-    A or B when Mode = "101" else
-    A xor B when Mode = "110" else
-    std_logic_vector(unsigned(A) + 1) when Mode = "111" else
+    std_logic_vector(unsigned(A) + unsigned(B)) when Mode = "0000" else
+    std_logic_vector(unsigned(A) - unsigned(B)) when Mode = "0001" else
+    std_logic_vector(unsigned(A) + unsigned(B) + unsigned(Carry_Flag)) when Mode = "0010" else
+    std_logic_vector(unsigned(A) - unsigned(B) - unsigned(Carry_Flag)) when Mode = "0011" else
+    A and B when Mode = "0100" else
+    A or B when Mode = "0101" else
+    A xor B when Mode = "0110" else
+    std_logic_vector(unsigned(A) + 1) when Mode = "0111" else
+    std_logic_vector(unsigned(B) - 1) when Mode = "1000" else
     X"0000";
   Result <= Tmp_Result;
 
