@@ -11,6 +11,7 @@
 #include "typedefs.hpp"
 #include "testfile.hpp"
 #include "util.hpp"
+#include "diff.hpp"
 
 class Test
 {
@@ -28,6 +29,8 @@ public:
   void set_prep_addrs(AddrDatas addrs);
   inline const AddrDatas& get_prep_addr_data() const { return m_prep_addresses;};
   void reset();
+  
+  const Diff& diff() const { return m_diff;};
   
   inline bool has_data() { 
     return !m_prepare.empty() 
@@ -48,5 +51,6 @@ private:
 
   PrepareStatements m_prepare;
   AddrDatas m_test_addresses, m_check_addresses, m_prep_addresses;
+  Diff m_diff;
 };
 

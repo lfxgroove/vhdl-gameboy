@@ -17,7 +17,8 @@ architecture Cpu_Implementation of Cpu is
   signal SP, PC : std_logic_vector(15 downto 0) := X"0000";
 
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
-  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4);
+  -- Halted is a state used when the CPU should wait for interrupts.
+  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4, Halted);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -28,30 +29,47 @@ architecture Cpu_Implementation of Cpu is
   signal Tmp_8bit : std_logic_vector(7 downto 0);
   -- Instruction Register
   signal IR : std_logic_vector(7 downto 0);
+  -- Interrupts enabled.
+  signal Interrupts_Enabled : std_logic := '0';
 
   -- ALU instantiation.
   component Alu
     port(A, B : in std_logic_vector(15 downto 0);
-         Mode : in std_logic_vector(2 downto 0);
+         Mode : in std_logic_vector(3 downto 0);
          Flags_In : in std_logic_vector(7 downto 0);
          Result : out std_logic_vector(15 downto 0);
-         Flags : out std_logic_vector(7 downto 0));
+         Flags : out std_logic_vector(7 downto 0);
+         High_Flags : in std_logic);
   end component;
 
   -- Signals to the ALU
   signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
   signal Alu_Flags_In : std_logic_vector(7 downto 0);
-  signal Alu_Mode : std_logic_vector(2 downto 0);
+  signal Alu_Mode : std_logic_vector(3 downto 0);
   signal Alu_Flags : std_logic_vector(7 downto 0);
+  signal Alu_High_Flags : std_logic;
   -- Modes for the alu.
-  constant Alu_Add : std_logic_vector(2 downto 0) := "000";
-  constant Alu_Sub : std_logic_vector(2 downto 0) := "001";
-  constant Alu_Add_Carry : std_logic_vector(2 downto 0) := "010";
-  constant Alu_Sub_Carry : std_logic_vector(2 downto 0) := "011";
-  constant Alu_And : std_logic_vector(2 downto 0) := "100";
-  constant Alu_Or : std_logic_vector(2 downto 0) := "101";
-  constant Alu_Xor : std_logic_vector(2 downto 0) := "110";
-  constant Alu_Inc : std_logic_vector(2 downto 0) := "111";
+  constant Alu_Add : std_logic_vector(3 downto 0) := "0000";
+  constant Alu_Sub : std_logic_vector(3 downto 0) := "0001";
+  constant Alu_Add_Carry : std_logic_vector(3 downto 0) := "0010";
+  constant Alu_Sub_Carry : std_logic_vector(3 downto 0) := "0011";
+  constant Alu_And : std_logic_vector(3 downto 0) := "0100";
+  constant Alu_Or : std_logic_vector(3 downto 0) := "0101";
+  constant Alu_Xor : std_logic_vector(3 downto 0) := "0110";
+  constant Alu_Inc : std_logic_vector(3 downto 0) := "0111";
+  constant Alu_Dec : std_logic_vector(3 downto 0) := "1000";
+
+  -- DAA instantiation
+  component Daa_Logic is
+    port (Input : in std_logic_vector(7 downto 0);
+          Flags : in std_logic_vector(7 downto 0);
+          Flags_Out : out std_logic_vector(7 downto 0);
+          Output : out std_logic_vector(7 downto 0));
+  end component;
+
+  signal Daa_Flags : std_logic_vector(7 downto 0);
+  signal Daa_Output : std_logic_vector(7 downto 0);
+
 begin
 
   Alu_Ports : Alu port map(
@@ -60,10 +78,17 @@ begin
     Mode => Alu_Mode,
     Flags_In => Alu_Flags_In,
     Result => Alu_Result,
-    Flags => Alu_Flags);
+    Flags => Alu_Flags,
+    High_Flags => Alu_High_Flags);
+
+  Daa_Ports : Daa_Logic port map(
+    Input => A,
+    Flags => F,
+    Flags_Out => Daa_Flags,
+    Output => Daa_Output);
 
   -- 
-  process(Clk)
+  process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
@@ -75,8 +100,10 @@ begin
         SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";
+        Interrupts_Enabled <= '0';      -- Assumed value.
       else
-        
+        -- Reset the high flags, since most instructions assume it is set to zero.
+        Alu_High_Flags <= '0';
         Waited_Clks <= std_logic_vector(unsigned(Waited_Clks) + 1);
         -- Each cycle, clear the write flag to the memory, to avoid
         -- unintentional writes to the memory.
@@ -88,6 +115,8 @@ begin
               State <= Fetch;
               Waited_Clks <= X"0000";
             end if;
+          when Waiting =>
+            -- TODO: Wait for interrupt.
           when Fetch =>
             Mem_Addr <= PC;
             State <= Exec;
@@ -977,6 +1006,171 @@ begin
                 Mem_Addr <= H & L;
                 State <= Exec2;
                 -- END op-codes from page 88
+                -- OP-codes from page 89
+                -- DEC A
+              when X"3D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC B
+              when X"05" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC C
+              when X"0D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC D
+              when X"15" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC E
+              when X"1D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC H
+              when X"25" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC L
+              when X"2D" =>
+                Alu_A <= "00" & A;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- DEC (HL)
+              when X"35" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- END op-codes from page 89
+                -- OP-codes from page 90
+                -- ADD HL, BC
+              when X"09" =>
+                Alu_A <= H & L;
+                Alu_B <= B & C;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, DE
+              when X"19" =>
+                Alu_A <= H & L;
+                Alu_B <= D & E;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, HL
+              when X"29" =>
+                Alu_A <= H & L;
+                Alu_B <= H & L;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- ADD HL, SP
+              when X"39" =>
+                Alu_A <= H & L;
+                Alu_B <= SP;
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '1';
+                State <= Exec2;
+                -- END op-codes from page 90
+                -- OP-code from page 91
+                -- ADD SP, n (n = signed byte)
+              when X"E8" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+
+                -- OP-codes from page 92
+                -- INC BC
+              when X"03" =>
+                Tmp := std_logic_vector(unsigned(B & C) + 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- INC DE
+              when X"13" =>
+                Tmp := std_logic_vector(unsigned(D & E) + 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- INC HL
+              when X"23" =>
+                Tmp := std_logic_vector(unsigned(H & L) + 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- INC SP
+              when X"33" =>
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                -- END op-codes from page 92
+
+                -- OP-codes from page 93
+                -- DEC BC
+              when X"0B" =>
+                Tmp := std_logic_vector(unsigned(B & C) - 1);
+                B <= Tmp(15 downto 8);
+                C <= Tmp(7 downto 0);
+                -- DEC DE
+              when X"1B" =>
+                Tmp := std_logic_vector(unsigned(D & E) - 1);
+                D <= Tmp(15 downto 8);
+                E <= Tmp(7 downto 0);
+                -- DEC HL
+              when X"2B" =>
+                Tmp := std_logic_vector(unsigned(H & L) - 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                -- DEC SP
+              when X"3B" =>
+                SP <= std_logic_vector(unsigned(SP) - 1);
+                -- END op-codes from page 93
+                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE STOP should be here
+              when X"10" =>
+                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE SWP should be here
+              when X"CB" =>
+                -- OP-codes from page 95
+                -- DAA (not implemented in daa_logic)
+              when X"27" =>
+                F <= Daa_Flags;
+                A <= Daa_Output;
+                
+                -- CPL (set N and H flag)
+              when X"2F" =>
+                A <= not A;
+                F(6 downto 5) <= "11";
+                -- END op-codes from  page 95
+                -- OP-codes from page 96
+                -- CCF
+              when X"3F" =>
+                F(6 downto 5) <= "00";
+                F(4) <= not F(4);
+              when X"37" =>
+                F(6 downto 5) <= "00";
+                F(4) <= '1';
+                -- END op-codes from page 96
+                -- OP-codes from page 97
+                -- NOP
+              when X"00" =>
+                -- HALT
+              when X"76" =>
+                State <= Halted;
+                -- END op-codes from page 97
+                -- OP-codes from page 98
+                -- DI
+              when X"F3" =>
+                Interrupts_Enabled <= '0';
+                -- EI
+              when X"FB" =>
+                Interrupts_Enabled <= '1';
+                -- END op-codes from page 98
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1497,6 +1691,70 @@ begin
                 Alu_Flags_In <= F;
                 State <= Exec3;
 
+                -- DEC A
+              when X"3D" =>
+                F <= Alu_Flags;
+                A <= Alu_Result(7 downto 0);
+                -- DEC B
+              when X"05" =>
+                F <= Alu_Flags;
+                B <= Alu_Result(7 downto 0);
+                -- DEC C
+              when X"0D" =>
+                F <= Alu_Flags;
+                C <= Alu_Result(7 downto 0);
+                -- DEC D
+              when X"15" =>
+                F <= Alu_Flags;
+                D <= Alu_Result(7 downto 0);
+                -- DEC E
+              when X"1D" =>
+                F <= Alu_Flags;
+                E <= Alu_Result(7 downto 0);
+                -- DEC H
+              when X"25" =>
+                F <= Alu_Flags;
+                H <= Alu_Result(7 downto 0);
+                -- DEC L
+              when X"2D" =>
+                F <= Alu_Flags;
+                L <= Alu_Result(7 downto 0);
+                -- DEC (HL)
+              when X"35" =>
+                Alu_A <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Dec;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
+                -- ADD HL, BC
+              when X"09" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, DE
+              when X"19" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, HL
+              when X"29" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- ADD HL, SP
+              when X"39" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
+                -- ADD SP, n (High or low flags????)
+              when X"E8" =>
+                Alu_A <= SP;
+                Alu_B(6 downto 0) <= Mem_Read(6 downto 0);
+                Alu_B(15 downto 7) <= (others => Mem_Read(7));
+                Alu_Mode <= Alu_Add;
+                Alu_High_Flags <= '0';  -- My guess. Check!
+                State <= Exec3;
 
               when others =>
             end case; -- End case Exec2
@@ -1630,6 +1888,20 @@ begin
                 Mem_Write <= Alu_Result(7 downto 0);
                 Mem_Write_Enable <= '1';
                 F <= Alu_Flags;
+
+                -- DEC (HL)
+              when X"35" =>
+                Mem_Addr <= H & L;
+                Mem_Write <= Alu_Result(7 downto 0);
+                Mem_Write_Enable <= '1';
+                F <= Alu_Flags;
+
+                -- ADD SP, n
+              when X"E8" =>
+                H <= Alu_Result(15 downto 8);
+                L <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
 
               when others =>
             end case; -- End case Exec3
