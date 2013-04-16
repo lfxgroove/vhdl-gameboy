@@ -63,7 +63,8 @@ begin
     Mode => Alu_Mode,
     Flags_In => Alu_Flags_In,
     Result => Alu_Result,
-    Flags => Alu_Flags);
+    Flags => Alu_Flags,
+    High_Flags => Alu_High_Flags);
 
   -- 
   process (Clk)
@@ -1107,6 +1108,15 @@ begin
               when X"3B" =>
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 -- END op-codes from page 92
+                -- OP-codes from page 95
+                -- DAA
+              when X"27" =>
+                
+                -- CPL (set N and H flag)
+              when X"2F" =>
+                A <= not A;
+                F(6 downto 5) <= "11";
+                -- END op-codes from  page 95
 
 
               when others =>
