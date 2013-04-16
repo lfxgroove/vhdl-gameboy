@@ -56,53 +56,43 @@ bool Test::run(const std::string& name)
       if ((*it) == '_')
 	std::transform(it+1, it+2, it+1, ::toupper);
     }
-  std::string arg = "ghdl --elab-run --ieee=synopsys " 
-    + test_name + 
-    " --vcd=" + test_name + ".vcd --stop-time=10us";
-  std::system(arg.c_str());
+  // std::string arg = "ghdl --elab-run --ieee=synopsys " 
+  //   + test_name + 
+  //   " --vcd=" + test_name + ".vcd --stop-time=10us";
+  // std::system(arg.c_str());
   
-  return check(m_base_path + "/results/results.txt");
-}
-
-void Test::read_num_lines(int num_lines, std::ifstream& file)
-{
-  std::array<char, 9> read_to;
-  for (int i = 0; i < num_lines; ++i)
-    file.getline(&read_to[0], 9);
+  // return check(m_base_path + "/results/results.txt");
 }
 
 //TODO: FIx this function
-int Test::to_dec(const std::string& bin)
-{
-  int res = 0;
-  // int power = bin.size();
-  int power = 4;
-  for (std::string::const_iterator it = bin.begin();
-       it != bin.end() - 4;
-       ++it)
-    {
-      if (*it == '1')
-	{
-	  res += std::pow(2, power);
-	}
-      --power;
-    }
+// int Test::to_dec(const std::string& bin)
+// {
+//   int res = 0;
+//   int power = bin.size() - 1;
+//   for (std::string::const_iterator it = bin.begin();
+//        it != bin.end();
+//        ++it)
+//     {
+//       if (*it == '1')
+// 	{
+// 	  res += std::pow(2, power);
+// 	}
+//       --power;
+//     }
+//   std::cout << bin << std::hex << " blir " << res << std::endl;
+//   return res;
+// }
 
-  int res2 = 0;
-  // int power = bin.size();
-  power = 4;
-  for (std::string::const_iterator it = bin.begin() + 4;
-       it != bin.end();
-       ++it)
+void Test::read_num_lines(int num_lines, std::ifstream& file, int& curr_line)
+{
+  std::array<char, 9> read_to;
+  std::cout << "Laser bort " << std::dec << num_lines << " rader" << std::endl;
+  for (int i = 0; i < num_lines; ++i, ++curr_line)
     {
-      if (*it == '1')
-	{
-	  res2 += std::pow(2, power);
-	}
-      --power;
+      std::cout << std::dec <<  i;
+      file.getline(&read_to[0], 9);
     }
-  std::cout << bin << std::dec << " blir " << res << " och " << res2 << std::endl;
-  return res;
+  std::cout << std::endl;
 }
 
 bool Test::check(const std::string& results_path)
@@ -117,6 +107,7 @@ bool Test::check(const std::string& results_path)
   
   m_check_addresses.sort();
   
+  int curr_line = 0;
   for (AddrDatas::const_iterator it = m_check_addresses.begin();
        it != m_check_addresses.end();
        ++it)
@@ -128,13 +119,14 @@ bool Test::check(const std::string& results_path)
 		    << " of RAM (0xC000). That won't happen lad" << std::endl;
 	  continue;
 	}
-      read_num_lines(addr - BASE_CHECK_OFFSET, file);
+      read_num_lines(addr - BASE_CHECK_OFFSET - curr_line, file, curr_line);
+      
       //next line to read is the one we want to check first
       const ByteList& bytes = it->get_bytes();
       int i = 0;
       for (ByteList::const_iterator it = bytes.begin();
 	   it != bytes.end();
-	   ++it, ++i)
+	   ++it, ++i, ++curr_line)
 	{
 	  // 8 + nul
 	  std::array<char, 9> read_to;
@@ -142,7 +134,18 @@ bool Test::check(const std::string& results_path)
 	  std::cout << "Read data (" << std::hex << addr + i << "): " << &read_to[0] << std::endl;
 	  std::string data;
 	  std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
-	  to_dec(data);
+	  data = data.substr(0, data.size() - 1);
+	  std::cout << "Strangens langd: " << data.size() << " och innehall:" << data << ":" << std::endl;
+	  //Get the data that we should diff against
+	  if (data != Util::to_bin(int(*it)))
+	    {
+	      std::cout << "NEIN";
+	    }
+	  else
+	    {
+	      std::cout << "JAWOHL";
+	    }
+	  std::cout << " RAD: " << curr_line << " DATA: " << Util::to_bin(int(*it)) << std::endl;
 	}
     }
   
