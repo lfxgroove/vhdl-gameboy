@@ -344,7 +344,7 @@ void Parser::parse_identifier()
       m_current_data << m_tokenizer.current();
       m_tokenizer.next();
     }
-  std::cout << "Hittade identifier: " << m_current_data.str() <<  ":" << std::endl;
+  // std::cout << "Hittade identifier: " << m_current_data.str() <<  ":" << std::endl;
   m_identifier = m_current_data.str();
   m_current_data.str("");
   //TODO: Remove m_state, m_block superseedes it
