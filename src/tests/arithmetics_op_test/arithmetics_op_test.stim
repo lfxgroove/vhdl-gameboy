@@ -158,3 +158,213 @@ C6 77
 }
 
 
+### Testing ADC A, n
+# Add n + Carry flag to A.
+## n = A,B,C,D,E,H,L,(HL),#
+# Flags affected:
+# Z - Set if result is zero.
+# N - Reset.
+# H - Set if carry from bit 3.
+# C - Set if carry from bit 7.
+
+
+# Tests 88 - CALC: 03+C1+(carry = 0) = C4 
+@test { 
+# ADD A, B - see to that carry = 0
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+80 3E 03 88 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests 88 - CALC: 03+C1+(carry = 1) = C4 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E 03 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+
+# Tests 88 - CALC: 03+C1+(carry = 1) = C4 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E 03 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+
+# Tests 88 - CALC: FF+C1+(carry = 1) = C1 
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #FF - restore A to a high value FF
+# ADC A, B
+# LD (HL), A
+3E FF 80 3E FF 88 77
+  @check {
+    [C000] C1
+  }
+}
+
+
+# Tests 88 - CALC: FF+C1+(carry = 0) = C0 
+@test { 
+# ADD A, B - 03+C1 will make carry = 0
+# LD A, #FF - restore A to a high value FF
+# ADC A, B
+# LD (HL), A
+80 3E FF 88 77
+  @check {
+    [C000] C0
+  }
+}
+
+## tests for 88 were more in detail, 89-8F are going to be simpler
+
+
+# Tests 89 - CALC: 03+04+(carry = 1) = 08
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, C
+# LD (HL), A
+3E FF 80 3E 03 89 77
+  @check {
+    [C000] 08
+  }
+}
+
+
+# Tests 8A - CALC: 03+C2+(carry = 1) = C6
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, D
+# LD (HL), A
+3E FF 80 3E 03 8A 77
+  @check {
+    [C000] C6
+  }
+}
+
+
+# Tests 8B - CALC: 03+08+(carry = 1) = 0C
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, E
+# LD (HL), A
+3E FF 80 3E 03 8B 77
+  @check {
+    [C000] 0C
+  }
+}
+
+
+# Tests 8C - CALC: 03+C0+(carry = 1) = C4
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, H
+# LD (HL), A
+3E FF 80 3E 03 8C 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests 8D - CALC: 03+00+(carry = 1) = 04
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, L
+# LD (HL), A
+3E FF 80 3E 03 8D 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests 8E - CALC: 03+FF+(carry = 1) = 03
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, (HL)
+# LD (HL), A
+3E FF 80 3E 03 8E 77
+  @check {
+    [C000] 03
+  }
+}
+
+
+# Tests 8F - CALC: 03+03+(carry = 1) = 07
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, A
+# LD (HL), A
+3E FF 80 3E 03 8F 77
+  @check {
+    [C000] 07
+  }
+}
+
+
+# Tests CE - CALC: 03+01+(carry = 1) = 05
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03 - restore A to a low value 03
+# ADC A, #01
+# LD (HL), A
+3E FF 80 3E 03 CE 01 77
+  @check {
+    [C000] 05
+  }
+}
+
+# Tests CE - CALC: 3C+FF+(carry = 1) = 3C
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #3C - set A to given value
+# ADC A, #FF
+# LD (HL), A
+3E FF 80 3E 3C CE FF 77
+  @check {
+    [C000] 3C
+  }
+}
+
+
+
+
+
+
+
+
+
