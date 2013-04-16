@@ -965,31 +965,31 @@ begin
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC B
+                -- INC B -t
               when X"04" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC C
+                -- INC C -t
               when X"0C" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC D
+                -- INC D -t
               when X"14" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC E
+                -- INC E -t
               when X"1C" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC H
+                -- INC H -t
               when X"24" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
@@ -1013,31 +1013,31 @@ begin
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC B
+                -- DEC B -t
               when X"05" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC C
+                -- DEC C -t
               when X"0D" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC D
+                -- DEC D -t
               when X"15" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC E
+                -- DEC E -t
               when X"1D" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC H
+                -- DEC H -t
               when X"25" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
@@ -1092,17 +1092,17 @@ begin
                 State <= Exec2;
 
                 -- OP-codes from page 92
-                -- INC BC
+                -- INC BC -t
               when X"03" =>
                 Tmp := std_logic_vector(unsigned(B & C) + 1);
                 B <= Tmp(15 downto 8);
                 C <= Tmp(7 downto 0);
-                -- INC DE
+                -- INC DE -t
               when X"13" =>
                 Tmp := std_logic_vector(unsigned(D & E) + 1);
                 D <= Tmp(15 downto 8);
                 E <= Tmp(7 downto 0);
-                -- INC HL
+                -- INC HL -t
               when X"23" =>
                 Tmp := std_logic_vector(unsigned(H & L) + 1);
                 H <= Tmp(15 downto 8);
@@ -1113,12 +1113,12 @@ begin
                 -- END op-codes from page 92
 
                 -- OP-codes from page 93
-                -- DEC BC
+                -- DEC BC -t
               when X"0B" =>
                 Tmp := std_logic_vector(unsigned(B & C) - 1);
                 B <= Tmp(15 downto 8);
                 C <= Tmp(7 downto 0);
-                -- DEC DE
+                -- DEC DE -t
               when X"1B" =>
                 Tmp := std_logic_vector(unsigned(D & E) - 1);
                 D <= Tmp(15 downto 8);
