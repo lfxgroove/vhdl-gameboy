@@ -30,7 +30,7 @@ class Parser
 {
 public:
   Parser(); 
-  Parser(Tokenizer&);
+  Parser(Tokenizer&, const std::string& base_path);
   Parser(const Parser&);
   virtual ~Parser();
   Tests parse();
@@ -47,6 +47,7 @@ private:
   //To keep the internal structure going
   void add_test();
   void add_addr();
+  void add_prep_addr();
   
   //Debug
   friend std::ostream & operator<<(std::ostream &os, const Parser& t);
@@ -62,9 +63,11 @@ private:
   std::string m_identifier;
   std::stringstream m_current_data;
   PrepareStatements m_prepare;
+  AddrDatas m_prepare_addrs;
   Tests m_current_tests;
   Test m_current_test;
   AddrData m_current_addr;
   Tokenizer m_tokenizer;
-  bool m_has_prev_addr;
+  bool m_has_prev_addr, m_in_addr;
+  std::string m_base_path;
 };
