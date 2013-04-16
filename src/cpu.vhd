@@ -1223,7 +1223,34 @@ begin
                   F(7) <= '0';
                 end if;
                 -- END op-codes from page 100
-
+                
+                -- OP-codes from page 111
+                -- JP nn
+              when X"C3" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JP NZ,nn
+              when X"C2" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JP Z,nn
+              when X"CA" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JP NC,nn
+              when X"D2" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- JP C,nn
+              when X"DA" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 111
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1809,6 +1836,38 @@ begin
                 Alu_High_Flags <= '0';  -- My guess. Check!
                 State <= Exec3;
 
+                -- JP nn
+              when X"C3" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- JP NZ,nn
+              when X"C2" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- JP Z,nn
+              when X"CA" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- JP NC,nn
+              when X"D2" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+                -- JP C,nn
+              when X"DA" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec3;
+
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -1954,6 +2013,22 @@ begin
                 H <= Alu_Result(15 downto 8);
                 L <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
+
+                -- JP nn
+              when X"C3" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                -- JP NZ,nn
+              when X"C2" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                -- JP Z,nn
+              when X"CA" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                -- JP NC,nn
+              when X"D2" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                -- JP C,nn
+              when X"DA" =>
+                PC <= Mem_Read & Tmp_8Bit;
 
 
               when others =>
