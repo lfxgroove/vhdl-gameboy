@@ -995,7 +995,7 @@ begin
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC L
+                -- INC L -t
               when X"2C" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
@@ -1123,7 +1123,7 @@ begin
                 Tmp := std_logic_vector(unsigned(D & E) - 1);
                 D <= Tmp(15 downto 8);
                 E <= Tmp(7 downto 0);
-                -- DEC HL
+                -- DEC HL -t
               when X"2B" =>
                 Tmp := std_logic_vector(unsigned(H & L) - 1);
                 H <= Tmp(15 downto 8);
@@ -1152,6 +1152,7 @@ begin
               when X"3F" =>
                 F(6 downto 5) <= "00";
                 F(4) <= not F(4);
+                -- SCF
               when X"37" =>
                 F(6 downto 5) <= "00";
                 F(4) <= '1';
@@ -1173,7 +1174,7 @@ begin
                 -- END op-codes from page 98
 
                 -- OP-codes from page 99
-                -- RLCA
+                -- RLCA -t
               when X"07" =>
                 A(7 downto 1) <= A(6 downto 0);
                 A(0) <= A(7);
@@ -1185,7 +1186,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLA
+                -- RLA -t
               when X"17" =>
                 A(7 downto 1) <= A(6 downto 0);
                 A(0) <= F(4);
@@ -1199,7 +1200,7 @@ begin
                 -- END op-codes from page 99
 
                 -- OP-codes from page 100
-                -- RRCA
+                -- RRCA -t
               when X"0F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= A(0);
@@ -1211,7 +1212,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRA
+                -- RRA -t
               when X"1F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= F(4);

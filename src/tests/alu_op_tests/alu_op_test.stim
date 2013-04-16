@@ -1218,18 +1218,6 @@ A8 77
   }
 }
 
-# Tests 25
-@test {
-# LD A, #C5
-# LD H, A 
-# DEC H
-# LD (HL), A
-3E C5 67 25 77
-  @check {
-    [C400] 03
-  }
-}
-
 # Tests 2B
 @test {
 # LD A, #C5
@@ -1251,7 +1239,6 @@ A8 77
     [C001] 03
   }
 }
-####################
 
 # Tests 2D
 @test {
@@ -1324,3 +1311,69 @@ A8 77
     [C000] 02
   }
 }
+
+
+### Rotations
+
+# Tests 07
+@test {
+# RLCA
+# LD (HL), A
+07 77
+  @check {
+    [C000] 06
+  }
+}
+
+# Tests 07
+@test {
+# LD A, #00
+# LD B, A
+# LD A, #80
+# RLCA
+# ADC A,B - 00+00+carry(=1) = 01
+# LD (HL), A
+3E 00 47 3E 80 07 88 77
+  @check {
+    [C000] 01
+  }
+}
+
+# Tests 0F
+@test {
+# LD A, #00
+# LD B, A
+# LD A, #81
+# RRCA
+# ADC A,B - 40+00+carry(=1) = 41
+# LD (HL), A
+3E 00 47 3E 81 0F 88 77
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests 17
+@test {
+# LD A, #81
+# RLA
+# LD (HL), A
+3E 81 17 77
+  @check {
+    [C000] 03
+  }
+}
+
+
+# Tests 1F 
+@test {
+# LD A, #81
+# RRA
+# LD (HL), A
+3E 81 1F 77
+  @check {
+    [C000] C0
+  }
+}
+
+
