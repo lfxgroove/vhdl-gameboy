@@ -190,7 +190,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 69 --
                 -- OP-codes from page 70
-                -- LD A,(C+$FF00)
+                -- LD A,(C+$FF00) -t
               when X"F2" =>
                 IR <= Mem_Read;
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
@@ -370,7 +370,7 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write <= B;
                 Mem_Write_Enable <= '1';
-                -- LD (HL), n
+                -- LD (HL), n -t
               when X"76" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -392,12 +392,12 @@ begin
                 Tmp := std_logic_vector(unsigned(H & L) + 1);
                 Mem_Write <= A;
                 -- OP-codes from page 75
-                -- LD ($FF00+n), A
+                -- LD ($FF00+n), A -t
               when X"E0" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD A, ($FF00+n)
+                -- LD A, ($FF00+n) -t
               when X"F0" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -429,7 +429,7 @@ begin
                 SP <= H & L;
                 -- END op-codes from page 76
                 -- OP code from page 77
-                -- LD HL, SP+n
+                -- LD HL, SP+n -t
               when X"F8" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
