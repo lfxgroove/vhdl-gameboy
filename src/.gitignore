@@ -10,4 +10,4 @@ Makefile
 *.cf
 implemented_op_codes.txt
 build/
-*_test
+./*_test
