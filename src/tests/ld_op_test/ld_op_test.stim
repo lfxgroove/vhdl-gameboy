@@ -159,10 +159,10 @@
 }
 
 
-# Tests 76
+# Tests 36
 @test {
 # LD (HL), n	
-76 E4
+36 E4
    @check {
    [C000] E4
    }
@@ -364,9 +364,9 @@
 # LD D, A
 # LD H, D
 # LD (HL), H
-3E CO 57 62 74
+3E C0 57 62 74
   @check {
-    [C000] CO
+    [C000] C0
   }
 }
 
