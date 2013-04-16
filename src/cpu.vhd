@@ -32,7 +32,7 @@ architecture Cpu_Implementation of Cpu is
   -- ALU instantiation.
   component Alu
     port(A, B : in std_logic_vector(15 downto 0);
-         Mode : in std_logic_vector(1 downto 0);
+         Mode : in std_logic_vector(2 downto 0);
          Flags_In : in std_logic_vector(7 downto 0);
          Result : out std_logic_vector(15 downto 0);
          Flags : out std_logic_vector(7 downto 0));
@@ -41,12 +41,15 @@ architecture Cpu_Implementation of Cpu is
   -- Signals to the ALU
   signal Alu_A, Alu_B, Alu_Result : std_logic_vector(15 downto 0);
   signal Alu_Flags_In : std_logic_vector(7 downto 0);
-  signal Alu_Mode : std_logic_vector(1 downto 0);
+  signal Alu_Mode : std_logic_vector(2 downto 0);
   signal Alu_Flags : std_logic_vector(7 downto 0);
   -- Modes for the alu.
-  constant Alu_Add : std_logic_vector(1 downto 0) := "00";
-  constant Alu_Sub : std_logic_vector(1 downto 0) := "01";
-  constant Alu_Add_Carry : std_logic_vector(1 downto 0) := "10";
+  constant Alu_Add : std_logic_vector(2 downto 0) := "000";
+  constant Alu_Sub : std_logic_vector(2 downto 0) := "001";
+  constant Alu_Add_Carry : std_logic_vector(2 downto 0) := "010";
+  constant Alu_Sub_Carry : std_logic_vector(2 downto 0) := "011";
+  constant Alu_And : std_logic_vector(2 downto 0) := "100";
+  constant Alu_Or : std_logic_vector(2 downto 0) := "101";
 begin
 
   Alu_Ports : Alu port map(
@@ -652,7 +655,173 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 82
-                
+                -- OP-codes from page 83
+                -- SBC A, A
+              when X"9F" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, B
+              when X"98" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, C
+              when X"99" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, D
+              when X"9A" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, E
+              when X"9B" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, H
+              when X"9C" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, L
+              when X"9D" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec2;
+                -- SBC A, (HL)
+              when X"9E" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- SBC A, #
+              when X"DE" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 83
+                -- OP-codes from page 84
+                -- AND A, A
+              when X"A7" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, B
+              when X"A0" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, C
+              when X"A1" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, D
+              when X"A2" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, E
+              when X"A3" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, H
+              when X"A4" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, L
+              when X"A5" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_And;
+                State <= Exec2;
+                -- AND A, (HL)
+              when X"A6" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- AND A, #
+              when X"E6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 84
+                -- OP-codes from page 85
+                -- OR A, A
+              when X"B7" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, B
+              when X"B0" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, C
+              when X"B1" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, D
+              when X"B2" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, E
+              when X"B3" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, H
+              when X"B4" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, L
+              when X"B5" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, (HL)
+              when X"B6" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- OR A, #
+              when X"F6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 85
+
               when others =>
                 --FAKKA UR TOTALT OCH D
             end case; -- End case (Mem_Read)
@@ -937,6 +1106,132 @@ begin
                 Alu_Mode <= Alu_Sub;
                 State <= Exec3;
 
+                -- SBC A, A
+              when X"9F" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, B
+              when X"98" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, C
+              when X"99" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, D
+              when X"9A" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, E
+              when X"9B" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, H
+              when X"9C" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, L
+              when X"9D" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, (HL)
+              when X"9E" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+                -- SBC A, #
+              when X"DE" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Sub_Carry;
+                Alu_Flags_In <= F;
+                State <= Exec3;
+
+                -- AND A, A
+              when X"A7" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, B
+              when X"A0" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, C
+              when X"A1" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, D
+              when X"A2" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, E
+              when X"A3" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, H
+              when X"A4" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, L
+              when X"A5" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, (HL)
+              when X"A6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_And;
+                State <= Exec3;
+                -- AND A, #
+              when X"E6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_And;
+                State <= Exec3;
+
+                -- OR A, A
+              when X"A7" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, B
+              when X"A0" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, C
+              when X"A1" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, D
+              when X"A2" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, E
+              when X"A3" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, H
+              when X"A4" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, L
+              when X"A5" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, (HL)
+              when X"A6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Or;
+                State <= Exec3;
+                -- OR A, #
+              when X"E6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Or;
+                State <= Exec3;
+
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -1001,6 +1296,7 @@ begin
               when X"C6" =>
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
+
                 -- ADC A, (HL)
               when X"8E" =>
                 A <= Alu_Result(7 downto 0);
@@ -1019,6 +1315,32 @@ begin
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
 
+                -- SBC A, (HL)
+              when X"9E" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- SBC A, #
+              when X"DE" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
+                -- AND A, (HL)
+              when X"A6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- AND A, #
+              when X"E6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+
+                -- OR A, (HL)
+              when X"B6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, #
+              when X"F6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3

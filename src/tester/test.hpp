@@ -10,6 +10,7 @@
 #include "addrdata.hpp"
 #include "typedefs.hpp"
 #include "testfile.hpp"
+#include "util.hpp"
 
 class Test
 {
@@ -30,7 +31,7 @@ public:
   
   inline bool has_data() { 
     return !m_prepare.empty() 
-      && !m_test_addresses.empty()
+      // && !m_test_addresses.empty()
       && !m_check_addresses.empty();
   };
   bool run(const std::string& test_name);
@@ -38,9 +39,9 @@ public:
   const static int BASE_CHECK_OFFSET = 0xC000;
   
 private:
-  void read_num_lines(int num_lines, std::ifstream& file);
+  void read_num_lines(int num_lines, std::ifstream& file, int& curr_line);
   bool check(const std::string& results_path);
-  int to_dec(const std::string& bin);
+  
   friend std::ostream& operator<<(std::ostream &os, const Test& t);
   
   std::string m_base_path;

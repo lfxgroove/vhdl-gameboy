@@ -1,23 +1,35 @@
 #Runs before every @test part is run
 @prepare {
 #bytes that should be existent in the beginning
- [0150] xx xx xx xx xx xx xx xx xx xx xx xx xx xx
- xx xx xx xx xx xx xx xx xx xx xx xx xx  xx xx xx
- [0180] xx xx xx   xx xx xx    xx
+  01 02 03 10 30 40 0e
+  [0162] b3 b4 b5
 }
 
 #This is a comment
 #Comment
 @test {
   @check {
-    [0150] 11 AB #Check that adr 0150 has data 11 and adr 0151			has data AB after running the test 
+    [C000] ab cd
+    [C100] ef 01
   }
 }
 
 @test {
-
+  03 40 4e a3
+  [0160] 10 11 12 13 14
+  @check {
+    [C000] ab cd ef 00 01
+    [C009] a0
+    [C00B] b0
+  }
 }
 
-@test {
 
-}
+#haxxkommentar
+# @test {
+#   a0 a1 a2 #kommentar a3
+#   [015e] ab cd ef 
+#   @check {
+#     [0150] 01 20 03
+#   }
+# }

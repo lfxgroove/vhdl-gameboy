@@ -37,8 +37,8 @@ Tests Parser::parse()
       
       if (m_tokenizer.is_identifier())
       	{
-      	  std::cout << "Found identifier: " << m_tokenizer.current() << ", "
-      		    << m_tokenizer.pos_x() << ":" <<m_tokenizer.pos_y() << std::endl;
+      	  // std::cout << "Found identifier: " << m_tokenizer.current() << ", "
+      	  // 	    << m_tokenizer.pos_x() << ":" <<m_tokenizer.pos_y() << std::endl;
 	  m_tokenizer.next();
 	  parse_identifier();
       	}
@@ -70,7 +70,7 @@ Tests Parser::parse()
     }
   
   std::cout << "Debug output: " << std::endl
-	    << "=======================" << std::endl;;
+  	    << "=======================" << std::endl;;
   std::cout << *this << std::endl;
   
   return m_current_tests;
@@ -109,6 +109,7 @@ void Parser::parse_test()
     {
       if (m_tokenizer.is_comment())
 	parse_comment();
+      
       if (m_tokenizer.is_identifier())
       	{
 	  //Remember to add the last adr parsed
@@ -135,7 +136,7 @@ void Parser::parse_test()
       m_tokenizer.next();
     }
   //Add the last one aswell
-  add_addr();
+  // add_addr();
 }
 
 void Parser::parse_check()
@@ -178,7 +179,7 @@ void Parser::add_prep_addr()
 {
   if (!m_current_addr.empty() && m_in_addr)
     {
-      std::cout << "LAgger till: " << m_current_addr << "till prep" << std::endl;
+      // std::cout << "LAgger till: " << m_current_addr << "till prep" << std::endl;
       m_prepare_addrs.push_back(m_current_addr);
       m_current_addr.reset();
     }
@@ -247,11 +248,17 @@ std::ostream & operator<<(std::ostream& os, const Parser& p)
 
 void Parser::parse_comment() 
 {
+  // std::cout << "DEBUG: Aeter kommentar pa (" << m_tokenizer.pos_x() << ", " << m_tokenizer.pos_y() << ")" << std::endl;
   //Read until end of line
   while (!m_tokenizer.is_end_of_line())
     m_tokenizer.next();
   //Read away that newline!
-  m_tokenizer.next();
+  // std::cout << "TOKEN:" << m_tokenizer.current() << ":" << std::endl;
+  // m_tokenizer.next();
+  // std::cout << "TOKEN:" << m_tokenizer.current() << ":" << std::endl;
+  
+  if (m_tokenizer.is_comment())
+    parse_comment();
 }
 
 //Code duplication here!
@@ -262,6 +269,9 @@ void Parser::parse_addr()
   
   while (!m_tokenizer.is_end_addr())
     {
+      if (m_tokenizer.is_comment())
+	parse_comment();
+      
       hex_data << m_tokenizer.current();
       ++num_in_row;
       if (num_in_row == 4)
@@ -289,6 +299,9 @@ void Parser::parse_byte()
   std::stringstream hex_data;
   while (m_tokenizer.is_good_block_data())
     {
+      if (m_tokenizer.is_comment())
+	parse_comment();
+      
       hex_data << m_tokenizer.current();
       ++num_in_row;
       if (num_in_row == 2)
