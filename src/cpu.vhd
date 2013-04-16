@@ -959,7 +959,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 87
                 -- OP-codes from page 88
-                -- INC A
+                -- INC A -t
               when X"3C" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Inc;
@@ -1001,13 +1001,13 @@ begin
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC (HL)
+                -- INC (HL) -t
               when X"34" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
                 -- END op-codes from page 88
                 -- OP-codes from page 89
-                -- DEC A
+                -- DEC A -t
               when X"3D" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
@@ -1043,13 +1043,13 @@ begin
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC L
+                -- DEC L -t
               when X"2D" =>
                 Alu_A <= "00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- DEC (HL)
+                -- DEC (HL) -t
               when X"35" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
@@ -1107,7 +1107,7 @@ begin
                 Tmp := std_logic_vector(unsigned(H & L) + 1);
                 H <= Tmp(15 downto 8);
                 L <= Tmp(7 downto 0);
-                -- INC SP
+                -- INC SP -t
               when X"33" =>
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 -- END op-codes from page 92
@@ -1128,7 +1128,7 @@ begin
                 Tmp := std_logic_vector(unsigned(H & L) - 1);
                 H <= Tmp(15 downto 8);
                 L <= Tmp(7 downto 0);
-                -- DEC SP
+                -- DEC SP -t
               when X"3B" =>
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 -- END op-codes from page 93

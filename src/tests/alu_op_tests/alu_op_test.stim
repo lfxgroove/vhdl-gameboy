@@ -1217,5 +1217,110 @@ A8 77
     [C400] 03
   }
 }
- 
 
+# Tests 25
+@test {
+# LD A, #C5
+# LD H, A 
+# DEC H
+# LD (HL), A
+3E C5 67 25 77
+  @check {
+    [C400] 03
+  }
+}
+
+# Tests 2B
+@test {
+# LD A, #C5
+# LD H, A 
+# DEC HL
+# LD (HL), A
+3E C5 67 2B 77
+  @check {
+    [C4FF] 03
+  }
+}
+
+# Tests 2C
+@test { 
+# INC L
+# LD (HL), A
+2C 77
+  @check {
+    [C001] 03
+  }
+}
+####################
+
+# Tests 2D
+@test {
+# LD A, #03
+# LD L, A 
+# DEC L
+# LD (HL), A
+3E C5 6F 2D 77
+  @check {
+    [C002] 03
+  }
+}
+
+# Tests 33
+@test {
+# LD SP, nn (nn = 04C1)
+# INC SP
+# LD (nn), SP
+31 04 C1 33 08 00 C0
+  @check {
+    [C000] C1 05
+  }
+}
+
+# Tests 34
+@test {
+# INC (HL)
+34
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests 35
+@test {
+# DEC (HL)
+35
+  @check {
+    [C000] FE
+  }
+}
+
+# Tests 3B
+@test {
+# LD SP, nn (nn = 04C1)
+# DEC SP
+# LD (nn), SP
+31 04 C1 3B 08 00 C0
+  @check {
+    [C000] C1 03
+  }
+}
+
+# Tests 3C
+@test {
+# INC A
+# LD (HL), A
+3C 77
+  @check {
+    [C000] 04
+  }
+}
+
+# Tests 3D
+@test {
+# DEC A
+# LD (HL), A
+3D 77
+  @check {
+    [C000] 02
+  }
+}
