@@ -23,14 +23,14 @@
 # LD E, A
 3E 08 5F
 
+# LD A, #03
+3E 03
 
 # default data 
 [C000] FF AA
 [C104] EE
-[C208] DD 3E 03
+[C208] DD
 
-# LD A, #03
-# 3E 03
 
 ## All registers now have unique values.
 ## This makes it possible for tests to be short as operations

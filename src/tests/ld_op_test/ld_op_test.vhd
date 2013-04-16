@@ -138,20 +138,16 @@ begin
     Cpu_Allowed <= '1';
     wait until rising_edge(Clk);
     
-    --for I in 1 to 60 loop
     for I in 1 to 200 loop
       wait until rising_edge(Clk);
     end loop; 
     
     Cpu_Allowed <= '0';
-    --Internal_Mem_Addr <= X"C000";
     wait until rising_edge(Clk);
-    --wait until rising_edge(Clk);
     
     Curr_Addr := X"C000";
     loop
       exit when Curr_Addr = X"C400";
-      --wait until rising_edge(Clk);
       
       Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
       
