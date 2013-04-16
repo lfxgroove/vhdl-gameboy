@@ -34,9 +34,9 @@ if [ $# -eq 1 ]; then
 		echo "Compiling test: ${test_name}"
 		ghdl -a --ieee=synopsys ${dir}/${test_name}_test.vhd || exit
 		echo "Simulating test: ${test_name^}"
-		    #Error suppression is used, perhaps this should be removed?
-    		    #ghdl --elab-run --ieee=synopsys ${test_name^}_Test --vcd=${test_name^}_Test.vcd --stop-time=${time}
-                    # > /dev/null 2>&1
+	        #Error suppression is used, perhaps this should be removed?
+                #ghdl --elab-run --ieee=synopsys ${test_name^}_Test --vcd=${test_name^}_Test.vcd --stop-time=${time}
+                # > /dev/null 2>&1
 		tester/tester -d ${dir}
 	    fi
 	done
@@ -46,15 +46,19 @@ if [ $# -eq 1 ]; then
 fi
 
 if [ $# -eq 2 ]; then
-    #Run individual test
-    test_name=${model_name}
-    test_path=${model_name}_test
-    echo "Compiling and running test ${test_name}"
-    if [ -e "tests/${test_path}" ]; then
-	./tester/tester -d ./tests/${test_path}/
+    if [ $2 = "t" ]; then
+        #Run individual test
+	test_name=${model_name}
+	test_path=${model_name}_test
+	echo "Compiling and running test ${test_name}"
+	if [ -e "tests/${test_path}" ]; then
+	    ./tester/tester -d ./tests/${test_path}/
+	else
+	    echo "The test: ${test_name} doesn't exist"
+	    exit
+	fi
     else
-	echo "The test: ${test_name} doesn't exist"
-	exit
+	show_help
     fi
 fi
 
