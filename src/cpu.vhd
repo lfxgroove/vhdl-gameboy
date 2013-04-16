@@ -49,6 +49,7 @@ architecture Cpu_Implementation of Cpu is
   constant Alu_Add_Carry : std_logic_vector(2 downto 0) := "010";
   constant Alu_Sub_Carry : std_logic_vector(2 downto 0) := "011";
   constant Alu_And : std_logic_vector(2 downto 0) := "100";
+  constant Alu_Or : std_logic_vector(2 downto 0) := "101";
 begin
 
   Alu_Ports : Alu port map(
@@ -767,6 +768,59 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 84
+                -- OP-codes from page 85
+                -- OR A, A
+              when X"B7" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & A;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, B
+              when X"B0" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & B;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, C
+              when X"B1" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & C;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, D
+              when X"B2" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & D;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, E
+              when X"B3" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & E;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, H
+              when X"B4" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & H;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, L
+              when X"B5" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & L;
+                Alu_Mode <= Alu_Or;
+                State <= Exec2;
+                -- OR A, (HL)
+              when X"B6" =>
+                Mem_Addr <= H & L;
+                State <= Exec2;
+                -- OR A, #
+              when X"F6" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 85
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1136,6 +1190,46 @@ begin
                 Alu_Mode <= Alu_And;
                 State <= Exec3;
 
+                -- OR A, A
+              when X"A7" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, B
+              when X"A0" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, C
+              when X"A1" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, D
+              when X"A2" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, E
+              when X"A3" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, H
+              when X"A4" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, L
+              when X"A5" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, (HL)
+              when X"A6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Or;
+                State <= Exec3;
+                -- OR A, #
+              when X"E6" =>
+                Alu_A <= X"00" & A;
+                Alu_B <= X"00" & Mem_Read;
+                Alu_Mode <= Alu_Or;
+                State <= Exec3;
 
 
               when others =>
@@ -1239,6 +1333,14 @@ begin
                 A <= Alu_Result(7 downto 0);
                 F <= Alu_Flags;
 
+                -- OR A, (HL)
+              when X"B6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
+                -- OR A, #
+              when X"F6" =>
+                A <= Alu_Result(7 downto 0);
+                F <= Alu_Flags;
 
               when others =>
             end case; -- End case Exec3
