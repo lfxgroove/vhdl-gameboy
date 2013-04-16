@@ -46,7 +46,7 @@
   @check {
     [C000] FF
     [C104] EE
-    [C208] DD 3E 03
+    [C208] DD
     [FF80] A0 A1 A2 A3 A4 A5
   }
 }
