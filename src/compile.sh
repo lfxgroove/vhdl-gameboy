@@ -37,6 +37,17 @@ if [ $# -eq 1 ]; then
 	        #Error suppression is used, perhaps this should be removed?
                 #ghdl --elab-run --ieee=synopsys ${test_name^}_Test --vcd=${test_name^}_Test.vcd --stop-time=${time}
                 # > /dev/null 2>&1
+		if [ ! -d ${dir}/stimulus ]
+		then
+		    echo Creating ${dir}/stimulus
+		    mkdir ${dir}/stimulus
+		fi
+		if [ ! -d ${dir}/results ]
+		then
+		    echo Creating ${dir}/results
+		    mkdir ${dir}/results
+		fi
+
 		tester/tester -d ${dir}
 	    fi
 	done
