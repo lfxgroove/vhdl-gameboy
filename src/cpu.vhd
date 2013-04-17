@@ -1234,27 +1234,27 @@ begin
                 -- END op-codes from page 100
                 
                 -- OP-codes from page 111
-                -- JP nn
+                -- JP nn -t
               when X"C3" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JP NZ,nn
+                -- JP NZ,nn -t
               when X"C2" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JP Z,nn
+                -- JP Z,nn -t
               when X"CA" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JP NC,nn
+                -- JP NC,nn -t
               when X"D2" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JP C,nn
+                -- JP C,nn -t
               when X"DA" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
