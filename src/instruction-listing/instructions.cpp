@@ -4,6 +4,7 @@
 #include <string>
 #include <iomanip>
 #include <algorithm>
+#include <sstream>
 #include <stdlib.h>
 
 using namespace std;
@@ -69,6 +70,7 @@ Instructions parseFile(const string &filename) {
     execWhen,
     memRead,
     after,
+    execMbWhen,
   } state = start;
 
   string lastComment;
@@ -95,7 +97,17 @@ Instructions parseFile(const string &filename) {
       }
       break;
     case after:
+      if (line == "when Mb_Exec =>") state = execMbWhen;
       break;
+    case execMbWhen:
+      if (line.size() > 2 && line.substr(0, 2) == "--") {
+	lastComment = trim(line.substr(2));
+      } else if (line.size() > 7 && line.substr(0, 7) == "when X\"") {
+	string opcode = line.substr(7, 4);
+	r.push_back(Instr(opcode, lastComment));
+      } else if (line.size() >= 8 && line.substr(0, 8) == "end case") {
+	state = after;
+      }
     }
     
   }
@@ -103,32 +115,53 @@ Instructions parseFile(const string &filename) {
   return r;
 }
 
-void outputList(const Instructions &instr, ostream &to) {
-  for (Instructions::const_iterator i = instr.begin(); i != instr.end(); i++) {
-    to << setw(2) << setfill('0') << hex << i->opcode;
-    to << ", " << i->mnemonic;
-    // int iImplementedOps, iNrOfTests; <- duno where it is best to put this rly ^^
-    //    iImplementedOps++;
-    if (i->tested) {
-      // insert a fixed spacing here so everything goes neatly in one row, please
-      to << ", tested";
-      // iNrOfTests++;
-    }
-    to << endl;
+void fill(ostringstream &s, int width) {
+  int toInsert = width - s.str().size();
+  while (toInsert > 0) {
+    s << " ";
+    toInsert--;
   }
+}
+
+void outputList(const Instructions &instr, ostream &to) {
+  const int cols[] = { 5, 13 };
+  int testedOpCodes = 0;
+  for (Instructions::const_iterator i = instr.begin(); i != instr.end(); i++) {
+    ostringstream line;
+    line << setw(2) << setfill('0') << hex << i->opcode;
+    if (i->tested) {
+      fill(line, cols[0]);
+      line << "tested";
+      testedOpCodes++;
+    }
+    fill(line, cols[1]);
+    line << i->mnemonic;
+    to << line.str() << endl;
+  }
+  to << "Total: " << testedOpCodes << " of " << instr.size() << " opcodes tested." << endl;
 }
 
 bool opcodeComp(const Instr &a, const Instr &b) {
   return a.opcode < b.opcode;
 }
 
+bool testComp(const Instr &a, const Instr &b) {
+  if (a.tested != b.tested) {
+    if (a.tested) return true;
+    else return false;
+  }
+  return a.opcode < b.opcode;
+}
+
 int main(int argc, char *argv[]) {
   string file = "cpu.vhd";
   string outputFile = "implemented_op_codes.txt";
+  //  string outputFile = "";
 
   enum Sort {
     sNone,
     sOpcode,
+    sTest,
   };
   Sort sort = sNone;
 
@@ -139,11 +172,14 @@ int main(int argc, char *argv[]) {
       outputFile = argv[++i];
     } else if (strcmp(argv[i], "-so") == 0) {
       sort = sOpcode;
+    } else if (strcmp(argv[i], "-st") == 0) {
+      sort = sTest;
     } else if (strcmp(argv[i], "-h") == 0) {
       cout << "Usage: -i <inputfile> -o <outputfile> -so" << endl;
       cout << "-i  - specifies input file (otherwise cpu.vhd)" << endl;
       cout << "-o  - specifies output file (default is stdout)" << endl;
       cout << "-so - sort output by op-codes" << endl;
+      cout << "-st - sort output by tested status" << endl;
       return 0;
     }
   }
@@ -156,6 +192,10 @@ int main(int argc, char *argv[]) {
   case sOpcode:
     cout << "Sorting opcodes" << endl;
     std::sort(i.begin(), i.end(), &opcodeComp);
+    break;
+  case sTest:
+    cout << "Sorting opcodes" << endl;
+    std::sort(i.begin(), i.end(), &testComp);
     break;
   }
     //    cout << iNrOfTests << " out of " << iImplementedOps << " are being tested"

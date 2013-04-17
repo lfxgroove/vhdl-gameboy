@@ -1134,10 +1134,15 @@ begin
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 -- END op-codes from page 93
                 -- Multi-byte op-codes
-              when X"10" | X"CB" =>
+              when X"10" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Mb_Exec;
+              when X"CB" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Mb_Exec;
+
                 -- OP-codes from page 95
                 -- DAA (not implemented in daa_logic)
               when X"27" =>
