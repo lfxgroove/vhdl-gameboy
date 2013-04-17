@@ -384,22 +384,22 @@ begin
                 -- LD (HL), D -t
               when X"72" =>
                 Mem_Addr <= H & L;
-                Mem_Write <= B;
+                Mem_Write <= D;
                 Mem_Write_Enable <= '1';
                 -- LD (HL), E -t
               when X"73" =>
                 Mem_Addr <= H & L;
-                Mem_Write <= B;
+                Mem_Write <= E;
                 Mem_Write_Enable <= '1';
                 -- LD (HL), H -t
               when X"74" =>
                 Mem_Addr <= H & L;
-                Mem_Write <= B;
+                Mem_Write <= H;
                 Mem_Write_Enable <= '1';
                 -- LD (HL), L -t
               when X"75" =>
                 Mem_Addr <= H & L;
-                Mem_Write <= B;
+                Mem_Write <= L;
                 Mem_Write_Enable <= '1';
                 -- LD (HL), n -t
               when X"36" =>
