@@ -1311,8 +1311,73 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-
                 -- END op-codes from page 115
+                -- OP-codes from page 116
+                -- RST 0x00
+              when X"C7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x08
+              when X"CF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x10
+              when X"D7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x18
+              when X"DF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x20
+              when X"E7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x28
+              when X"EF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x30
+              when X"F7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- RST 0x38
+              when X"FF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(15 downto 8);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                State <= Exec2;
+                -- END op-codes from page 116
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -1984,6 +2049,70 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
 
+                -- RST 0x00
+              when X"C7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0000";
+                -- RST 0x08
+              when X"CF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0008";
+                -- RST 0x10
+              when X"D7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0010";
+                -- RST 0x18
+              when X"DF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0018";
+                -- RST 0x20
+              when X"E7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0020";
+                -- RST 0x28
+              when X"EF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0028";
+                -- RST 0x30
+              when X"F7" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0030";
+                -- RST 0x38
+              when X"FF" =>
+                Tmp := std_logic_vector(unsigned(SP) - 1);
+                SP <= Tmp;
+                Mem_Write <= PC(7 downto 0);
+                Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
+                PC <= X"0038";
 
               when others =>
             end case; -- End case Exec2
