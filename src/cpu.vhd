@@ -18,7 +18,8 @@ architecture Cpu_Implementation of Cpu is
 
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
   -- Halted is a state used when the CPU should wait for interrupts.
-  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4, Halted);
+  -- Mb_Exec is the execution stages for multi-byte op-codes.
+  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4, Mb_Exec, Mb_Exec2, Halted);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -27,8 +28,8 @@ architecture Cpu_Implementation of Cpu is
   signal Tmp_Addr : std_logic_vector(15 downto 0);
   -- tmp variable for calculations on 8-bit stuff
   signal Tmp_8bit : std_logic_vector(7 downto 0);
-  -- Instruction Register
-  signal IR : std_logic_vector(7 downto 0);
+  -- Instruction Register. MB_IR is the second byte of multi-byte instructions.
+  signal IR, MB_IR : std_logic_vector(7 downto 0);
   -- Interrupts enabled.
   signal Interrupts_Enabled : std_logic := '0';
 
@@ -1132,10 +1133,11 @@ begin
               when X"3B" =>
                 SP <= std_logic_vector(unsigned(SP) - 1);
                 -- END op-codes from page 93
-                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE STOP should be here
-              when X"10" =>
-                -- NOT IMPLEMENTED, MULTI-BYTE OP-CODE SWP should be here
-              when X"CB" =>
+                -- Multi-byte op-codes
+              when X"10" | X"CB" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Mb_Exec;
                 -- OP-codes from page 95
                 -- DAA (not implemented in daa_logic)
               when X"27" =>
@@ -2453,6 +2455,111 @@ begin
 
               when others =>
             end case;
+          when Mb_Exec =>
+            -- Multi-byte OP-codes.
+            State <= Waiting;
+            MB_IR <= Mem_Read;
+            Tmp := IR & Mem_Read;
+            
+            case (Tmp) is
+              -- STOP Not correct implementation, halts instead
+              when X"1000" =>
+                State <= Halted;
+                -- OP-codes from page 94
+                -- SWAP A
+              when X"CB37" =>
+                A(7 downto 4) <= A(3 downto 0);
+                A(3 downto 0) <= A(7 downto 4);
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP B
+              when X"CB30" =>
+                B(7 downto 4) <= B(3 downto 0);
+                B(3 downto 0) <= B(7 downto 4);
+                if B = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP C
+              when X"CB31" =>
+                C(7 downto 4) <= C(3 downto 0);
+                C(3 downto 0) <= C(7 downto 4);
+                if C = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP D
+              when X"CB32" =>
+                D(7 downto 4) <= D(3 downto 0);
+                D(3 downto 0) <= D(7 downto 4);
+                if D = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP E
+              when X"CB33" =>
+                E(7 downto 4) <= E(3 downto 0);
+                E(3 downto 0) <= E(7 downto 4);
+                if E = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP H
+              when X"CB34" =>
+                H(7 downto 4) <= H(3 downto 0);
+                H(3 downto 0) <= H(7 downto 4);
+                if H = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP L
+              when X"CB35" =>
+                L(7 downto 4) <= L(3 downto 0);
+                L(3 downto 0) <= L(7 downto 4);
+                if L = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+                -- SWAP (HL)
+              when X"CB36" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+              when others =>
+            end case; -- End case IR & Mem_Read
+          when Mb_Exec2 =>
+            State <= Waiting;
+            Tmp := IR & MB_IR;
+            case (Tmp) is
+              -- SWAP (HL)
+              when X"CB36" =>
+                Mem_Write(7 downto 4) <= Mem_Read(3 downto 0);
+                Mem_Write(3 downto 0) <= Mem_Read(7 downto 4);
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                if Mem_Read = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                F(6 downto 0) <= (others => '0');
+              when others =>
+            end case; -- End case IR & MB_IR
           when others =>
         end case; -- End case State 
       end if;
