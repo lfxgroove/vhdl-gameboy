@@ -611,6 +611,70 @@ D6 CE 77
   }
 }
 
+### Testing ADD HL, X
+##
+
+# Tests 09 - CALC: 0001+C104 = C105
+@test { 
+# LD HL, nn (nn = 01 00) 
+# ADD HL, BC
+# LD (HL), A
+21 01 00 09 77
+  @check {
+    [C105] 03
+  }
+}
+
+# Tests 19 - CALC: 0001+C208 = C209
+@test { 
+# LD HL, nn (nn = 01 00) 
+# ADD HL, DE
+# LD (HL), A
+21 01 00 19 77
+  @check {
+    [C209] 03
+  }
+}
+
+
+# Tests 29 - CALC: E080+E080 = C100
+@test { 
+# LD HL, nn (nn = 80 EO) 
+# ADD HL, HL
+# LD (HL), A
+21 80 E0 29 77
+  @check {
+    [C100] 03
+  }
+}
+
+# Tests 39 - CALC: 0000+C100 = C101
+@test { 
+# LD HL, nn (nn = 01 00)
+# LD SP, nn (nn = OO C1)
+# ADD HL, SP
+# LD (HL), A
+21 01 00 31 00 C1 39 77
+  @check {
+    [C101] 03
+  }
+}
+
+
+# Tests E8 - CALC: C100+0008 = C108
+@test { 
+# LD SP, nn (nn = OO C1)
+# ADD SP, n (n = 08)
+# LD (HL), A
+31 00 E8 08 77
+  @check {
+    [C108] 03
+  }
+}
+
+
+
+
 ### Testing CP A, n
 #Compare A with n. This is basically an A - n
 #subtraction instruction but the results are thrown
@@ -1240,7 +1304,7 @@ A8 77
   }
 }
 
-# Tests 2D
+l# Tests 2D
 @test {
 # LD A, #03
 # LD L, A 
@@ -1285,7 +1349,7 @@ A8 77
 @test {
 # LD SP, nn (nn = 04C1)
 # DEC SP
-# LD (nn), SP
+# LD (nn), P
 31 04 C1 3B 08 00 C0
   @check {
     [C000] C1 03
