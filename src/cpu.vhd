@@ -1487,9 +1487,10 @@ begin
               when X"6E" =>
                 L <= Mem_Read;
                 -- LD (HL), n
-              when X"76" =>
+              when X"36" =>
                 Mem_Write <= Mem_Read;
                 Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
                 -- LD A, (HL+)
               when X"2A" =>
                 A <= Mem_Read;

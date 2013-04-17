@@ -131,13 +131,13 @@
 
 # Tests 6F
 @test {
-# LD L, A	- store 03 in A
+# LD L, A	- store 03 in L
 # LD A, #FF	- "destroy" A
 # LD A, L	- restore 03 to A
 # LD (BC), A	
-6F 3E FF 7C 02
+6F 3E FF 7D 02
    @check {
-   [C102] 03
+   [C104] 03
    }
 }
 
