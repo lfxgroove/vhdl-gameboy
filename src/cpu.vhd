@@ -101,6 +101,7 @@ begin
         SP <= X"FFFE"; -- see 3.2.4 at page 64
         A <= X"03";
         B <= X"00";
+        Mem_Addr <= X"0000";
         Interrupts_Enabled <= '0';      -- Assumed value.
       else
         -- Reset the high flags, since most instructions assume it is set to zero.
@@ -962,43 +963,43 @@ begin
                 -- OP-codes from page 88
                 -- INC A -t
               when X"3C" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC B -t
               when X"04" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC C -t
               when X"0C" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC D -t
               when X"14" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC E -t
               when X"1C" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC H -t
               when X"24" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC L -t
               when X"2C" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
@@ -1010,43 +1011,43 @@ begin
                 -- OP-codes from page 89
                 -- DEC A -t
               when X"3D" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC B -t
               when X"05" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC C -t
               when X"0D" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC D -t
               when X"15" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC E -t
               when X"1D" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC H -t
               when X"25" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC L -t
               when X"2D" =>
-                Alu_A <= "00" & A;
+                Alu_A <= X"00" & A;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
