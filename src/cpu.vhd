@@ -582,7 +582,7 @@ begin
                 Alu_Mode <= Alu_Add_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- ADC A, B -tested - tested more in detail than 89-8f
+                -- ADC A, B   more in detail than 89-8f -t
               when X"88" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
@@ -695,7 +695,7 @@ begin
                 Alu_Mode <= Alu_Sub_Carry;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- SBC A, B -tested - tested more in detail than 99-9F
+                -- SBC A, B - tested more in detail than 99-9F -t
               when X"98" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
@@ -754,7 +754,7 @@ begin
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_And;
                 State <= Exec2;
-                -- AND A, B -tested - tested in more detail than A1-A7
+                -- AND A, B  - tested in more detail than A1-A7 -t
               when X"A0" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
@@ -807,7 +807,7 @@ begin
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Or;
                 State <= Exec2;
-                -- OR A, B -tested - tested in more detail than B1-B7
+                -- OR A, B   - tested in more detail than B1-B7 -t
               when X"B0" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
@@ -860,7 +860,7 @@ begin
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Xor;
                 State <= Exec2;
-                -- XOR A, B  -tested - tested in more detail than A9-AF
+                -- XOR A, B - tested in more detail than A9-AF -t
               when X"A8" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
@@ -907,53 +907,53 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 86
                 -- OP-codes from page 87
-                -- CP A, A -(only tested if this does not destory A)
+                -- CP A, A - (only tested if this does not destory A) -t
               when X"BF" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & A;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, B -(only tested if this does not destory A)
+                -- CP A, B - (only tested if this does not destory A) -t
               when X"B8" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & B;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, C -(only tested if this does not destory A)
+                -- CP A, C - (only tested if this does not destory A) -t
               when X"B9" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & C;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, D -(only tested if this does not destory A)
+                -- CP A, D - (only tested if this does not destory A) -t
               when X"BA" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & D;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, E -(only tested if this does not destory A)
+                -- CP A, E - (only tested if this does not destory A) -t
               when X"BB" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & E;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, H -(only tested if this does not destory A)
+                -- CP A, H - (only tested if this does not destory A) -t
               when X"BC" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & H;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, L -(only tested if this does not destory A)
+                -- CP A, L - (only tested if this does not destory A) -t
               when X"BD" =>
                 Alu_A <= X"00" & A;
                 Alu_B <= X"00" & L;
                 Alu_Mode <= Alu_Sub;
                 State <= Exec2;
-                -- CP A, (HL) -(only tested if this does not destory A)
+                -- CP A, (HL) - (only tested if this does not destory A) -t
               when X"BE" =>
                 Mem_Addr <= H & L;
                 State <= Exec2;
-                -- CP A, # -(only tested if this does not destory A)
+                -- CP A, # - (only tested if this does not destory A) -t
               when X"FE" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1056,28 +1056,28 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 89
                 -- OP-codes from page 90
-                -- ADD HL, BC
+                -- ADD HL, BC -t
               when X"09" =>
                 Alu_A <= H & L;
                 Alu_B <= B & C;
                 Alu_Mode <= Alu_Add;
                 Alu_High_Flags <= '1';
                 State <= Exec2;
-                -- ADD HL, DE
+                -- ADD HL, DE -t
               when X"19" =>
                 Alu_A <= H & L;
                 Alu_B <= D & E;
                 Alu_Mode <= Alu_Add;
                 Alu_High_Flags <= '1';
                 State <= Exec2;
-                -- ADD HL, HL
+                -- ADD HL, HL -t
               when X"29" =>
                 Alu_A <= H & L;
                 Alu_B <= H & L;
                 Alu_Mode <= Alu_Add;
                 Alu_High_Flags <= '1';
                 State <= Exec2;
-                -- ADD HL, SP
+                -- ADD HL, SP -t
               when X"39" =>
                 Alu_A <= H & L;
                 Alu_B <= SP;
@@ -1086,7 +1086,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 90
                 -- OP-code from page 91
-                -- ADD SP, n (n = signed byte)
+                -- ADD SP, n (n = signed byte) # (High or low flags????) -t
               when X"E8" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
