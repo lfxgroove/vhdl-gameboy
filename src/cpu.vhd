@@ -1378,6 +1378,47 @@ begin
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
                 -- END op-codes from page 116
+                -- OP-codes from page 117
+                -- RET
+              when X"C9" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
+                -- RET NZ
+              when X"C0" =>
+                if F(7) = '0' then
+                  Mem_Addr <= SP;
+                  SP <= std_logic_vector(unsigned(SP) + 1);
+                  State <= Exec2;
+                end if;
+                -- RET Z
+              when X"C8" =>
+                if F(7) = '1' then
+                  Mem_Addr <= SP;
+                  SP <= std_logic_vector(unsigned(SP) + 1);
+                  State <= Exec2;
+                end if;
+                -- RET NC
+              when X"D0" =>
+                if F(4) = '0' then
+                  Mem_Addr <= SP;
+                  SP <= std_logic_vector(unsigned(SP) + 1);
+                  State <= Exec2;
+                end if;
+                -- RET C
+              when X"D8" =>
+                if F(4) = '1' then
+                  Mem_Addr <= SP;
+                  SP <= std_logic_vector(unsigned(SP) + 1);
+                  State <= Exec2;
+                end if;
+                -- END op-codes from page 117
+                -- OP-code from page 118
+                -- RETI
+              when X"D9" =>
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec2;
 
               when others =>
                 --FAKKA UR TOTALT OCH D
@@ -2114,6 +2155,13 @@ begin
                 Mem_Write_Enable <= '1';
                 PC <= X"0038";
 
+                -- RET, and all other RET when they have decided to jump
+              when X"C9" | X"C0" | X"C8" | X"D0" | X"D8" | X"D9" =>
+                Tmp_8Bit <= Mem_Read;
+                Mem_Addr <= SP;
+                SP <= std_logic_vector(unsigned(SP) + 1);
+                State <= Exec3;
+
               when others =>
             end case; -- End case Exec2
           when Exec3 =>
@@ -2339,6 +2387,13 @@ begin
                   State <= Exec4;
                 end if;
 
+                -- RET, and all other RET when they have decided to jump
+              when X"C9" | X"C0" | X"C8" | X"D0" | X"D8" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                -- RETI
+              when X"D9" =>
+                PC <= Mem_Read & Tmp_8Bit;
+                Interrupts_Enabled <= '1';
 
               when others =>
             end case; -- End case Exec3
