@@ -2547,6 +2547,97 @@ begin
               when X"CB36" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
+                -- OP-codes from page 101
+                -- RLC A (same as RLCA)
+              when X"CB07" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= A(7);
+                F(4) <= A(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC B
+              when X"CB00" =>
+                B(7 downto 1) <= B(6 downto 0);
+                B(0) <= B(7);
+                F(4) <= B(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if B = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC C
+              when X"CB01" =>
+                C(7 downto 1) <= C(6 downto 0);
+                C(0) <= C(7);
+                F(4) <= C(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if C = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC D
+              when X"CB02" =>
+                D(7 downto 1) <= D(6 downto 0);
+                D(0) <= D(7);
+                F(4) <= D(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if D = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC E
+              when X"CB03" =>
+                E(7 downto 1) <= E(6 downto 0);
+                E(0) <= E(7);
+                F(4) <= E(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if E = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC H
+              when X"CB04" =>
+                H(7 downto 1) <= H(6 downto 0);
+                H(0) <= H(7);
+                F(4) <= H(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if H = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC L
+              when X"CB05" =>
+                L(7 downto 1) <= L(6 downto 0);
+                L(0) <= L(7);
+                F(4) <= L(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if L = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC (HL)
+              when X"CB06" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+
+                -- END op-codes from page 101
               when others =>
             end case; -- End case IR & Mem_Read
           when Mb_Exec2 =>
@@ -2565,6 +2656,21 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
+                -- RLC (HL)
+              when X"CB05" =>
+                Mem_Write(7 downto 1) <= Mem_Read(6 downto 0);
+                Mem_Write(0) <= Mem_Read(7);
+                F(4) <= Mem_Read(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if Mem_Read = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+
               when others =>
             end case; -- End case IR & MB_IR
           when others =>
