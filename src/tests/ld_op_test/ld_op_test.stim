@@ -430,13 +430,13 @@
 
 # Tests 63
 @test {
-# LD A, #CO
+# LD A, #C1
 # LD E, A
 # LD H, E
 # LD (HL), H
-3E 34 5F 63 74
+3E C1 5F 63 74
   @check {
-    [C000] 34
+    [C100] C1
   }
 }
 

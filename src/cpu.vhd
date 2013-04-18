@@ -2548,6 +2548,670 @@ begin
               when X"CB36" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
+                -- OP-codes from page 101
+                -- RLC A (same as RLCA)
+              when X"CB07" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= A(7);
+                F(4) <= A(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC B
+              when X"CB00" =>
+                B(7 downto 1) <= B(6 downto 0);
+                B(0) <= B(7);
+                F(4) <= B(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if B = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC C
+              when X"CB01" =>
+                C(7 downto 1) <= C(6 downto 0);
+                C(0) <= C(7);
+                F(4) <= C(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if C = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC D
+              when X"CB02" =>
+                D(7 downto 1) <= D(6 downto 0);
+                D(0) <= D(7);
+                F(4) <= D(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if D = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC E
+              when X"CB03" =>
+                E(7 downto 1) <= E(6 downto 0);
+                E(0) <= E(7);
+                F(4) <= E(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if E = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC H
+              when X"CB04" =>
+                H(7 downto 1) <= H(6 downto 0);
+                H(0) <= H(7);
+                F(4) <= H(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if H = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC L
+              when X"CB05" =>
+                L(7 downto 1) <= L(6 downto 0);
+                L(0) <= L(7);
+                F(4) <= L(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if L = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RLC (HL)
+              when X"CB06" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 101
+                -- OP-codes from page 102
+                -- RL A (same as RLA)
+              when X"CB17" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= F(4);
+                F(4) <= A(7);
+                F(6 downto 5) <= "00";
+                if A(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL B
+              when X"CB10" =>
+                B(7 downto 1) <= B(6 downto 0);
+                B(0) <= F(4);
+                F(4) <= B(7);
+                F(6 downto 5) <= "00";
+                if B(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL C
+              when X"CB11" =>
+                C(7 downto 1) <= C(6 downto 0);
+                C(0) <= F(4);
+                F(4) <= C(7);
+                F(6 downto 5) <= "00";
+                if C(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL D
+              when X"CB12" =>
+                D(7 downto 1) <= D(6 downto 0);
+                D(0) <= F(4);
+                F(4) <= D(7);
+                F(6 downto 5) <= "00";
+                if D(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL E
+              when X"CB13" =>
+                E(7 downto 1) <= E(6 downto 0);
+                E(0) <= F(4);
+                F(4) <= E(7);
+                F(6 downto 5) <= "00";
+                if E(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL H
+              when X"CB14" =>
+                H(7 downto 1) <= H(6 downto 0);
+                H(0) <= F(4);
+                F(4) <= H(7);
+                F(6 downto 5) <= "00";
+                if H(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL L
+              when X"CB15" =>
+                L(7 downto 1) <= L(6 downto 0);
+                L(0) <= F(4);
+                F(4) <= L(7);
+                F(6 downto 5) <= "00";
+                if L(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL (HL)
+              when X"CB16" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 102
+                -- OP-codes from page 103
+                -- RRC A
+              when X"CB0F" =>
+                A(6 downto 0) <= A(7 downto 1);
+                A(7) <= A(0);
+                F(4) <= A(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if A = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC B
+              when X"CB08" =>
+                B(6 downto 0) <= B(7 downto 1);
+                B(7) <= B(0);
+                F(4) <= B(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if B = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC C
+              when X"CB09" =>
+                C(6 downto 0) <= C(7 downto 1);
+                C(7) <= C(0);
+                F(4) <= C(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if C = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC D
+              when X"CB0A" =>
+                D(6 downto 0) <= D(7 downto 1);
+                D(7) <= D(0);
+                F(4) <= D(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if D = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC E
+              when X"CB0B" =>
+                E(6 downto 0) <= E(7 downto 1);
+                E(7) <= E(0);
+                F(4) <= E(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if E = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC H
+              when X"CB0C" =>
+                H(6 downto 0) <= H(7 downto 1);
+                H(7) <= H(0);
+                F(4) <= H(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if H = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC L
+              when X"CB0D" =>
+                L(6 downto 0) <= L(7 downto 1);
+                L(7) <= L(0);
+                F(4) <= L(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if L = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RRC (HL)
+              when X"CB0E" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 103
+                -- OP-codes from page 104
+                -- RR A
+              when X"CB1F" =>
+                A(6 downto 0) <= A(7 downto 1);
+                A(7) <= F(4);
+                F(4) <= A(0);
+                F(6 downto 5) <= "00";
+                if A(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR B
+              when X"CB18" =>
+                B(6 downto 0) <= B(7 downto 1);
+                B(7) <= F(4);
+                F(4) <= B(0);
+                F(6 downto 5) <= "00";
+                if B(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR C
+              when X"CB19" =>
+                C(6 downto 0) <= C(7 downto 1);
+                C(7) <= F(4);
+                F(4) <= C(0);
+                F(6 downto 5) <= "00";
+                if C(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR D
+              when X"CB1A" =>
+                D(6 downto 0) <= D(7 downto 1);
+                D(7) <= F(4);
+                F(4) <= D(0);
+                F(6 downto 5) <= "00";
+                if D(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR E
+              when X"CB1B" =>
+                E(6 downto 0) <= E(7 downto 1);
+                E(7) <= F(4);
+                F(4) <= E(0);
+                F(6 downto 5) <= "00";
+                if E(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR H
+              when X"CB1C" =>
+                H(6 downto 0) <= H(7 downto 1);
+                H(7) <= F(4);
+                F(4) <= H(0);
+                F(6 downto 5) <= "00";
+                if H(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR L
+              when X"CB1D" =>
+                L(6 downto 0) <= L(7 downto 1);
+                L(7) <= F(4);
+                F(4) <= L(0);
+                F(6 downto 5) <= "00";
+                if L(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RR (HL)
+              when X"CB1E" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 104
+                -- OP-codes from page 105
+                -- SLA A
+              when X"CB27" =>
+                A <= A(6 downto 0) & "0";
+                F(4) <= A(7);
+                F(6 downto 5) <= "00";
+                if A(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA B
+              when X"CB20" =>
+                B <= B(6 downto 0) & "0";
+                F(4) <= B(7);
+                F(6 downto 5) <= "00";
+                if B(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA C
+              when X"CB21" =>
+                C <= C(6 downto 0) & "0";
+                F(4) <= C(7);
+                F(6 downto 5) <= "00";
+                if C(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA D
+              when X"CB22" =>
+                D <= D(6 downto 0) & "0";
+                F(4) <= D(7);
+                F(6 downto 5) <= "00";
+                if D(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA E
+              when X"CB23" =>
+                E <= E(6 downto 0) & "0";
+                F(4) <= E(7);
+                F(6 downto 5) <= "00";
+                if E(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA H
+              when X"CB24" =>
+                H <= H(6 downto 0) & "0";
+                F(4) <= H(7);
+                F(6 downto 5) <= "00";
+                if H(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA L
+              when X"CB25" =>
+                L <= L(6 downto 0) & "0";
+                F(4) <= L(7);
+                F(6 downto 5) <= "00";
+                if L(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA (HL)
+              when X"CB26" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 105
+                -- OP-codes from page 106
+                -- SRA A
+              when X"CB2F" =>
+                A(6 downto 0) <= A(7 downto 1);
+                F(4) <= A(0);
+                F(6 downto 5) <= "00";
+                if A(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA B
+              when X"CB28" =>
+                B(6 downto 0) <= B(7 downto 1);
+                F(4) <= B(0);
+                F(6 downto 5) <= "00";
+                if B(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA C
+              when X"CB29" =>
+                C(6 downto 0) <= C(7 downto 1);
+                F(4) <= C(0);
+                F(6 downto 5) <= "00";
+                if C(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA D
+              when X"CB2A" =>
+                D(6 downto 0) <= D(7 downto 1);
+                F(4) <= D(0);
+                F(6 downto 5) <= "00";
+                if D(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA E
+              when X"CB2B" =>
+                E(6 downto 0) <= E(7 downto 1);
+                F(4) <= E(0);
+                F(6 downto 5) <= "00";
+                if E(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA H
+              when X"CB2C" =>
+                H(6 downto 0) <= H(7 downto 1);
+                F(4) <= H(0);
+                F(6 downto 5) <= "00";
+                if H(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRA L
+              when X"CB2D" =>
+                L(6 downto 0) <= L(7 downto 1);
+                F(4) <= L(0);
+                F(6 downto 5) <= "00";
+                if L(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA (HL)
+              when X"CB2E" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 106
+                -- OP-codes from page 107
+                -- SRL A
+              when X"CB3F" =>
+                A <= "0" & A(7 downto 1);
+                F(4) <= A(0);
+                F(6 downto 5) <= "00";
+                if A(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL B
+              when X"CB38" =>
+                B <= "0" & B(7 downto 1);
+                F(4) <= B(0);
+                F(6 downto 5) <= "00";
+                if B(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL C
+              when X"CB39" =>
+                C <= "0" & C(7 downto 1);
+                F(4) <= C(0);
+                F(6 downto 5) <= "00";
+                if C(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL D
+              when X"CB3A" =>
+                D <= "0" & D(7 downto 1);
+                F(4) <= D(0);
+                F(6 downto 5) <= "00";
+                if D(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL E
+              when X"CB3B" =>
+                E <= "0" & E(7 downto 1);
+                F(4) <= E(0);
+                F(6 downto 5) <= "00";
+                if E(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL H
+              when X"CB3C" =>
+                H <= "0" & H(7 downto 1);
+                F(4) <= H(0);
+                F(6 downto 5) <= "00";
+                if H(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL L
+              when X"CB3D" =>
+                L <= "0" & L(7 downto 1);
+                F(4) <= L(0);
+                F(6 downto 5) <= "00";
+                if L(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SRL (HL)
+              when X"CB3E" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 107
+                -- OP-codes from page 108
+                -- BIT b, A (where 8 * b is added to the OP-code)
+              when X"CB47" | X"CB4F" | X"CB57" | X"CB5F" | X"CB67" | X"CB6F" | X"CB77" | X"CB7F" =>
+                F(7) <= not A(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, B (where 8 * b is added to the OP-code)
+              when X"CB40" | X"CB48" | X"CB50" | X"CB58" | X"CB60" | X"CB68" | X"CB70" | X"CB78" =>
+                F(7) <= not B(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, C (where 8 * b is added to the OP-code)
+              when X"CB41" | X"CB49" | X"CB51" | X"CB59" | X"CB61" | X"CB69" | X"CB71" | X"CB79" =>
+                F(7) <= not C(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, D (where 8 * b is added to the OP-code)
+              when X"CB42" | X"CB4A" | X"CB52" | X"CB5A" | X"CB62" | X"CB6A" | X"CB72" | X"CB7A" =>
+                F(7) <= not D(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, E (where 8 * b is added to the OP-code)
+              when X"CB43" | X"CB4B" | X"CB53" | X"CB5B" | X"CB63" | X"CB6B" | X"CB73" | X"CB7B" =>
+                F(7) <= not E(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, H (where 8 * b is added to the OP-code)
+              when X"CB44" | X"CB4C" | X"CB54" | X"CB5C" | X"CB64" | X"CB6C" | X"CB74" | X"CB7C" =>
+                F(7) <= not H(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, L (where 8 * b is added to the OP-code)
+              when X"CB45" | X"CB4D" | X"CB55" | X"CB5D" | X"CB65" | X"CB6D" | X"CB75" | X"CB7D" =>
+                F(7) <= not L(to_integer(unsigned(Mem_Read(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- BIT b, (HL) (where 8 * b is added to the OP-code)
+              when X"CB46" | X"CB4E" | X"CB56" | X"CB5E" | X"CB66" | X"CB6E" | X"CB76" | X"CB7E" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 108
+                -- OP-codes from page 109
+                -- SET b, A (where 8 * b is added to the OP-code)
+              when X"CBC7" | X"CBCF" | X"CBD7" | X"CBDF" | X"CBE7" | X"CBEF" | X"CBF7" | X"CBFF" =>
+                A(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, B (where 8 * b is added to the OP-code)
+              when X"CBC0" | X"CBC8" | X"CBD0" | X"CBD8" | X"CBE0" | X"CBE8" | X"CBF0" | X"CBF8" =>
+                B(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, C (where 8 * b is added to the OP-code)
+              when X"CBC1" | X"CBC9" | X"CBD1" | X"CBD9" | X"CBE1" | X"CBE9" | X"CBF1" | X"CBF9" =>
+                C(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, D (where 8 * b is added to the OP-code)
+              when X"CBC2" | X"CBCA" | X"CBD2" | X"CBDA" | X"CBE2" | X"CBEA" | X"CBF2" | X"CBFA" =>
+                D(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, E (where 8 * b is added to the OP-code)
+              when X"CBC3" | X"CBCB" | X"CBD3" | X"CBDB" | X"CBE3" | X"CBEB" | X"CBF3" | X"CBFB" =>
+                E(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, H (where 8 * b is added to the OP-code)
+              when X"CBC4" | X"CBCC" | X"CBD4" | X"CBDC" | X"CBE4" | X"CBEC" | X"CBF4" | X"CBFC" =>
+                H(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, L (where 8 * b is added to the OP-code)
+              when X"CBC5" | X"CBCD" | X"CBD5" | X"CBDD" | X"CBE5" | X"CBED" | X"CBF5" | X"CBFD" =>
+                L(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, (HL) (where 8 * b is added to the OP-code)
+              when X"CBC6" | X"CBCE" | X"CBD6" | X"CBDE" | X"CBE6" | X"CBEE" | X"CBF6" | X"CBFE" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 109
+                -- OP-codes from page 110
+                -- RES b, A (where 8 * b is added to the OP-code)
+              when X"CB87" | X"CB8F" | X"CB97" | X"CB9F" | X"CBA7" | X"CBAF" | X"CBB7" | X"CBBF" =>
+                A(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, B (where 8 * b is added to the OP-code)
+              when X"CB80" | X"CB88" | X"CB90" | X"CB98" | X"CBA0" | X"CBA8" | X"CBB0" | X"CBB8" =>
+                B(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, C (where 8 * b is added to the OP-code)
+              when X"CB81" | X"CB89" | X"CB91" | X"CB99" | X"CBA1" | X"CBA9" | X"CBB1" | X"CBB9" =>
+                C(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, D (where 8 * b is added to the OP-code)
+              when X"CB82" | X"CB8A" | X"CB92" | X"CB9A" | X"CBA2" | X"CBAA" | X"CBB2" | X"CBBA" =>
+                D(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, E (where 8 * b is added to the OP-code)
+              when X"CB83" | X"CB8B" | X"CB93" | X"CB9B" | X"CBA3" | X"CBAB" | X"CBB3" | X"CBBB" =>
+                E(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, H (where 8 * b is added to the OP-code)
+              when X"CB84" | X"CB8C" | X"CB94" | X"CB9C" | X"CBA4" | X"CBAC" | X"CBB4" | X"CBBC" =>
+                H(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, L (where 8 * b is added to the OP-code)
+              when X"CB85" | X"CB8D" | X"CB95" | X"CB9D" | X"CBA5" | X"CBAD" | X"CBB5" | X"CBBD" =>
+                L(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
+                -- RES b, (HL) (where 8 * b is added to the OP-code)
+              when X"CB86" | X"CB8E" | X"CB96" | X"CB9E" | X"CBA6" | X"CBAE" | X"CBB6" | X"CBBE" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 110
+
+
               when others =>
             end case; -- End case IR & Mem_Read
           when Mb_Exec2 =>
@@ -2566,6 +3230,113 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
+                -- RLC (HL)
+              when X"CB06" =>
+                Mem_Write(7 downto 1) <= Mem_Read(6 downto 0);
+                Mem_Write(0) <= Mem_Read(7);
+                F(4) <= Mem_Read(7);
+                F(5) <= '0';
+                F(6) <= '0';
+                if Mem_Read = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- RL (HL)
+              when X"CB16" =>
+                Mem_Write(7 downto 1) <= Mem_Read(6 downto 0);
+                Mem_Write(0) <= F(4);
+                F(4) <= Mem_Read(7);
+                F(6 downto 5) <= "00";
+                if Mem_Read(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- RRC (HL)
+              when X"CB0E" =>
+                Mem_Write(6 downto 0) <= Mem_Read(7 downto 1);
+                Mem_Write(7) <= Mem_Read(0);
+                F(4) <= Mem_Read(0);
+                F(5) <= '0';
+                F(6) <= '0';
+                if Mem_Read = X"00" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- RR (HL)
+              when X"CB1E" =>
+                Mem_Write(6 downto 0) <= Mem_Read(7 downto 1);
+                Mem_Write(7) <= F(4);
+                F(4) <= Mem_Read(0);
+                F(6 downto 5) <= "00";
+                if Mem_Read(7 downto 1) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- SLA (HL)
+              when X"CB26" =>
+                Mem_Write <= Mem_Read(6 downto 0) & "0";
+                F(4) <= Mem_Read(7);
+                F(6 downto 5) <= "00";
+                if Mem_Read(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- SLA (HL)
+              when X"CB2E" =>
+                Mem_Write(6 downto 0) <= Mem_Read(7 downto 1);
+                F(4) <= Mem_Read(0);
+                F(6 downto 5) <= "00";
+                if Mem_Read(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- SRL (HL)
+              when X"CB3E" =>
+                Mem_Write <= "0" & Mem_Read(7 downto 1);
+                F(4) <= Mem_Read(0);
+                F(6 downto 5) <= "00";
+                if Mem_Read(7 downto 1) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                -- BIT b, (HL) (where 8 * b is added to the OP-code)
+              when X"CB46" | X"CB4E" | X"CB56" | X"CB5E" | X"CB66" | X"CB6E" | X"CB76" | X"CB7E" =>
+                F(7) <= not Mem_Read(to_integer(unsigned(MB_IR(5 downto 3))));
+                F(6 downto 5) <= "01";
+                -- SET b, (HL) (where 8 * b is added to the OP-code)
+              when X"CBC6" | X"CBCE" | X"CBD6" | X"CBDE" | X"CBE6" | X"CBEE" | X"CBF6" | X"CBFE" =>
+                Mem_Write <= Mem_Read;
+                Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '1';
+                Mem_Write_Enable <= '1';
+                Mem_Addr <= H & L;
+                -- RES b, (HL) (where 8 * b is added to the OP-code)
+              when X"CB86" | X"CB8E" | X"CB96" | X"CB9E" | X"CBA6" | X"CBAE" | X"CBB6" | X"CBBE" =>
+                Mem_Write <= Mem_Read;
+                Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '1';
+                Mem_Write_Enable <= '1';
+                Mem_Addr <= H & L;
+
               when others =>
             end case; -- End case IR & MB_IR
           when others =>
