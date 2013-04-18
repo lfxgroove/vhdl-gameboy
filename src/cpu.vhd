@@ -2549,7 +2549,7 @@ begin
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- OP-codes from page 101
-                -- RLC A (same as RLCA)
+                -- RLC A (same as RLCA) -t
               when X"CB07" =>
                 A(7 downto 1) <= A(6 downto 0);
                 A(0) <= A(7);
@@ -2561,7 +2561,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC B
+                -- RLC B  -t
               when X"CB00" =>
                 B(7 downto 1) <= B(6 downto 0);
                 B(0) <= B(7);
@@ -2573,7 +2573,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC C
+                -- RLC C -t
               when X"CB01" =>
                 C(7 downto 1) <= C(6 downto 0);
                 C(0) <= C(7);
@@ -2585,7 +2585,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC D
+                -- RLC D -t
               when X"CB02" =>
                 D(7 downto 1) <= D(6 downto 0);
                 D(0) <= D(7);
@@ -2597,7 +2597,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC E
+                -- RLC E -t
               when X"CB03" =>
                 E(7 downto 1) <= E(6 downto 0);
                 E(0) <= E(7);
@@ -2609,7 +2609,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC H
+                -- RLC H -t
               when X"CB04" =>
                 H(7 downto 1) <= H(6 downto 0);
                 H(0) <= H(7);
@@ -2621,7 +2621,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC L
+                -- RLC L -t
               when X"CB05" =>
                 L(7 downto 1) <= L(6 downto 0);
                 L(0) <= L(7);
@@ -2633,7 +2633,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RLC (HL)
+                -- RLC (HL) -t
               when X"CB06" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;

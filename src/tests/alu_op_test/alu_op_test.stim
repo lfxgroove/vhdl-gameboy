@@ -1441,3 +1441,206 @@ l# Tests 2D
 }
 
 
+# Tests CB00 
+@test {
+# LD A, #81
+# LD B, A
+# LD A, #00
+# RLC B
+# ADC A, B - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (HL), A
+3E 81 47 CB 00 88 77
+  @check {
+    [C000] 03
+  }
+}
+
+
+# Tests CB00 
+@test {
+# LD A, #01
+# LD B, A
+# LD A, #00
+# RLC B
+# ADC A, B - 00+02+carry(=0) = 02 # tests if carry is Reset
+# LD (HL), A
+3E 01 47 CB 00 88 77
+  @check {
+    [C000] 02
+  }
+}
+
+
+# Tests CB01
+@test {
+# LD A, #81
+# LD C, A
+# LD A, #00
+# RLC C
+# ADC A, C - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (HL), A
+3E 81 4F CB 01 89 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests CB01
+@test {
+# LD A, #01
+# LD C, A
+# LD A, #00
+# RLC C
+# ADC A, C - 00+02+carry(=0) = 02 # tests if carry is set
+# LD (HL), A
+3E 01 4F CB 01 89 77
+  @check {
+    [C000] 02
+  }
+}
+
+
+# Tests CB02
+@test {
+# LD A, #81
+# LD D, A
+# LD A, #00
+# RLC D
+# ADC A, D - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (HL), A
+3E 81 57 CB 02 8A 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests CB02
+@test {
+# LD A, #01
+# LD D, A
+# LD A, #00
+# RLC D
+# ADC A, D - 00+02+carry(=0) = 02 # tests if carry is set
+# LD (HL), A
+3E 01 57 CB 02 8A 77
+  @check {
+    [C000] 02
+  }
+}
+
+
+# Tests CB03
+@test {
+# LD A, #81
+# LD E, A
+# LD A, #00
+# RLC E
+# ADC A, E - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (HL), A
+3E 81 5F CB 03 8B 77
+  @check {
+    [C000] 03
+  }
+}
+
+# Tests CB03
+@test {
+# LD A, #01
+# LD E, A
+# LD A, #00
+# RLC E
+# ADC A, E - 00+02+carry(=0) = 02 # tests if carry is set
+# LD (HL), A
+3E 01 5F CB 03 8B 77
+  @check {
+    [C000] 02
+  }
+}
+
+
+# Tests CB04
+@test {
+# LD A, #81
+# LD H, A
+# LD A, #00
+# RLC H
+# ADC A, H - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (BC), A
+3E 81 67 CB 04 8C 02
+  @check {
+    [C104] 03
+  }
+}
+
+# Tests CB04
+@test {
+# LD A, #01
+# LD H, A
+# LD A, #00
+# RLC H
+# ADC A, H - 00+02+carry(=0) = 02 # tests if carry is set
+# LD (BC), A
+3E 01 67 CB 04 8C 02
+  @check {
+    [C104] 02
+  }
+}
+
+
+# Tests CB05
+@test {
+# LD A, #81
+# LD L, A
+# LD A, #00
+# RLC L
+# ADC A, L - 00+02+carry(=1) = 03 # tests if carry is set
+# LD (BC), A
+3E 81 6F CB 05 8D 02
+  @check {
+    [C104] 03
+  }
+}
+
+# Tests CB05
+@test {
+# LD A, #01
+# LD L, A
+# LD A, #00
+# RLC L
+# ADC A, L - 00+02+carry(=0) = 02 # tests if carry is set
+# LD (BC), A
+3E 01 6F CB 05 8D 02
+  @check {
+    [C104] 02
+  }
+}
+
+# Tests CB06
+@test {
+# A, #00
+# LD B, A
+# RLC (HL)
+# ADC A, B - 00+00+carry(=1) = 01 # tests if carry is set
+# LD (BC), A
+3E 00 47 CB 06 8D 02
+  @check {
+    [C000] FE
+    [C104] 01
+  }
+}
+
+# Tests CB07
+@test {
+# LD A, #00
+# LD B, A
+# LD A, #80
+# RLC A
+# ADC A,B - 00+00+carry(=1) = 01
+# LD (HL), A
+3E 00 47 3E 80 CB 07 88 77
+  @check {
+    [C000] 01
+  }
+}
+
+
