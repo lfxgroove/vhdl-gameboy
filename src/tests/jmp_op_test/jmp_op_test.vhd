@@ -6,10 +6,10 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-entity Alu_Op_Test is
-end Alu_Op_Test;
+entity Jmp_Op_Test is
+end Jmp_Op_Test;
 
-architecture Behavior of Alu_Op_Test is
+architecture Behavior of Jmp_Op_Test is
 -- Component Decalaration
 
   component Bus_Controller
@@ -92,8 +92,8 @@ begin
     variable In_Line, Out_Line : line;
     variable Curr_Addr : std_logic_vector(15 downto 0) := X"0150";
     variable Data_Byte : std_logic_vector(7 downto 0);
-    file In_File : text open read_mode is "tests/alu_op_test/stimulus/feed.txt";
-    file Out_File : text open write_mode is "tests/alu_op_test/results/results.txt";
+    file In_File : text open read_mode is "tests/jmp_op_test/stimulus/feed.txt";
+    file Out_File : text open write_mode is "tests/jmp_op_test/results/results.txt";
   begin
     Cpu_Allowed <= '1';
   --writes one byte at a time to the memory
