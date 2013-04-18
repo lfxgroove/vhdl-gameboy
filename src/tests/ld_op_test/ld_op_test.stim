@@ -514,7 +514,7 @@
 # LD (HL), L
 6C 75
   @check {
-    [C000] C0
+    [C0C0] C0
   }
 }
 
@@ -626,7 +626,7 @@
 # LD D, (HL)
 # LD A, D
 # LD (BC), A
-56 7A 12
+56 7A 02
   @check {
     [C104] FF 
   }
@@ -637,7 +637,7 @@
 # LD E, (HL)
 # LD A, E
 # LD (BC), A
-5E 7B 12
+5E 7B 02
   @check {
     [C104] FF 
   }
@@ -706,11 +706,11 @@
 
 # Tests 01
 @test {
-# LD BC, 01
+# LD BC, #C208
 # LD (BC), A
-01 01 02
+01 08 C2 02
   @check {
-    [C104] 80
+    [C208] 03
   }
 }
 
@@ -844,7 +844,7 @@ FA 00 C0 02
 # LD (nn), SP (nn=00C1)
 31 34 12 08 00 C1 
   @check {
-    [C100] 12 34
+    [C100] 34 12
   }
 }
 
@@ -855,19 +855,20 @@ FA 00 C0 02
 # LD (nn), SP (nn=00C1)
 F9 08 00 C1 
   @check {
-    [C100] C1 00
+    [C100] 00 C0
   }
 }
 
 
 # Tests F8 CALC: SP+n=ABCD+02=ABCF
 @test {
-# LD SP, nn (nn=DCAB)
-# LD HL, SP+n
+# LD SP, nn (nn=CDAB)
+# LD HL, SP+n (n=02)
+# LD SP, HL -- added since the result in HL was previously ignored, causing the test to fail
 # LD (nn), SP (nn=00C1)
-31 DC AB F8 02 08 00 C1 
+31 CD AB F8 02 F9 08 00 C1 
   @check {
-    [C100] AB CF
+    [C100] CF AB
   }
 }
 
