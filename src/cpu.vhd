@@ -2893,7 +2893,82 @@ begin
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 104
-
+                -- OP-codes from page 105
+                -- SLA A
+              when X"CB27" =>
+                A <= A(6 downto 0) & "0";
+                F(4) <= A(7);
+                F(6 downto 5) <= "00";
+                if A(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA B
+              when X"CB20" =>
+                B <= B(6 downto 0) & "0";
+                F(4) <= B(7);
+                F(6 downto 5) <= "00";
+                if B(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA C
+              when X"CB21" =>
+                C <= C(6 downto 0) & "0";
+                F(4) <= C(7);
+                F(6 downto 5) <= "00";
+                if C(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA D
+              when X"CB22" =>
+                D <= D(6 downto 0) & "0";
+                F(4) <= D(7);
+                F(6 downto 5) <= "00";
+                if D(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA E
+              when X"CB23" =>
+                E <= E(6 downto 0) & "0";
+                F(4) <= E(7);
+                F(6 downto 5) <= "00";
+                if E(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA H
+              when X"CB24" =>
+                H <= H(6 downto 0) & "0";
+                F(4) <= H(7);
+                F(6 downto 5) <= "00";
+                if H(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA L
+              when X"CB25" =>
+                L <= L(6 downto 0) & "0";
+                F(4) <= L(7);
+                F(6 downto 5) <= "00";
+                if L(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- SLA (HL)
+              when X"CB26" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 105
 
               when others =>
             end case; -- End case IR & Mem_Read
@@ -2967,7 +3042,18 @@ begin
                 end if;
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
-
+                -- SLA (HL)
+              when X"CB26" =>
+                Mem_Write <= Mem_Read(6 downto 0) & "0";
+                F(4) <= Mem_Read(7);
+                F(6 downto 5) <= "00";
+                if Mem_Read(6 downto 0) = "0000000" then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
 
               when others =>
             end case; -- End case IR & MB_IR
