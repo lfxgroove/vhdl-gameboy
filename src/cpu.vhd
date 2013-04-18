@@ -3155,6 +3155,33 @@ begin
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 108
+                -- OP-codes from page 109
+                -- SET b, A (where 8 * b is added to the OP-code)
+              when X"CBC7" | X"CBCF" | X"CBD7" | X"CBDF" | X"CBE7" | X"CBEF" | X"CBF7" | X"CBFF" =>
+                A(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, B (where 8 * b is added to the OP-code)
+              when X"CBC0" | X"CBC8" | X"CBD0" | X"CBD8" | X"CBE0" | X"CBE8" | X"CBF0" | X"CBF8" =>
+                B(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, C (where 8 * b is added to the OP-code)
+              when X"CBC1" | X"CBC9" | X"CBD1" | X"CBD9" | X"CBE1" | X"CBE9" | X"CBF1" | X"CBF9" =>
+                C(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, D (where 8 * b is added to the OP-code)
+              when X"CBC2" | X"CBCA" | X"CBD2" | X"CBDA" | X"CBE2" | X"CBEA" | X"CBF2" | X"CBFA" =>
+                D(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, E (where 8 * b is added to the OP-code)
+              when X"CBC3" | X"CBCB" | X"CBD3" | X"CBDB" | X"CBE3" | X"CBEB" | X"CBF3" | X"CBFB" =>
+                E(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, H (where 8 * b is added to the OP-code)
+              when X"CBC4" | X"CBCC" | X"CBD4" | X"CBDC" | X"CBE4" | X"CBEC" | X"CBF4" | X"CBFC" =>
+                H(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, L (where 8 * b is added to the OP-code)
+              when X"CBC5" | X"CBCD" | X"CBD5" | X"CBDD" | X"CBE5" | X"CBED" | X"CBF5" | X"CBFD" =>
+                L(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
+                -- SET b, (HL) (where 8 * b is added to the OP-code)
+              when X"CBC6" | X"CBCE" | X"CBD6" | X"CBDE" | X"CBE6" | X"CBEE" | X"CBF6" | X"CBFE" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+                -- END op-codes from page 109
 
               when others =>
             end case; -- End case IR & Mem_Read
@@ -3268,6 +3295,12 @@ begin
               when X"CB46" | X"CB4E" | X"CB56" | X"CB5E" | X"CB66" | X"CB6E" | X"CB76" | X"CB7E" =>
                 F(7) <= not Mem_Read(to_integer(unsigned(MB_IR(5 downto 3))));
                 F(6 downto 5) <= "01";
+                -- BIT b, (HL) (where 8 * b is added to the OP-code)
+              when X"CBC6" | X"CBCE" | X"CBD6" | X"CBDE" | X"CBE6" | X"CBEE" | X"CBF6" | X"CBFE" =>
+                Mem_Write <= Mem_Read;
+                Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '1';
+                Mem_Write_Enable <= '1';
+                Mem_Addr <= H & L;
 
 
               when others =>
