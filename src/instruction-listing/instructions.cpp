@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <sstream>
 #include <stdlib.h>
+#include <string.h>
 
 using namespace std;
 
@@ -203,7 +204,8 @@ int main(int argc, char *argv[]) {
   if (outputFile == "") {
     outputList(i, cout);
   } else {
-    outputList(i, ofstream(outputFile.c_str()));
+    ofstream f(outputFile.c_str());
+    outputList(i, f);
   }
 
   return 0;
