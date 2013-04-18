@@ -2636,8 +2636,90 @@ begin
               when X"CB06" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
-
                 -- END op-codes from page 101
+                -- OP-codes from page 102
+                -- RL A (same as RLA)
+              when X"CB17" =>
+                A(7 downto 1) <= A(6 downto 0);
+                A(0) <= F(4);
+                F(4) <= A(7);
+                F(6 downto 5) <= "00";
+                if A(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL B
+              when X"CB10" =>
+                B(7 downto 1) <= B(6 downto 0);
+                B(0) <= F(4);
+                F(4) <= B(7);
+                F(6 downto 5) <= "00";
+                if B(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL C
+              when X"CB11" =>
+                C(7 downto 1) <= C(6 downto 0);
+                C(0) <= F(4);
+                F(4) <= C(7);
+                F(6 downto 5) <= "00";
+                if C(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL D
+              when X"CB12" =>
+                D(7 downto 1) <= D(6 downto 0);
+                D(0) <= F(4);
+                F(4) <= D(7);
+                F(6 downto 5) <= "00";
+                if D(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL E
+              when X"CB13" =>
+                E(7 downto 1) <= E(6 downto 0);
+                E(0) <= F(4);
+                F(4) <= E(7);
+                F(6 downto 5) <= "00";
+                if E(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL H
+              when X"CB14" =>
+                H(7 downto 1) <= H(6 downto 0);
+                H(0) <= F(4);
+                F(4) <= H(7);
+                F(6 downto 5) <= "00";
+                if H(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL L
+              when X"CB15" =>
+                L(7 downto 1) <= L(6 downto 0);
+                L(0) <= F(4);
+                F(4) <= L(7);
+                F(6 downto 5) <= "00";
+                if L(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                -- RL (HL)
+              when X"CB16" =>
+                Mem_Addr <= H & L;
+                State <= Mb_Exec2;
+
               when others =>
             end case; -- End case IR & Mem_Read
           when Mb_Exec2 =>
@@ -2657,7 +2739,7 @@ begin
                 end if;
                 F(6 downto 0) <= (others => '0');
                 -- RLC (HL)
-              when X"CB05" =>
+              when X"CB06" =>
                 Mem_Write(7 downto 1) <= Mem_Read(6 downto 0);
                 Mem_Write(0) <= Mem_Read(7);
                 F(4) <= Mem_Read(7);
@@ -2670,6 +2752,20 @@ begin
                 end if;
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
+                -- RL L
+              when X"CB16" =>
+                Mem_Write(7 downto 1) <= Mem_Read(6 downto 0);
+                Mem_Write(0) <= F(4);
+                F(4) <= Mem_Read(7);
+                F(6 downto 5) <= "00";
+                if Mem_Read(6 downto 0) = "000000" and F(4) = '0' then
+                  F(7) <= '1';
+                else
+                  F(7) <= '0';
+                end if;
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+
 
               when others =>
             end case; -- End case IR & MB_IR
