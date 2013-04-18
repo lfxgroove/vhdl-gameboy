@@ -1264,19 +1264,20 @@ begin
                 -- JP (HL)
               when X"E9" =>
                 PC <= H & L;
-                -- JR n (relative jump, n signed, relative first byte of next instr)
+                -- JR n (relative jump, n signed, relative first byte of next
+                -- instr) -t
               when X"18" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 112
                 -- OP-codes from page 113
-                -- JR NZ, n
+                -- JR NZ, n -t
               when X"20" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JR Z, n
+                -- JR Z, n -t
               when X"28" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1286,7 +1287,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JR C, n
+                -- JR C, n -t
               when X"38" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -2056,7 +2057,7 @@ begin
                 if F(7) = '1' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
                 end if;
-                -- JR NC, n
+                -- JR NC, n -t
               when X"30" =>
                 if F(4) = '0' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
