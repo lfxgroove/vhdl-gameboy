@@ -137,7 +137,7 @@ begin
               when X"7F" =>
               -- LD A, B -t
               when X"78" =>
-                B <= A;
+                A <= B;
               -- LD A, C -t
               when X"79" =>
                 A <= C;
@@ -421,6 +421,8 @@ begin
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
                 Tmp := std_logic_vector(unsigned(H & L) + 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
                 Mem_Write <= A;
                 -- OP-codes from page 75
                 -- LD ($FF00+n), A -t
@@ -3335,6 +3337,7 @@ begin
                 Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '1';
                 Mem_Write_Enable <= '1';
                 Mem_Addr <= H & L;
+
 
               when others =>
             end case; -- End case IR & MB_IR
