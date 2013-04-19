@@ -237,6 +237,38 @@ begin
                 Mem_Addr <= H & L;
                 State <= Exec2;
                 -- END of-codes from page 71
+                -- OP-codes from page 65
+                -- LD B, n
+              when X"06" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD C, n
+              when X"0E" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD D, n
+              when X"16" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD E, n
+              when X"1E" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD H, n
+              when X"26" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- LD L, n
+              when X"2E" =>
+                Mem_Addr <= PC;
+                PC <= std_logic_vector(unsigned(PC) + 1);
+                State <= Exec2;
+                -- END op-codes from page 65
 
                 -- OP-codes from page 66-67
                 -- LD B, B -t
@@ -407,6 +439,16 @@ begin
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 66-67
+                -- OP-code from page 72
+                -- LD (HL-), A
+              when X"32" =>
+                Mem_Addr <= H & L;
+                Mem_Write_Enable <= '1';
+                Tmp := std_logic_vector(unsigned(H & L) - 1);
+                H <= Tmp(15 downto 8);
+                L <= Tmp(7 downto 0);
+                Mem_Write <= A;
+
                 -- OP-code from page 73
                 -- LD A, (HL+) -t
               when X"2A" =>
@@ -478,6 +520,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= A;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH BC -t
@@ -485,6 +528,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= B;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH DE -t
@@ -492,6 +536,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= D;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH HL -t
@@ -499,6 +544,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= H;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- END op-codes from page 78
@@ -1019,37 +1065,37 @@ begin
                 State <= Exec2;
                 -- DEC B -t
               when X"05" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & B;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC C -t
               when X"0D" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & C;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC D -t
               when X"15" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & D;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC E -t
               when X"1D" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & E;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC H -t
               when X"25" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & H;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- DEC L -t
               when X"2D" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & L;
                 Alu_Mode <= Alu_Dec;
                 Alu_Flags_In <= F;
                 State <= Exec2;
@@ -1266,8 +1312,7 @@ begin
                 -- JP (HL)
               when X"E9" =>
                 PC <= H & L;
-                -- JR n (relative jump, n signed, relative first byte of next
-                -- instr) -t
+                -- JR n (relative jump, n signed, relative first byte of next instr) -t
               when X"18" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1465,6 +1510,27 @@ begin
                 tmp := std_logic_vector(unsigned(H & L) - X"0001");
                 H <= tmp(15 downto 8);
                 L <= tmp(7 downto 0);
+
+                -- LD B, n
+              when X"06" =>
+                B <= Mem_Read;
+                -- LD C, n
+              when X"0E" =>
+                C <= Mem_Read;
+                -- LD D, n
+              when X"16" =>
+                D <= Mem_Read;
+                -- LD E, n
+              when X"1E" =>
+                E <= Mem_Read;
+                -- LD H, n
+              when X"26" =>
+                H <= Mem_Read;
+                -- LD L, n
+              when X"2E" =>
+                L <= Mem_Read;
+                -- END op-codes from page 65
+
               -- LD (nn), A
               when X"EA" =>
                 Tmp_8Bit <= Mem_Read;
@@ -1547,49 +1613,52 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) + 1);
                 Mem_Write <= F;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
-                State <= Exec2;
                 -- PUSH BC
               when X"C5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= C;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH DE
               when X"D5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= E;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH HL
               when X"E5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= L;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- POP AF
               when X"F1" =>
                 F <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP BC
               when X"C1" =>
                 C <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP DE
               when X"D1" =>
                 E <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP HL
               when X"E1" =>
                 L <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- ADD A, A
               when X"87" =>

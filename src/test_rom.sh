@@ -24,7 +24,7 @@ model_name=Rom_Test
 ./compile.sh
 
 echo "Running..."
-ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=2ms 2> ./roms/errors.txt
+ghdl --elab-run --ieee=synopsys ${model_name} --vcd=${model_name}.vcd --stop-time=20ms 2> ./roms/errors.txt
 if [ $? -ne 0 ]
 then
     echo "Errors (last 6 lines from ./roms/errors.txt):"
