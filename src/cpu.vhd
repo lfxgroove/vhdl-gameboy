@@ -2724,7 +2724,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 102
                 -- OP-codes from page 103
-                -- RRC A
+                -- RRC A -t
               when X"CB0F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= A(0);
@@ -2808,7 +2808,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC (HL)
+                -- RRC (HL) -t
               when X"CB0E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;

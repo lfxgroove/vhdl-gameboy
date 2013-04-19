@@ -1661,15 +1661,15 @@ l# Tests 2D
 
 # Tests CB08
 @test {
-# LD A, #01
+# LD A, #80
 # LD B, A	 
 # LD A, #00
 # RRC B
-# ADC A, B - 00+00+carry(=1) = 01
+# ADC A, B - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 01 47 35 00 CB 08 88 77
+3E 80 47 35 00 CB 08 88 77
   @check {
-    [C000] 01
+    [C000] 40
   }
 }
 
@@ -1690,15 +1690,15 @@ l# Tests 2D
 
 # Tests CB09
 @test {
-# LD A, #01
+# LD A, #80
 # LD C, A	 
 # LD A, #00
 # RRC C
-# ADC A, C - 00+00+carry(=1) = 01
+# ADC A, C - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 01 4F 35 00 CB 09 89 77
+3E 80 4F 35 00 CB 09 89 77
   @check {
-    [C000] 01
+    [C000] 40
   }
 }
 
@@ -1715,21 +1715,6 @@ l# Tests 2D
     [C000] 41
   }
 }
-
-# Tests CB09
-@test {
-# LD A, #01
-# LD C, A	 
-# LD A, #00
-# RRC C
-# ADC A, C - 00+00+carry(=1) = 01
-# LD (HL), A
-3E 01 4F 35 00 CB 09 89 77
-  @check {
-    [C000] 01
-  }
-}
-
 
 # Tests CB0A
 @test {
@@ -1747,15 +1732,15 @@ l# Tests 2D
 
 # Tests CB0A
 @test {
-# LD A, #01
+# LD A, #80
 # LD D, A	 
 # LD A, #00
 # RRC D
-# ADC A, D - 00+00+carry(=1) = 01
+# ADC A, D - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 01 57 35 00 CB 0A 8A 77
+3E 80 57 35 00 CB 0A 8A 77
   @check {
-    [C000] 01
+    [C000] 40
   }
 }
 
@@ -1770,21 +1755,21 @@ l# Tests 2D
 # LD (BC), A
 3E 81 5F 35 00 CB 0B 8B 02
   @check {
-    [C000] 41
+    [C104] 41
   }
 }
 
 # Tests CB0B
 @test {
-# LD A, #01
+# LD A, #80
 # LD E, A	 
 # LD A, #00
 # RRC E
-# ADC A, E - 00+00+carry(=1) = 01
+# ADC A, E - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 01 5F 35 00 CB 0B 8B 02
+3E 80 5F 35 00 CB 0B 8B 02
   @check {
-    [C000] 01
+    [C104] 40
   }
 }
 
@@ -1799,21 +1784,21 @@ l# Tests 2D
 # LD (BC), A
 3E 81 67 35 00 CB 0C 8C 02
   @check {
-    [C000] 41
+    [C104] 41
   }
 }
 
 # Tests CB0C
 @test {
-# LD A, #01
+# LD A, #80
 # LD H, A	 
 # LD A, #00
 # RRC H
-# ADC A, H - 00+00+carry(=1) = 01
+# ADC A, H - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 01 67 35 00 CB 0C 8C 02
+3E 80 67 35 00 CB 0C 8C 02
   @check {
-    [C000] 01
+    [C104] 40
   }
 }
 
@@ -1828,24 +1813,23 @@ l# Tests 2D
 # LD (BC), A
 3E 81 6F 35 00 CB 0D 8D 02
   @check {
-    [C000] 41
+    [C104] 41
   }
 }
 
 # Tests CB0D
 @test {
-# LD A, #01
+# LD A, #80
 # LD L, A	 
 # LD A, #00
 # RRC L
-# ADC A, L - 00+00+carry(=1) = 01
+# ADC A, L - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 01 5F 35 00 CB 0D 8D 02
+3E 80 5F 35 00 CB 0D 8D 02
   @check {
-    [C000] 01
+    [C104] 40
   }
 }
-
 
 # Tests CB0E
 @test {
@@ -1858,18 +1842,40 @@ CB 0E 7E 87 02
     [C104] 41
   }
 }
-### NOT FINISHED
+
 # Tests CB0E
 @test {
 # LD (HL), n (n = 80)
 # RRC (HL) # 80 BLIR 40
 # LD A, (HL)
-# ADC A, B - 40+C1+carry(=0) = 01 # tests if carry is set
+# ADC A, B - 40+C1+carry(=0) = 40 # tests if carry is set
 # LD (BC), A
 36 80 CB 0E 7E 87 02
   @check {
-    [C104] 41
+    [C104] 40
   }
 }
 
-#### KOLLA SÅ ATT ALLA CARRY VÄRDEN ÄR RÄTT
+
+# Tests CB0F
+@test {
+# RRC A
+# ADC A, A - 02+02+carry(=1) = 05 # tests if carry is set
+# LD (HL), A
+CB 0F 8F 77
+  @check {
+    [C000] 41
+  }
+}
+
+# Tests CB0F
+@test {
+# LD A, #80
+# RRC A
+# ADC A, A - 40+40+carry(=0) = 80
+# LD (HL), A
+3E 80 CB 0F 8F 77
+  @check {
+    [C000] 80
+  }
+}
