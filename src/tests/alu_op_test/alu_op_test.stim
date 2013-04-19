@@ -1449,7 +1449,7 @@ l# Tests 2D
 # RLC B
 # ADC A, B - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (HL), A
-3E 81 47 CB 00 88 77
+3E 81 47 3E 00 CB 00 88 77
   @check {
     [C000] 03
   }
@@ -1464,7 +1464,7 @@ l# Tests 2D
 # RLC B
 # ADC A, B - 00+02+carry(=0) = 02 # tests if carry is Reset
 # LD (HL), A
-3E 01 47 CB 00 88 77
+3E 01 47 3E 00 CB 00 88 77
   @check {
     [C000] 02
   }
@@ -1479,7 +1479,7 @@ l# Tests 2D
 # RLC C
 # ADC A, C - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (HL), A
-3E 81 4F CB 01 89 77
+3E 81 4F 3E 00 CB 01 89 77
   @check {
     [C000] 03
   }
@@ -1493,7 +1493,7 @@ l# Tests 2D
 # RLC C
 # ADC A, C - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (HL), A
-3E 01 4F CB 01 89 77
+3E 01 4F 3E 00 CB 01 89 77
   @check {
     [C000] 02
   }
@@ -1508,7 +1508,7 @@ l# Tests 2D
 # RLC D
 # ADC A, D - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (HL), A
-3E 81 57 CB 02 8A 77
+3E 81 57 3E 00 CB 02 8A 77
   @check {
     [C000] 03
   }
@@ -1522,7 +1522,7 @@ l# Tests 2D
 # RLC D
 # ADC A, D - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (HL), A
-3E 01 57 CB 02 8A 77
+3E 01 57 3E 00 CB 02 8A 77
   @check {
     [C000] 02
   }
@@ -1537,7 +1537,7 @@ l# Tests 2D
 # RLC E
 # ADC A, E - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (HL), A
-3E 81 5F CB 03 8B 77
+3E 81 5F 3E 00 CB 03 8B 77
   @check {
     [C000] 03
   }
@@ -1551,7 +1551,7 @@ l# Tests 2D
 # RLC E
 # ADC A, E - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (HL), A
-3E 01 5F CB 03 8B 77
+3E 01 5F 3E 00 CB 03 8B 77
   @check {
     [C000] 02
   }
@@ -1566,7 +1566,7 @@ l# Tests 2D
 # RLC H
 # ADC A, H - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (BC), A
-3E 81 67 CB 04 8C 02
+3E 81 67 3E 00 CB 04 8C 02
   @check {
     [C104] 03
   }
@@ -1580,7 +1580,7 @@ l# Tests 2D
 # RLC H
 # ADC A, H - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (BC), A
-3E 01 67 CB 04 8C 02
+3E 01 67 3E 00 CB 04 8C 02
   @check {
     [C104] 02
   }
@@ -1595,7 +1595,7 @@ l# Tests 2D
 # RLC L
 # ADC A, L - 00+02+carry(=1) = 03 # tests if carry is set
 # LD (BC), A
-3E 81 6F CB 05 8D 02
+3E 81 6F 3E 00 CB 05 8D 02
   @check {
     [C104] 03
   }
@@ -1609,7 +1609,7 @@ l# Tests 2D
 # RLC L
 # ADC A, L - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (BC), A
-3E 01 6F CB 05 8D 02
+3E 01 6F 35 00 CB 05 8D 02
   @check {
     [C104] 02
   }
@@ -1642,5 +1642,37 @@ l# Tests 2D
     [C000] 01
   }
 }
+
+###Testing RRC OPs
+##
+
+# Tests CB08
+@test {
+# LD A, #81
+# LD B, A	 
+# LD A, #00
+# RRC B
+# ADC A, B - 00+40+carry(=1) = 41 # tests if carry is set
+# LD (HL), A
+3E 81 47 35 00 CB 08 88 77
+  @check {
+    [C104] 41
+  }
+}
+
+# Tests CB08
+@test {
+# LD A, #01
+# LD B, A	 
+# LD A, #00
+# RRC B
+# ADC A, B - 00+00+carry(=1) = 01
+# LD (HL), A
+3E 01 47 35 00 CB 08 88 77
+  @check {
+    [C104] 01
+  }
+}
+
 
 

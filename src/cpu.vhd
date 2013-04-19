@@ -2736,7 +2736,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC B
+                -- RRC B -t
               when X"CB08" =>
                 B(6 downto 0) <= B(7 downto 1);
                 B(7) <= B(0);
