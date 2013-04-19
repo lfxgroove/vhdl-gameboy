@@ -1369,7 +1369,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 115
                 -- OP-codes from page 116
-                -- RST 0x00
+                -- RST 0x00 -t
               when X"C7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1377,7 +1377,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x08
+                -- RST 0x08 -t
               when X"CF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1385,7 +1385,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x10
+                -- RST 0x10 -t
               when X"D7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1393,7 +1393,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x18
+                -- RST 0x18 -t
               when X"DF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1401,7 +1401,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x20
+                -- RST 0x20 -t
               when X"E7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1409,7 +1409,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x28
+                -- RST 0x28 -t
               when X"EF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1417,7 +1417,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x30
+                -- RST 0x30 -t
               when X"F7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1425,7 +1425,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x38
+                -- RST 0x38 -t
               when X"FF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;

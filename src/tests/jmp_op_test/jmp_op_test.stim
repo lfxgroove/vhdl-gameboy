@@ -27,6 +27,24 @@
 3E 03
 
 # default data 
+#used to simulate interupptvectors
+# $00,$08,$10,$18,$20,$28,$30,$38
+## ALL OF THEM DO BASICALLY THIS:
+# LD A, n (n = last byte of the adress)
+# LD (HL), A
+# POP DE <- The interupp saved its adress
+# INC DE <- we increase the address so we come to the next instruction
+# PUSH DE <- We put it back so the RET can be made
+# RET
+[0000] 3E 00 77 D1 13 D5 C9
+[0008] 3E 08 77 D1 13 D5 C9
+[0010] 3E 10 77 D1 13 D5 C9
+[0018] 3E 18 77 D1 13 D5 C9
+[0020] 3E 20 77 D1 13 D5 C9
+[0028] 3E 28 77 D1 13 D5 C9
+[0030] 3E 30 77 D1 13 D5 C9
+[0038] 3E 38 77 D1 13 D5 C9
+
 [0200] 3E 20 77 76 # used so JPs can jump to here
 [0250] 3E 25 77 76 # or to here and then (HL) should contain 20 and 25 respectevly 
 [C000] FF
@@ -268,7 +286,6 @@ C3 50 02
   }
 }
 
-
 # Tests E9
 @test { 
 # LD HL, nn (nn = 00 C2)
@@ -277,5 +294,92 @@ C3 50 02
 21 00 C2 59 77
   @check {
     [C200] 20
+  }
+}
+
+### Testing the RSTs
+
+
+# Tests C7
+@test { 
+# RST 0x00
+# LD A, #DD
+# LD (BC), A
+C7 35 DD 02
+  @check {
+    [C000] 00
+    [C104] DD
+  }
+}
+
+# Tests D7
+@test { 
+# RST 0x10
+# LD A, #DD
+# LD (BC), A
+D7 35 DD 02
+  @check {
+    [C000] 10
+    [C104] DD
+  }
+}
+
+# Tests DF
+@test { 
+# RST 0x18
+# LD A, #DD
+# LD (BC), A
+DF 35 DD 02
+  @check {
+    [C000] 18
+    [C104] DD
+  }
+}
+
+# Tests E7
+@test { 
+# RST 0x20
+# LD A, #DD
+# LD (BC), A
+E7 35 DD 02
+  @check {
+    [C000] 20
+    [C104] DD
+  }
+}
+
+# Tests EF
+@test { 
+# RST 0x28
+# LD A, #DD
+# LD (BC), A
+EF 35 DD 02
+  @check {
+    [C000] 28
+    [C104] DD
+  }
+}
+
+# Tests F7
+@test { 
+# RST 0x30
+# LD A, #DD
+# LD (BC), A
+F7 35 DD 02
+  @check {
+    [C000] 30
+    [C104] DD
+  }
+}
+
+# Tests FF
+@test { 
+# RST 0x38
+# LD A, #DD
+# LD (BC), A
+FF 35 DD 02
+  @check {
+    [C000] 38
+    [C104] DD
   }
 }
