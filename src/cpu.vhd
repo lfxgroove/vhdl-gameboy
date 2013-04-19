@@ -2966,7 +2966,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 104
                 -- OP-codes from page 105
-                -- SLA A
+                -- SLA A -t
               when X"CB27" =>
                 A <= A(6 downto 0) & "0";
                 F(4) <= A(7);
@@ -2976,7 +2976,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA B
+                -- SLA B -t
               when X"CB20" =>
                 B <= B(6 downto 0) & "0";
                 F(4) <= B(7);
@@ -2986,7 +2986,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA C
+                -- SLA C -t
               when X"CB21" =>
                 C <= C(6 downto 0) & "0";
                 F(4) <= C(7);
@@ -2996,7 +2996,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA D
+                -- SLA D -t
               when X"CB22" =>
                 D <= D(6 downto 0) & "0";
                 F(4) <= D(7);
@@ -3006,7 +3006,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA E
+                -- SLA E -t
               when X"CB23" =>
                 E <= E(6 downto 0) & "0";
                 F(4) <= E(7);
@@ -3016,7 +3016,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA H
+                -- SLA H -t
               when X"CB24" =>
                 H <= H(6 downto 0) & "0";
                 F(4) <= H(7);
@@ -3026,7 +3026,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA L
+                -- SLA L -t
               when X"CB25" =>
                 L <= L(6 downto 0) & "0";
                 F(4) <= L(7);
@@ -3036,13 +3036,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA (HL)
+                -- SLA (HL) -t
               when X"CB26" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 105
                 -- OP-codes from page 106
-                -- SRA A
+                -- SRA A -t
               when X"CB2F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 F(4) <= A(0);
@@ -3052,7 +3052,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA B
+                -- SRA B -t
               when X"CB28" =>
                 B(6 downto 0) <= B(7 downto 1);
                 F(4) <= B(0);
@@ -3062,7 +3062,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA C
+                -- SRA C -t
               when X"CB29" =>
                 C(6 downto 0) <= C(7 downto 1);
                 F(4) <= C(0);
@@ -3072,7 +3072,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA D
+                -- SRA D -t
               when X"CB2A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 F(4) <= D(0);
@@ -3082,7 +3082,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA E
+                -- SRA E -t
               when X"CB2B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 F(4) <= E(0);
@@ -3092,7 +3092,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA H
+                -- SRA H -t
               when X"CB2C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 F(4) <= H(0);
@@ -3102,7 +3102,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA L
+                -- SRA L -t
               when X"CB2D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 F(4) <= L(0);
@@ -3112,7 +3112,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA (HL)
+                -- SLA (HL) -t
               when X"CB2E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
