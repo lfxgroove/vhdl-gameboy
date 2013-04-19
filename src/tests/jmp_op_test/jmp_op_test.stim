@@ -267,3 +267,15 @@ C3 50 02
     [C000] 06
   }
 }
+
+
+# Tests E9
+@test { 
+# LD HL, nn (nn = 00 C2)
+# JP (HL)
+# LD (HL), A
+21 00 C2 59 77
+  @check {
+    [C200] 20
+  }
+}

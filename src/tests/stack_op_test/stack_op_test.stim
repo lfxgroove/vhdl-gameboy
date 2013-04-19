@@ -32,6 +32,8 @@
 [C200] 3E 20 77 76
 [C104] EE
 [C208] DD
+## Used for testing calls
+[C210] 3E EE C9
 
 ## All registers now have unique values.
 ## This makes it possible for tests to be short as operations
@@ -162,6 +164,217 @@ C5 E1 7C 02 7D 12
 21 00 C2 E5 C9
   @check {
     [C200] 20
+  }
+}
+
+# Tests C0
+@test {
+# ADD A, B - resets Z (Z=0)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET NZ
+# LD (HL), A
+80 21 00 C2 E5 C0 77
+  @check {
+    [C200] 20
+  }
+}
+
+# Tests C0
+@test {
+# SUB A, A - Sets Z (Z=1)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET NZ
+# LD (HL), A
+97 21 00 C2 E5 C0 77
+  @check {
+    [C200] 00
+  }
+}
+
+
+# Tests C8
+@test {
+# ADD A, B - resets Z (Z=0)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET Z
+# LD (HL), A
+80 21 00 C2 E5 C8 77
+  @check {
+    [C200] C4
+  }
+}
+
+# Tests C8
+@test {
+# SUB A, A - Sets Z (Z=1)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET Z
+# LD (HL), A
+97 21 00 C2 E5 C8 77
+  @check {
+    [C200] 20
+  }
+}
+
+# Tests D0
+@test {
+# LD A, #FF
+# ADD A, B - Sets C (C=1)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET NC
+# LD (HL), A
+3E FF 80 21 00 C2 E5 D0 77
+  @check {
+    [C200] C0
+  }
+}
+
+# Tests D0
+@test {
+# ADD A, B - Resets C (C=0)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET NC
+# LD (HL), A
+80 21 00 C2 E5 D0 77
+  @check {
+    [C200] 20
+  }
+}
+
+
+# Tests D8
+@test {
+# LD A, #FF
+# ADD A, B - Sets C (C=1)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET C
+# LD (HL), A
+3E FF 80 21 00 C2 E5 D8 77
+  @check {
+    [C200] 20
+  }
+}
+
+# Tests D8
+@test {
+# ADD A, B - Resets C (C=0)
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET C
+# LD (HL), A
+80 21 00 C2 E5 D8 77
+  @check {
+    [C200] C4
+  }
+}
+
+### Testing calls
+
+
+# Tests CD
+@test {
+# CALL nn (nn = 10 C2) # At address C210 there is: LD A, #EE, RET
+# LD (HL), A
+CD 10 C2 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests C4
+@test {
+# ADD A, B - resets Z (Z=0)
+# CALL NZ, nn (nn = 10 C2)
+# LD (HL), A
+80 C4 10 C2 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests C4
+@test {
+# SUB A, A - Sets Z (Z=1)
+# CALL NZ, nn (nn = 10 C2)
+# LD (HL), A
+97 C4 10 C2 77
+  @check {
+    [C000] 00
+  }
+}
+
+# Tests CC
+@test {
+# ADD A, B - resets Z (Z=0)
+# CALL NZ, nn (nn = 10 C2)
+# LD (HL), A
+80 CC 10 C2 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests CC
+@test {
+# SUB A, A - Sets Z (Z=1)
+# CALL NZ, nn (nn = 10 C2)
+# LD (HL), A
+97 CC 10 C2 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests D4
+@test {
+# ADD A, B - resets C (C=0)
+# CALL NC, nn (nn = 10 C2)
+# LD (HL), A
+80 CC 10 C2 77
+  @check {
+    [C000] EE
+  }
+}
+
+# Tests D4
+@test {
+# LD A, #FF
+# ADD A, B - Sets C (C=1)
+# CALL NC, nn (nn = 10 C2)
+# LD (HL), A
+3E FF 80 D4 10 C2 77
+  @check {
+    [C000] C0
+  }
+}
+
+# Tests DC
+@test {
+# ADD A, B - resets C (C=0)
+# CALL C, nn (nn = 10 C2)
+# LD (HL), A
+80 DC 10 C2 77
+  @check {
+    [C000] C4
+  }
+}
+
+# Tests DC
+@test {
+# LD A, #FF
+# ADD A, B - Sets C (C=1)
+# CALL C, nn (nn = 10 C2)
+# LD (HL), A
+3E FF 80 DC 10 C2 77
+  @check {
+    [C000] EE
   }
 }
 

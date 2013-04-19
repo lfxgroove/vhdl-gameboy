@@ -226,7 +226,7 @@ begin
                 IR <= Mem_Read;
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 State <= Exec2;
-                -- LD(C+$FF00),A
+                -- LD(C+$FF00),A -t
               when X"E2" =>
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 Mem_Write <= A;
@@ -1309,7 +1309,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 111
                 -- OP-codes from page 112
-                -- JP (HL)
+                -- JP (HL) -t
               when X"E9" =>
                 PC <= H & L;
                 -- JR n (relative jump, n signed, relative first byte of next instr) -t
@@ -1341,28 +1341,28 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 113
                 -- OP-code from page 114
-                -- CALL nn
+                -- CALL nn -t
               when X"CD" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- OP-codes from page 115
-                -- CALL NZ, nn
+                -- CALL NZ, nn -t
               when X"C4" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL Z, nn
+                -- CALL Z, nn -t
               when X"CC" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL NC, nn
+                -- CALL NC, nn -t
               when X"D4" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL C, nn
+                -- CALL C, nn -t
               when X"DC" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1440,28 +1440,28 @@ begin
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
-                -- RET NZ
+                -- RET NZ -t
               when X"C0" =>
                 if F(7) = '0' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET Z
+                -- RET Z -t
               when X"C8" =>
                 if F(7) = '1' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET NC
+                -- RET NC -t
               when X"D0" =>
                 if F(4) = '0' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET C
+                -- RET C -t
               when X"D8" =>
                 if F(4) = '1' then
                   Mem_Addr <= SP;
@@ -2145,7 +2145,6 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
-
                 -- CALL NZ, nn
               when X"C4" =>
                 Tmp_Addr(7 downto 0) <= Mem_Read;

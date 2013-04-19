@@ -920,6 +920,17 @@ E0 80
   }
 }
 
+# Tests E2
+@test {
+# LD C, n (n=80)
+# LD (C+$FF00), A
+0E 80 E2
+  @check {
+    [FF80] 03
+  }
+}
+
+
 
 ### Testing LD X, n
 
