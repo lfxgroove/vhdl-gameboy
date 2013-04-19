@@ -2776,7 +2776,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL L
+                -- RL L -t
               when X"CB15" =>
                 L(7 downto 1) <= L(6 downto 0);
                 L(0) <= F(4);
@@ -2883,7 +2883,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 103
                 -- OP-codes from page 104
-                -- RR A
+                -- RR A -t
               when X"CB1F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= F(4);
@@ -2894,7 +2894,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR B
+                -- RR B -t
               when X"CB18" =>
                 B(6 downto 0) <= B(7 downto 1);
                 B(7) <= F(4);
@@ -2905,7 +2905,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR C
+                -- RR C -t
               when X"CB19" =>
                 C(6 downto 0) <= C(7 downto 1);
                 C(7) <= F(4);
@@ -2916,7 +2916,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR D
+                -- RR D -t
               when X"CB1A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 D(7) <= F(4);
@@ -2927,7 +2927,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR E
+                -- RR E -t
               when X"CB1B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 E(7) <= F(4);
@@ -2938,7 +2938,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR H
+                -- RR H -t
               when X"CB1C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 H(7) <= F(4);
@@ -2949,7 +2949,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR L
+                -- RR L -t
               when X"CB1D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 L(7) <= F(4);
@@ -2960,7 +2960,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR (HL)
+                -- RR (HL) -t
               when X"CB1E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
