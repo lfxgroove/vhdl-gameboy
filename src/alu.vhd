@@ -97,7 +97,7 @@ begin
     A or B when Mode = "0101" else
     A xor B when Mode = "0110" else
     std_logic_vector(unsigned(A) + 1) when Mode = "0111" else
-    std_logic_vector(unsigned(B) - 1) when Mode = "1000" else
+    std_logic_vector(unsigned(A) - 1) when Mode = "1000" else
     X"0000";
   Result <= Tmp_Result;
 
