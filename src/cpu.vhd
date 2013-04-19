@@ -478,6 +478,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= A;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH BC -t
@@ -485,6 +486,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= B;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH DE -t
@@ -492,6 +494,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= D;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- PUSH HL -t
@@ -499,6 +502,7 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= H;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 State <= Exec2;
                 -- END op-codes from page 78
@@ -1266,8 +1270,7 @@ begin
                 -- JP (HL)
               when X"E9" =>
                 PC <= H & L;
-                -- JR n (relative jump, n signed, relative first byte of next
-                -- instr) -t
+                -- JR n (relative jump, n signed, relative first byte of next instr) -t
               when X"18" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1547,49 +1550,52 @@ begin
                 Tmp := std_logic_vector(unsigned(SP) + 1);
                 Mem_Write <= F;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
-                State <= Exec2;
                 -- PUSH BC
               when X"C5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= C;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH DE
               when X"D5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= E;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH HL
               when X"E5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= L;
                 Mem_Addr <= Tmp;
+                Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- POP AF
               when X"F1" =>
                 F <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP BC
               when X"C1" =>
                 C <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP DE
               when X"D1" =>
                 E <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP HL
               when X"E1" =>
                 L <= Mem_Read;
                 Mem_Addr <= SP;
-                SP <= std_logic_vector(unsigned(SP) - 1);
+                SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- ADD A, A
               when X"87" =>

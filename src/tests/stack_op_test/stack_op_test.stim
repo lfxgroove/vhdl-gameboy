@@ -10,10 +10,10 @@
 # Set BC to adress X"C104"
 # LD A, #C1
 # LD B, A
-3E D0 47
+3E C1 47
 # LD A, #04
 # LD C, A
-3E 01 4F
+3E 04 4F
 
 # Set DE to adress X"C208"
 # LD A, #C2
@@ -21,16 +21,15 @@
 3E C2 57
 # LD A, #08
 # LD E, A
-3E 02 5F
+3E 08 5F
 
+# LD A, #03
+3E 03
 
 # default data 
 [C000] FF AA
 [C104] EE
 [C208] DD
-
-# LD A, #03
-3E 03
 
 ## All registers now have unique values.
 ## This makes it possible for tests to be short as operations
@@ -71,8 +70,9 @@
 # PUSH DE - C2 08 to the stack
 # POP BC  - C2 08
 # LD (HL), B - C2
-# LD (DE), C - 08
-D5 C1 70 71
+# LD A, C
+# LD (DE), A - 08
+D5 C1 70 79 12
   @check {
     [C000] C2
     [C208] 08
@@ -85,8 +85,9 @@ D5 C1 70 71
 # PUSH HL - C0 00 to the stack
 # POP BC  - C0 00
 # LD (HL), B - C0
-# LD (DE), C - 00
-E5 C1 70 71
+# LD A, C
+# LD (DE), A - 00
+E5 C1 70 79 12
   @check {
     [C000] C0
     [C208] 00
@@ -104,7 +105,7 @@ E5 C1 70 71
 E5 D1 72 7B 02
   @check {
     [C000] C0
-    [C208] 00
+    [C104] 00
   }
 }
 
@@ -118,7 +119,7 @@ E5 D1 72 7B 02
 C5 D1 72 7B 12
   @check {
     [C000] C1
-    [C208] 04
+    [C104] 04
   }
 }
 

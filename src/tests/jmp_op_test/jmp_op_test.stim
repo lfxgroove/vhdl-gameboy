@@ -10,10 +10,10 @@
 # Set BC to adress X"C104"
 # LD A, #C1
 # LD B, A
-3E D0 47
+3E C1 47
 # LD A, #04
 # LD C, A
-3E 01 4F
+3E 04 4F
 
 # Set DE to adress X"C208"
 # LD A, #C2
@@ -23,6 +23,8 @@
 # LD E, A
 3E 02 5F
 
+# LD A, #03
+3E 03
 
 # default data 
 [0200] 3E 20 77 # used so JPs can jump to here
@@ -30,9 +32,6 @@
 [C000] FF
 [C104] EE
 [C208] DD
-
-# LD A, #03
-3E 03
 
 # adresses up to 1520 should be filled up now
 }
@@ -111,7 +110,7 @@ C3 50 02
 # LD A, #FF
 # ADD A, A # this should set C. (C=1)
 # JP NC, nn (nn = 50 02)
-3E FF 87 DA 50 02
+3E FF 87 D2 50 02
   @check {
     [C000] FF # the jump should not have been done so 
     	      #  nothing is loaded into C000
@@ -122,7 +121,7 @@ C3 50 02
 @test { 
 # ADD A, A # this should Reset C. (C=0)
 # JP NC, nn (nn = 50 02)
-87 DA 50 02
+87 D2 50 02
   @check {
     [C000] 25  # jmp was made and 25 should be there.
   }
@@ -161,7 +160,7 @@ C3 50 02
 # JR n (n = 02)
 # LD A, #AB
 # LD (HL), A # JMP DIRECTLY HERE!
-18 35 AB 77
+18 02 3E AB 77
   @check {
     [C000] 03
   }
@@ -171,22 +170,22 @@ C3 50 02
 # Tests 28
 @test { 
 # SUB A, A # this should set Z. (Z=1)
-# JR Z, n (n = 03)
+# JR Z, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-97 28 03 35 BA 77
+97 28 02 3E BA 77
   @check {
-    [C000] 03
+    [C000] 00
   }
 }
 
 # Tests 28
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
-# JR Z, n (n = 03)
+# JR Z, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-90 28 03 35 BA 77
+90 28 02 3E BA 77
   @check {
     [C000] BA
   }
@@ -196,10 +195,10 @@ C3 50 02
 # Tests 20
 @test { 
 # SUB A, A # this should set Z. (Z=1)
-# JR NZ, n (n = 03)
+# JR NZ, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-97 20 03 35 BA 77
+97 20 02 3E BA 77
   @check {
     [C000] BA
   }
@@ -208,12 +207,12 @@ C3 50 02
 # Tests 20
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
-# JR NZ, n (n = 03)
+# JR NZ, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-90 20 03 35 BA 77
+90 20 02 3E BA 77
   @check {
-    [C000] 03
+    [C000] 42
   }
 }
 
@@ -225,9 +224,9 @@ C3 50 02
 # JR C, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-3E FF 87 38 02 35 BA 77
+3E FF 87 38 02 3E BA 77
   @check {
-    [C000] 03
+    [C000] FE
   }
 }
 
@@ -237,7 +236,7 @@ C3 50 02
 # JR C, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-87 38 02 35 BA 77
+87 38 02 3E BA 77
   @check {
     [C000] BA
   }
@@ -251,7 +250,7 @@ C3 50 02
 # JR NC, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-3E FF 87 38 02 35 BA 77
+3E FF 87 30 02 3E BA 77
   @check {
     [C000] BA
   }
@@ -263,8 +262,8 @@ C3 50 02
 # JR NC, n (n = 02)
 # LD A, #BA
 # LD (HL), A
-3E FF 87 38 02 35 BA 77
+87 30 02 3E BA 77
   @check {
-    [C000] 03
+    [C000] 06
   }
 }
