@@ -1866,3 +1866,210 @@ CB 0F 8F 77
     [C000] 80
   }
 }
+
+### Testing RL n
+
+
+# Tests CB10
+@test {
+# LD A, #82
+# LD B, A
+# RL B
+# LD (HL), A
+3E 82 47 CB 10 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests CB10
+@test {
+# LD A, #82
+# LD B, A
+# RL B 
+# RL B # to see if a 1 pops back in from the right again.
+# LD (HL), A
+3E 82 47 CB 10 CB 10 77
+  @check {
+    [C000] 09
+  }
+}
+
+# Tests CB11
+@test {
+# LD A, #82
+# LD C, A
+# RL C
+# LD (HL), A
+3E 82 4F CB 11 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests CB11
+@test {
+# LD A, #82
+# LD C, A
+# RL C 
+# RL C # to see if a 1 pops back in from the right again.
+# LD (HL), A
+3E 82 4F CB 11 CB 11 77
+  @check {
+    [C000] 09
+  }
+}
+
+# Tests CB12
+@test {
+# LD A, #82
+# LD D, A
+# RL D
+# LD (HL), A
+3E 82 57 CB 12 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests CB12
+@test {
+# LD A, #82
+# LD D, A
+# RL D 
+# RL D # to see if a 1 pops back in from the right again.
+# LD (HL), A
+3E 82 57 CB 12 CB 12 77
+  @check {
+    [C000] 09
+  }
+}
+
+# Tests CB13
+@test {
+# LD A, #82
+# LD E, A
+# RL E
+# LD (HL), A
+3E 82 5F CB 13 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests CB13
+@test {
+# LD A, #82
+# LD E, A
+# RL E 
+# RL E # to see if a 1 pops back in from the right again.
+# LD (HL), A
+3E 82 5F CB 13 CB 13 77
+  @check {
+    [C000] 09
+  }
+}
+
+# Tests CB14
+@test {
+# LD A, #82
+# LD H, A
+# RL H
+# LD (BC), A
+3E 82 67 CB 14 02
+  @check {
+    [C104] 04
+  }
+}
+
+
+# Tests CB14
+@test {
+# LD A, #82
+# LD H, A
+# RL H 
+# RL H # to see if a 1 pops back in from the right again.
+# LD (BC), A
+3E 82 67 CB 14 CB 14 02
+  @check {
+    [C104] 09
+  }
+}
+
+# Tests CB15
+@test {
+# LD A, #82
+# LD L, A
+# RL L
+# LD (BC), A
+3E 82 6F CB 15 02
+  @check {
+    [C104] 04
+  }
+}
+
+
+# Tests CB15
+@test {
+# LD A, #82
+# LD L, A
+# RL L 
+# RL L # to see if a 1 pops back in from the right again.
+# LD (BC), A
+3E 82 6F CB 15 CB 15 02
+  @check {
+    [C104] 09
+  }
+}
+
+# Tests CB16
+@test {
+# LD (HL), n (n = 82)
+# RL (HL)
+# LD (BC), A
+36 82 CB 16 02
+  @check {
+    [C104] 04
+  }
+}
+
+
+# Tests CB16
+@test {
+# LD (HL), n (n = 82)
+# RL (HL) 
+# RL (HL) # to see if a 1 pops back in from the right again.
+# LD (BC), A
+36 82 CB 16 CB 16 02
+  @check {
+    [C104] 09
+  }
+}
+
+# Tests CB17
+@test {
+# LD A, #82
+# RL A
+# LD (HL), A
+3E 82 CB 17 77
+  @check {
+    [C000] 04
+  }
+}
+
+
+# Tests CB17
+@test {
+# LD A, #82
+# RL A 
+# RL A # to see if a 1 pops back in from the right again.
+# LD (HL), A
+3E 82 CB 17 CB 15 77
+  @check {
+    [C000] 09
+  }
+}

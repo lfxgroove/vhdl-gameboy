@@ -2710,7 +2710,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 101
                 -- OP-codes from page 102
-                -- RL A (same as RLA)
+                -- RL A (same as RLA) -t
               when X"CB17" =>
                 A(7 downto 1) <= A(6 downto 0);
                 A(0) <= F(4);
@@ -2721,7 +2721,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL B
+                -- RL B -t
               when X"CB10" =>
                 B(7 downto 1) <= B(6 downto 0);
                 B(0) <= F(4);
@@ -2732,7 +2732,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL C
+                -- RL C -t
               when X"CB11" =>
                 C(7 downto 1) <= C(6 downto 0);
                 C(0) <= F(4);
@@ -2743,7 +2743,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL D
+                -- RL D -t
               when X"CB12" =>
                 D(7 downto 1) <= D(6 downto 0);
                 D(0) <= F(4);
@@ -2754,7 +2754,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL E
+                -- RL E -t
               when X"CB13" =>
                 E(7 downto 1) <= E(6 downto 0);
                 E(0) <= F(4);
@@ -2765,7 +2765,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL H
+                -- RL H -t
               when X"CB14" =>
                 H(7 downto 1) <= H(6 downto 0);
                 H(0) <= F(4);
@@ -2787,7 +2787,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL (HL)
+                -- RL (HL) -t
               when X"CB16" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
