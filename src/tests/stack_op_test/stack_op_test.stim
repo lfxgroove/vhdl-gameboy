@@ -28,6 +28,8 @@
 
 # default data 
 [C000] FF AA
+## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPAE
+[C200] 3E 20 77 76
 [C104] EE
 [C208] DD
 
@@ -63,7 +65,6 @@
 }
 
 ## Testing PUSH and POP
-
 
 # Tests C1,D5
 @test {
@@ -150,6 +151,17 @@ C5 E1 7C 02 7D 12
   @check {
     [C104] C1
     [C208] 04
+  }
+}
+
+# Tests C9
+@test {
+# LD HL , nn (nn = 00 C2)
+# PUSH HL - C2 00 to the stack
+# RET
+21 00 C2 E5 C9
+  @check {
+    [C200] 20
   }
 }
 

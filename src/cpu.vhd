@@ -238,32 +238,32 @@ begin
                 State <= Exec2;
                 -- END of-codes from page 71
                 -- OP-codes from page 65
-                -- LD B, n
+                -- LD B, n -t
               when X"06" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD C, n
+                -- LD C, n -t
               when X"0E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD D, n
+                -- LD D, n -t
               when X"16" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD E, n
+                -- LD E, n -t
               when X"1E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD H, n
+                -- LD H, n -t
               when X"26" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD L, n
+                -- LD L, n -t
               when X"2E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -440,7 +440,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 66-67
                 -- OP-code from page 72
-                -- LD (HL-), A
+                -- LD (HL-), A -t
               when X"32" =>
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
@@ -1204,11 +1204,11 @@ begin
                 F(6 downto 5) <= "11";
                 -- END op-codes from  page 95
                 -- OP-codes from page 96
-                -- CCF
+                -- CCF -t
               when X"3F" =>
                 F(6 downto 5) <= "00";
                 F(4) <= not F(4);
-                -- SCF
+                -- SCF -t
               when X"37" =>
                 F(6 downto 5) <= "00";
                 F(4) <= '1';
@@ -1329,7 +1329,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JR NC, n
+                -- JR NC, n -t
               when X"30" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1435,7 +1435,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 116
                 -- OP-codes from page 117
-                -- RET
+                -- RET -t
               when X"C9" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
@@ -2128,7 +2128,7 @@ begin
                 if F(7) = '1' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
                 end if;
-                -- JR NC, n -t
+                -- JR NC, n
               when X"30" =>
                 if F(4) = '0' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));

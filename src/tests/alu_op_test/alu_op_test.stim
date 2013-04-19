@@ -180,7 +180,7 @@ C6 77
   }
 }
 
-# Tests 88 - CALC: 03+C1+(carry = 1) = C4 
+# Tests 88 - CALC: 03+C1+(carry = 1) = C5
 @test { 
 # LD A, #FF
 # ADD A, B - FF+C1 will make carry = 1
