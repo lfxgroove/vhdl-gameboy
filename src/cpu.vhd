@@ -2748,7 +2748,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC C
+                -- RRC C -t
               when X"CB09" =>
                 C(6 downto 0) <= C(7 downto 1);
                 C(7) <= C(0);
@@ -2760,7 +2760,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC D
+                -- RRC D -t
               when X"CB0A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 D(7) <= D(0);
@@ -2772,7 +2772,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC E
+                -- RRC E -t
               when X"CB0B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 E(7) <= E(0);
@@ -2784,7 +2784,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC H
+                -- RRC H -t
               when X"CB0C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 H(7) <= H(0);
@@ -2796,7 +2796,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC L
+                -- RRC L -t
               when X"CB0D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 L(7) <= L(0);

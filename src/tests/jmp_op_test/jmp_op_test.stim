@@ -23,16 +23,15 @@
 # LD E, A
 3E 02 5F
 
+# LD A, #03
+3E 03
 
 # default data 
-[0200] 3E 20 77 # used so JPs can jump to here
-[0250] 3E 25 77 # or to here and then (HL) should contain 20 and 25 respectevly 
+[0200] 3E 20 77 76 # used so JPs can jump to here
+[0250] 3E 25 77 76 # or to here and then (HL) should contain 20 and 25 respectevly 
 [C000] FF
 [C104] EE
 [C208] DD
-
-# LD A, #03
-3E 03
 
 # adresses up to 1520 should be filled up now
 }
