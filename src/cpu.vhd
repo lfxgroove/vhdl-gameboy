@@ -2545,7 +2545,7 @@ begin
               when X"1000" =>
                 State <= Halted;
                 -- OP-codes from page 94
-                -- SWAP A
+                -- SWAP A -t
               when X"CB37" =>
                 A(7 downto 4) <= A(3 downto 0);
                 A(3 downto 0) <= A(7 downto 4);
@@ -2555,7 +2555,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP B
+                -- SWAP B -t
               when X"CB30" =>
                 B(7 downto 4) <= B(3 downto 0);
                 B(3 downto 0) <= B(7 downto 4);
@@ -2565,7 +2565,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP C
+                -- SWAP C -t
               when X"CB31" =>
                 C(7 downto 4) <= C(3 downto 0);
                 C(3 downto 0) <= C(7 downto 4);
@@ -2575,7 +2575,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP D
+                -- SWAP D -t
               when X"CB32" =>
                 D(7 downto 4) <= D(3 downto 0);
                 D(3 downto 0) <= D(7 downto 4);
@@ -2585,7 +2585,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP E
+                -- SWAP E -t
               when X"CB33" =>
                 E(7 downto 4) <= E(3 downto 0);
                 E(3 downto 0) <= E(7 downto 4);
@@ -2595,7 +2595,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP H
+                -- SWAP H -t
               when X"CB34" =>
                 H(7 downto 4) <= H(3 downto 0);
                 H(3 downto 0) <= H(7 downto 4);
@@ -2605,7 +2605,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP L
+                -- SWAP L -t
               when X"CB35" =>
                 L(7 downto 4) <= L(3 downto 0);
                 L(3 downto 0) <= L(7 downto 4);
@@ -2615,7 +2615,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP (HL)
+                -- SWAP (HL) -t
               when X"CB36" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
@@ -3118,7 +3118,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 106
                 -- OP-codes from page 107
-                -- SRL A
+                -- SRL A -t
               when X"CB3F" =>
                 A <= "0" & A(7 downto 1);
                 F(4) <= A(0);
@@ -3128,7 +3128,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL B
+                -- SRL B -t
               when X"CB38" =>
                 B <= "0" & B(7 downto 1);
                 F(4) <= B(0);
@@ -3138,7 +3138,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL C
+                -- SRL C -t
               when X"CB39" =>
                 C <= "0" & C(7 downto 1);
                 F(4) <= C(0);
@@ -3148,7 +3148,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL D
+                -- SRL D -t
               when X"CB3A" =>
                 D <= "0" & D(7 downto 1);
                 F(4) <= D(0);
@@ -3158,7 +3158,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL E
+                -- SRL E -t
               when X"CB3B" =>
                 E <= "0" & E(7 downto 1);
                 F(4) <= E(0);
@@ -3168,7 +3168,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL H
+                -- SRL H -t
               when X"CB3C" =>
                 H <= "0" & H(7 downto 1);
                 F(4) <= H(0);
@@ -3178,7 +3178,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL L
+                -- SRL L -t
               when X"CB3D" =>
                 L <= "0" & L(7 downto 1);
                 F(4) <= L(0);
@@ -3188,7 +3188,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL (HL)
+                -- SRL (HL) -t
               when X"CB3E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
