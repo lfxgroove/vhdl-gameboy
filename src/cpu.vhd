@@ -515,7 +515,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- PUSH AF
+                -- PUSH AF tested well enough I belive -t
               when X"F5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= A;
@@ -549,7 +549,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 78
                 -- OP-codes from page 79
-                -- POP AF
+                -- POP AF -t
               when X"F1" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
@@ -1214,7 +1214,7 @@ begin
                 F(4) <= '1';
                 -- END op-codes from page 96
                 -- OP-codes from page 97
-                -- NOP
+                -- NOP -t
               when X"00" =>
                 -- HALT
               when X"76" =>

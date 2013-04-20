@@ -377,3 +377,75 @@ CD 10 C2 77
     [C000] EE
   }
 }
+
+### POP AND PUSH ON AF
+
+# Tests F5
+@test {
+# ADD A, A #Sets all flags to 0 (no Carry/halfCarry, not Z, not a subtraction)
+# LD A, #FF
+# PUSH AF <- AF = FF00
+# POP BC <- B = FF, C = 00
+# LD A, B
+# LD (HL), A
+# LD A, C
+# LD (DE), A
+87 3E FF F5 C1 78 77 79 77
+  @check {
+    [C000] FF
+    [C208] 00
+  }
+}
+
+# Tests F5
+@test {
+# SUB A, A # sets F = C0
+# LD A, #FF
+# PUSH AF <- AF = FFC0
+# POP BC <- B = FF, C = C0
+# LD A, B
+# LD (HL), A
+# LD A, C
+# LD (DE), A
+97 3E FF F5 C1 78 77 79 77
+  @check {
+    [C000] FF
+    [C208] C0
+  }
+}
+
+# Tests F1
+@test {
+# LD BC,nn (nn = C100)
+# PUSH BC
+# POP AF <- AF = C1C0
+# LD (HL), A
+# LD A, #00
+# ADC A, A # 00+00+CARRY(=0) = 0
+# LD (DE), A
+# JP Z, nn (nn = 00 C2) <- Should NOT do this jump - if it does it ruins the check.
+01 C1 00 C5 F1 77 35 00 8F 12 CA 00 C2
+  @check {
+    [C000] C1
+    [C208] 00
+  }
+}
+
+
+### NOP test
+
+# Tests DC
+@test {
+# LD A, #10
+# NOP
+# NOP
+# NOP
+# NOP
+# LD (HL), A
+3E 10 00 00 00 00 77
+  @check {
+    [C000] 10
+  }
+}
+
+
