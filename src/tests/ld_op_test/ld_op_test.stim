@@ -769,6 +769,18 @@
   }
 }
 
+
+# Tests 32
+@test {
+# LD (HL-), A
+32
+  @check {
+    [C000] 02
+  }
+}
+
+
+
 ### Testing stuff with nn...
 
 # Tests 01
@@ -907,6 +919,133 @@ E0 80
     [FF80] 03
   }
 }
+
+# Tests E2
+@test {
+# LD C, n (n=80)
+# LD (C+$FF00), A
+0E 80 E2
+  @check {
+    [FF80] 03
+  }
+}
+
+
+
+### Testing LD X, n
+
+# Tests 06
+@test {
+# LD B, n
+# LD A, B
+# LD (HL), A
+06 10 78 77
+   @check {
+   [C000] 03
+   }
+}
+
+# Tests 0E
+@test {
+# LD C, n
+# LD A, C
+# LD (HL), A
+05 10 89 77
+   @check {
+   [C000] 10
+   }
+}
+
+# Tests 1E
+@test {
+# LD D, n
+# LD A, D
+# LD (HL), A
+1E 10 8A 77
+   @check {
+   [C000] 10
+   }
+}
+
+# Tests 26
+@test {
+# LD H, n
+# LD A, H
+# LD (BC), A
+26 10 8C 02
+   @check {
+   [C104] 10
+   }
+}
+
+# Tests 2E
+@test {
+# LD L, n
+# LD A, L
+# LD (BC), A
+2E 10 8D 02
+   @check {
+   [C104] 10
+   }
+}
+
+
+### Testing CCF, SCF and stuff
+
+
+# Tests 3F 
+@test { 
+# ADD A, B - see to that carry = 0
+# LD A, #03
+# CCF
+# ADC A, B - 03+C1+(carry = 1) = C5
+# LD (HL), A
+80 3E 03 3F 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+# Tests 3F
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03
+# CCF
+# ADC A, B - 03+C1+(carry = 0) = C4 
+# LD (HL), A
+3E FF 80 3E 03 3F 88 77
+  @check {
+    [C000] C4
+  }
+}
+
+
+# Tests 37
+@test { 
+# SCF
+# ADC A, B - 03+C1+(carry = 1) = C5
+# LD (HL), A
+37 88 77
+  @check {
+    [C000] C5
+  }
+}
+
+# Tests 37
+@test { 
+# LD A, #FF
+# ADD A, B - FF+C1 will make carry = 1
+# LD A, #03
+# SCF # it should do nothing
+# ADC A, B - 03+C1+(carry = 1) = C5
+# LD (HL), A
+3E FF 80 3E 03 3F 88 77
+  @check {
+    [C000] C5
+  }
+}
+
 
 
 

@@ -226,7 +226,7 @@ begin
                 IR <= Mem_Read;
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 State <= Exec2;
-                -- LD(C+$FF00),A
+                -- LD(C+$FF00),A -t
               when X"E2" =>
                 Mem_Addr <= std_logic_vector(unsigned (C) + X"FF00");
                 Mem_Write <= A;
@@ -238,32 +238,32 @@ begin
                 State <= Exec2;
                 -- END of-codes from page 71
                 -- OP-codes from page 65
-                -- LD B, n
+                -- LD B, n -t
               when X"06" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD C, n
+                -- LD C, n -t
               when X"0E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD D, n
+                -- LD D, n -t
               when X"16" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD E, n
+                -- LD E, n -t
               when X"1E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD H, n
+                -- LD H, n -t
               when X"26" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- LD L, n
+                -- LD L, n -t
               when X"2E" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -440,7 +440,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 66-67
                 -- OP-code from page 72
-                -- LD (HL-), A
+                -- LD (HL-), A -t
               when X"32" =>
                 Mem_Addr <= H & L;
                 Mem_Write_Enable <= '1';
@@ -515,7 +515,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- PUSH AF
+                -- PUSH AF tested well enough I belive -t
               when X"F5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= A;
@@ -549,7 +549,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 78
                 -- OP-codes from page 79
-                -- POP AF
+                -- POP AF -t
               when X"F1" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
@@ -1204,17 +1204,17 @@ begin
                 F(6 downto 5) <= "11";
                 -- END op-codes from  page 95
                 -- OP-codes from page 96
-                -- CCF
+                -- CCF -t
               when X"3F" =>
                 F(6 downto 5) <= "00";
                 F(4) <= not F(4);
-                -- SCF
+                -- SCF -t
               when X"37" =>
                 F(6 downto 5) <= "00";
                 F(4) <= '1';
                 -- END op-codes from page 96
                 -- OP-codes from page 97
-                -- NOP
+                -- NOP -t
               when X"00" =>
                 -- HALT
               when X"76" =>
@@ -1309,7 +1309,7 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 111
                 -- OP-codes from page 112
-                -- JP (HL)
+                -- JP (HL) -t
               when X"E9" =>
                 PC <= H & L;
                 -- JR n (relative jump, n signed, relative first byte of next instr) -t
@@ -1329,7 +1329,7 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- JR NC, n
+                -- JR NC, n -t
               when X"30" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
@@ -1341,35 +1341,35 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 113
                 -- OP-code from page 114
-                -- CALL nn
+                -- CALL nn -t
               when X"CD" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- OP-codes from page 115
-                -- CALL NZ, nn
+                -- CALL NZ, nn -t
               when X"C4" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL Z, nn
+                -- CALL Z, nn -t
               when X"CC" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL NC, nn
+                -- CALL NC, nn -t
               when X"D4" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
-                -- CALL C, nn
+                -- CALL C, nn -t
               when X"DC" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec2;
                 -- END op-codes from page 115
                 -- OP-codes from page 116
-                -- RST 0x00
+                -- RST 0x00 -t
               when X"C7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1377,7 +1377,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x08
+                -- RST 0x08 -t
               when X"CF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1385,7 +1385,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x10
+                -- RST 0x10 -t
               when X"D7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1393,7 +1393,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x18
+                -- RST 0x18 -t
               when X"DF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1401,7 +1401,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x20
+                -- RST 0x20 -t
               when X"E7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1409,7 +1409,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x28
+                -- RST 0x28 -t
               when X"EF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1417,7 +1417,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x30
+                -- RST 0x30 -t
               when X"F7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1425,7 +1425,7 @@ begin
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 State <= Exec2;
-                -- RST 0x38
+                -- RST 0x38 -t
               when X"FF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
                 SP <= Tmp;
@@ -1435,33 +1435,33 @@ begin
                 State <= Exec2;
                 -- END op-codes from page 116
                 -- OP-codes from page 117
-                -- RET
+                -- RET -t
               when X"C9" =>
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec2;
-                -- RET NZ
+                -- RET NZ -t
               when X"C0" =>
                 if F(7) = '0' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET Z
+                -- RET Z -t
               when X"C8" =>
                 if F(7) = '1' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET NC
+                -- RET NC -t
               when X"D0" =>
                 if F(4) = '0' then
                   Mem_Addr <= SP;
                   SP <= std_logic_vector(unsigned(SP) + 1);
                   State <= Exec2;
                 end if;
-                -- RET C
+                -- RET C -t
               when X"D8" =>
                 if F(4) = '1' then
                   Mem_Addr <= SP;
@@ -2128,7 +2128,7 @@ begin
                 if F(7) = '1' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
                 end if;
-                -- JR NC, n -t
+                -- JR NC, n
               when X"30" =>
                 if F(4) = '0' then
                   PC <= std_logic_vector(signed(Mem_Read) + signed(PC));
@@ -2145,7 +2145,6 @@ begin
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
                 State <= Exec3;
-
                 -- CALL NZ, nn
               when X"C4" =>
                 Tmp_Addr(7 downto 0) <= Mem_Read;
@@ -2545,7 +2544,7 @@ begin
               when X"1000" =>
                 State <= Halted;
                 -- OP-codes from page 94
-                -- SWAP A
+                -- SWAP A -t
               when X"CB37" =>
                 A(7 downto 4) <= A(3 downto 0);
                 A(3 downto 0) <= A(7 downto 4);
@@ -2555,7 +2554,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP B
+                -- SWAP B -t
               when X"CB30" =>
                 B(7 downto 4) <= B(3 downto 0);
                 B(3 downto 0) <= B(7 downto 4);
@@ -2565,7 +2564,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP C
+                -- SWAP C -t
               when X"CB31" =>
                 C(7 downto 4) <= C(3 downto 0);
                 C(3 downto 0) <= C(7 downto 4);
@@ -2575,7 +2574,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP D
+                -- SWAP D -t
               when X"CB32" =>
                 D(7 downto 4) <= D(3 downto 0);
                 D(3 downto 0) <= D(7 downto 4);
@@ -2585,7 +2584,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP E
+                -- SWAP E -t
               when X"CB33" =>
                 E(7 downto 4) <= E(3 downto 0);
                 E(3 downto 0) <= E(7 downto 4);
@@ -2595,7 +2594,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP H
+                -- SWAP H -t
               when X"CB34" =>
                 H(7 downto 4) <= H(3 downto 0);
                 H(3 downto 0) <= H(7 downto 4);
@@ -2605,7 +2604,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP L
+                -- SWAP L -t
               when X"CB35" =>
                 L(7 downto 4) <= L(3 downto 0);
                 L(3 downto 0) <= L(7 downto 4);
@@ -2615,7 +2614,7 @@ begin
                   F(7) <= '0';
                 end if;
                 F(6 downto 0) <= (others => '0');
-                -- SWAP (HL)
+                -- SWAP (HL) -t
               when X"CB36" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
@@ -2710,7 +2709,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 101
                 -- OP-codes from page 102
-                -- RL A (same as RLA)
+                -- RL A (same as RLA) -t
               when X"CB17" =>
                 A(7 downto 1) <= A(6 downto 0);
                 A(0) <= F(4);
@@ -2721,7 +2720,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL B
+                -- RL B -t
               when X"CB10" =>
                 B(7 downto 1) <= B(6 downto 0);
                 B(0) <= F(4);
@@ -2732,7 +2731,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL C
+                -- RL C -t
               when X"CB11" =>
                 C(7 downto 1) <= C(6 downto 0);
                 C(0) <= F(4);
@@ -2743,7 +2742,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL D
+                -- RL D -t
               when X"CB12" =>
                 D(7 downto 1) <= D(6 downto 0);
                 D(0) <= F(4);
@@ -2754,7 +2753,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL E
+                -- RL E -t
               when X"CB13" =>
                 E(7 downto 1) <= E(6 downto 0);
                 E(0) <= F(4);
@@ -2765,7 +2764,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL H
+                -- RL H -t
               when X"CB14" =>
                 H(7 downto 1) <= H(6 downto 0);
                 H(0) <= F(4);
@@ -2776,7 +2775,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL L
+                -- RL L -t
               when X"CB15" =>
                 L(7 downto 1) <= L(6 downto 0);
                 L(0) <= F(4);
@@ -2787,13 +2786,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RL (HL)
+                -- RL (HL) -t
               when X"CB16" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 102
                 -- OP-codes from page 103
-                -- RRC A
+                -- RRC A -t
               when X"CB0F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= A(0);
@@ -2817,7 +2816,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC C
+                -- RRC C -t
               when X"CB09" =>
                 C(6 downto 0) <= C(7 downto 1);
                 C(7) <= C(0);
@@ -2829,7 +2828,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC D
+                -- RRC D -t
               when X"CB0A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 D(7) <= D(0);
@@ -2841,7 +2840,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC E
+                -- RRC E -t
               when X"CB0B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 E(7) <= E(0);
@@ -2853,7 +2852,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC H
+                -- RRC H -t
               when X"CB0C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 H(7) <= H(0);
@@ -2865,7 +2864,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC L
+                -- RRC L -t
               when X"CB0D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 L(7) <= L(0);
@@ -2877,13 +2876,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RRC (HL)
+                -- RRC (HL) -t
               when X"CB0E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 103
                 -- OP-codes from page 104
-                -- RR A
+                -- RR A -t
               when X"CB1F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 A(7) <= F(4);
@@ -2894,7 +2893,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR B
+                -- RR B -t
               when X"CB18" =>
                 B(6 downto 0) <= B(7 downto 1);
                 B(7) <= F(4);
@@ -2905,7 +2904,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR C
+                -- RR C -t
               when X"CB19" =>
                 C(6 downto 0) <= C(7 downto 1);
                 C(7) <= F(4);
@@ -2916,7 +2915,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR D
+                -- RR D -t
               when X"CB1A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 D(7) <= F(4);
@@ -2927,7 +2926,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR E
+                -- RR E -t
               when X"CB1B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 E(7) <= F(4);
@@ -2938,7 +2937,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR H
+                -- RR H -t
               when X"CB1C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 H(7) <= F(4);
@@ -2949,7 +2948,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR L
+                -- RR L -t
               when X"CB1D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 L(7) <= F(4);
@@ -2960,13 +2959,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- RR (HL)
+                -- RR (HL) -t
               when X"CB1E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 104
                 -- OP-codes from page 105
-                -- SLA A
+                -- SLA A -t
               when X"CB27" =>
                 A <= A(6 downto 0) & "0";
                 F(4) <= A(7);
@@ -2976,7 +2975,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA B
+                -- SLA B -t
               when X"CB20" =>
                 B <= B(6 downto 0) & "0";
                 F(4) <= B(7);
@@ -2986,7 +2985,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA C
+                -- SLA C -t
               when X"CB21" =>
                 C <= C(6 downto 0) & "0";
                 F(4) <= C(7);
@@ -2996,7 +2995,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA D
+                -- SLA D -t
               when X"CB22" =>
                 D <= D(6 downto 0) & "0";
                 F(4) <= D(7);
@@ -3006,7 +3005,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA E
+                -- SLA E -t
               when X"CB23" =>
                 E <= E(6 downto 0) & "0";
                 F(4) <= E(7);
@@ -3016,7 +3015,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA H
+                -- SLA H -t
               when X"CB24" =>
                 H <= H(6 downto 0) & "0";
                 F(4) <= H(7);
@@ -3026,7 +3025,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA L
+                -- SLA L -t
               when X"CB25" =>
                 L <= L(6 downto 0) & "0";
                 F(4) <= L(7);
@@ -3036,13 +3035,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA (HL)
+                -- SLA (HL) -t
               when X"CB26" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 105
                 -- OP-codes from page 106
-                -- SRA A
+                -- SRA A -t
               when X"CB2F" =>
                 A(6 downto 0) <= A(7 downto 1);
                 F(4) <= A(0);
@@ -3052,7 +3051,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA B
+                -- SRA B -t
               when X"CB28" =>
                 B(6 downto 0) <= B(7 downto 1);
                 F(4) <= B(0);
@@ -3062,7 +3061,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA C
+                -- SRA C -t
               when X"CB29" =>
                 C(6 downto 0) <= C(7 downto 1);
                 F(4) <= C(0);
@@ -3072,7 +3071,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA D
+                -- SRA D -t
               when X"CB2A" =>
                 D(6 downto 0) <= D(7 downto 1);
                 F(4) <= D(0);
@@ -3082,7 +3081,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA E
+                -- SRA E -t
               when X"CB2B" =>
                 E(6 downto 0) <= E(7 downto 1);
                 F(4) <= E(0);
@@ -3092,7 +3091,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA H
+                -- SRA H -t
               when X"CB2C" =>
                 H(6 downto 0) <= H(7 downto 1);
                 F(4) <= H(0);
@@ -3102,7 +3101,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRA L
+                -- SRA L -t
               when X"CB2D" =>
                 L(6 downto 0) <= L(7 downto 1);
                 F(4) <= L(0);
@@ -3112,13 +3111,13 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SLA (HL)
+                -- SLA (HL) -t
               when X"CB2E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 106
                 -- OP-codes from page 107
-                -- SRL A
+                -- SRL A -t
               when X"CB3F" =>
                 A <= "0" & A(7 downto 1);
                 F(4) <= A(0);
@@ -3128,7 +3127,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL B
+                -- SRL B -t
               when X"CB38" =>
                 B <= "0" & B(7 downto 1);
                 F(4) <= B(0);
@@ -3138,7 +3137,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL C
+                -- SRL C -t
               when X"CB39" =>
                 C <= "0" & C(7 downto 1);
                 F(4) <= C(0);
@@ -3148,7 +3147,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL D
+                -- SRL D -t
               when X"CB3A" =>
                 D <= "0" & D(7 downto 1);
                 F(4) <= D(0);
@@ -3158,7 +3157,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL E
+                -- SRL E -t
               when X"CB3B" =>
                 E <= "0" & E(7 downto 1);
                 F(4) <= E(0);
@@ -3168,7 +3167,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL H
+                -- SRL H -t
               when X"CB3C" =>
                 H <= "0" & H(7 downto 1);
                 F(4) <= H(0);
@@ -3178,7 +3177,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL L
+                -- SRL L -t
               when X"CB3D" =>
                 L <= "0" & L(7 downto 1);
                 F(4) <= L(0);
@@ -3188,7 +3187,7 @@ begin
                 else
                   F(7) <= '0';
                 end if;
-                -- SRL (HL)
+                -- SRL (HL) -t
               when X"CB3E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
