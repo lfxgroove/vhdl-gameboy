@@ -3197,7 +3197,7 @@ begin
               when X"CB47" | X"CB4F" | X"CB57" | X"CB5F" | X"CB67" | X"CB6F" | X"CB77" | X"CB7F" =>
                 F(7) <= not A(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, B (where 8 * b is added to the OP-code)
+                -- BIT b, B (where 8 * b is added to the OP-code) -t
               when X"CB40" | X"CB48" | X"CB50" | X"CB58" | X"CB60" | X"CB68" | X"CB70" | X"CB78" =>
                 F(7) <= not B(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";

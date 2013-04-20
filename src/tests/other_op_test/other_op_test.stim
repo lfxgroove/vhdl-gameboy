@@ -367,3 +367,91 @@ F3 76 3E 10
     [C104] 00
   }
 }
+
+
+### Testing BIT
+
+# Testing CB40
+@test { 
+# LD B, #FF
+# BIT 0, B - CB 40
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 1, B - CB 48
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 2, B - CB 50
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 3, B - CB 58
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 4, B - CB 60
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 5, B - CB 68
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 6, B - CB 70
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 7, B - CB 78
+# LD A, B
+# LD (DE), A
+06 FF 
+CB 40 CA 00 C2
+CB 48 CA 00 C2
+CB 50 CA 00 C2
+CB 58 CA 00 C2
+CB 60 CA 00 C2
+CB 68 CA 00 C2
+CB 7O CA 00 C2
+CB 78 CA 00 C2
+78 12
+  @check {
+    [C208] FF
+  }
+}
+
+# Testing CB40 
+# idea, every bit that sets Z should NOT increment E and then
+# check in the end if E was incremented. 
+
+@test { 
+# LD E, #00
+# LD B, #00
+# BIT 0, B - CB 40 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 1, B - CB 48 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 2, B - CB 50 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 3, B - CB 58 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 4, B - CB 60 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 5, B - CB 68 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 6, B - CB 70 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 7, B - CB 78 # gives Z=1
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# LD A, B
+# LD (HL), A
+1E 00 06 FE
+CB 40 28 01 1C
+CB 48 28 01 1C
+CB 50 28 01 1C
+CB 58 28 01 1C
+CB 60 28 01 1C
+CB 68 28 01 1C
+CB 70 28 01 1C
+CB 78 28 01 1C
+C2 78 77
+  @check {
+    [C000] 00
+  }
+}
+
+
