@@ -112,7 +112,7 @@ std::string TestFile::to_bin(int i)
 void TestFile::fill(const std::string& file_name)
 {
   std::ofstream file;
-  file.open(file_name);
+  file.open(file_name.c_str());
   if (!file.is_open())
     {
       std::cout << "DEBUG: Couldn't open " << file_name << " for filling" << std::endl;

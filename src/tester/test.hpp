@@ -5,7 +5,6 @@
 #include <cstdlib>
 #include <algorithm>
 #include <string>
-#include <array>
 
 #include "addrdata.hpp"
 #include "typedefs.hpp"

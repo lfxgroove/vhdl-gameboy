@@ -1,26 +1,26 @@
 #include "tokenizer.hpp"
 
-const std::vector<char> Tokenizer::ALLOWED_IDENTIFIER_CHARS = 
+const char Tokenizer::ALLOWED_IDENTIFIER_CHARS[] = 
   {
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_'
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '-', '_', 0,
   };
 
 //Only hex
-const std::vector<char> Tokenizer::ALLOWED_BLOCK_DATA = 
+const char Tokenizer::ALLOWED_BLOCK_DATA[] = 
   {
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
     'a', 'b', 'c', 'd', 'e', 'f', 
-    'A', 'B', 'C', 'D', 'E', 'F', 
+    'A', 'B', 'C', 'D', 'E', 'F', 0
   };
 
 void Tokenizer::next()
 {
   m_current_token = m_read_from.get(); 
-  // std::cout << "Extracted: " << m_current_token << std::endl;
+  //std::cout << "Extracted: " << m_current_token << std::endl;
   //Think about this logic
   ++m_pos_x;
   if (is_end_of_line())

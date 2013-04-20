@@ -25,17 +25,15 @@ public:
   //This one doesn't work that well..
   inline bool is_end_of_line() const { return m_current_token == '\n' || m_current_token == '\r'; };
   inline bool is_good_identifier() const
-  { 
-    return std::find(ALLOWED_IDENTIFIER_CHARS.begin(), 
-		     ALLOWED_IDENTIFIER_CHARS.end(),
-		     m_current_token) != ALLOWED_IDENTIFIER_CHARS.end();
+  {
+    char t[] = { m_current_token, 0 };
+    return strstr(ALLOWED_IDENTIFIER_CHARS, t) != NULL;
   };
   
   inline bool is_good_block_data() const
   {
-    return std::find(ALLOWED_BLOCK_DATA.begin(),
-		     ALLOWED_BLOCK_DATA.end(),
-		     m_current_token) != ALLOWED_BLOCK_DATA.end();
+    char t[] = { m_current_token, 0 };
+    return strstr(ALLOWED_BLOCK_DATA, t) != NULL;
   };
   
   inline bool has_token() const { return !!m_read_from;};
@@ -46,8 +44,8 @@ public:
   inline char current() const { return m_current_token;};
   
   //Characters allowed in an identifier
-  static const std::vector<char> ALLOWED_IDENTIFIER_CHARS;
-  static const std::vector<char> ALLOWED_BLOCK_DATA;
+  static const char ALLOWED_IDENTIFIER_CHARS[];
+  static const char ALLOWED_BLOCK_DATA[];
   
 private:
   std::ifstream m_read_from;

@@ -59,7 +59,12 @@ bool Test::run(const std::string& name)
   std::string arg = "ghdl --elab-run --ieee=synopsys " 
     + test_name + 
     //1600 us will be enough for now, might be subject to change..
-    " --vcd=" + test_name + ".vcd --stop-time=1600us > /dev/null 2>&1";
+    " --vcd=" + test_name + ".vcd --stop-time=1600us";
+#ifdef _WIN32
+  arg = "\"" + arg + " > NUL 2>NUL\"";
+#else
+  arg = arg + " > /dev/null 2>&1";
+#endif
   std::system(arg.c_str());
   
   return check(m_base_path + "/results/results.txt");
@@ -68,7 +73,7 @@ bool Test::run(const std::string& name)
 
 void Test::read_num_lines(int num_lines, std::ifstream& file, int& curr_line)
 {
-  std::array<char, 9> read_to;
+  char read_to[9];
   // std::cout << "Laser bort " << std::dec << num_lines << " rader" << std::endl;
   for (int i = 0; i < num_lines; ++i, ++curr_line)
     {
@@ -82,7 +87,7 @@ bool Test::check(const std::string& results_path)
 {
   //Open the file
   std::ifstream file;
-  file.open(results_path);
+  file.open(results_path.c_str());
   if (!file.is_open())
     {
       std::cout << "DEBUG: Couldn't open " << results_path << std::endl;
@@ -113,11 +118,12 @@ bool Test::check(const std::string& results_path)
 	   ++it, ++i, ++curr_line)
 	{
 	  // 8 + nul
-	  std::array<char, 9> read_to;
+	  char read_to[9];
 	  file.getline(&read_to[0], 9);
 	  // std::cout << "Read data (" << std::hex << addr + i << "): " << &read_to[0] << std::endl;
 	  std::string data;
-	  std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
+	  std::copy(read_to, read_to + 9, std::back_inserter(data));
+	  //std::copy(read_to.begin(), read_to.end(), std::back_inserter(data));
 	  data = data.substr(0, data.size() - 1);
 	  // std::cout << "Strangens langd: " << data.size() 
 	  //           << " och innehall:" << data << ":" << std::endl;
@@ -125,7 +131,8 @@ bool Test::check(const std::string& results_path)
 	  if (data != Util::to_bin(int(*it)))
 	    {
 	      all_ok = false;
-	      m_diff.add_diff({data, Util::to_bin(int(*it)), addr + i});
+	      DiffInfo d = { data, Util::to_bin(int(*it)), addr + 1 };
+	      m_diff.add_diff(d);
 	    }
 	  // std::cout << " RAD: " << curr_line << " DATA: " << Util::to_bin(int(*it)) << std::endl;
 	}
