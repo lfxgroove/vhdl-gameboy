@@ -28,7 +28,7 @@
 
 # default data 
 [C000] FF AA
-## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPAE
+## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPACE
 [C200] 3E 20 77 76
 [C104] EE
 [C208] DD
@@ -418,7 +418,7 @@ CD 10 C2 77
 @test {
 # LD BC,nn (nn = C100)
 # PUSH BC
-# POP AF <- AF = C1C0
+# POP AF <- AF = C100
 # LD (HL), A
 # LD A, #00
 # ADC A, A # 00+00+CARRY(=0) = 0
@@ -428,6 +428,20 @@ CD 10 C2 77
   @check {
     [C000] C1
     [C208] 00
+  }
+}
+
+
+# Tests F1, F5
+@test {
+# PUSH BC
+# POP AF
+# PUSH AF
+# POP DE
+# LD (DE), A
+C5 F1 F5 D1 12
+  @check {
+    [C104] 03
   }
 }
 

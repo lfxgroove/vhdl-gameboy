@@ -1,0 +1,218 @@
+@prepare {
+# Set HL to adress X"C000"
+# LD A, #C0
+# LD H, A
+3E C0 67
+# LD A, #00
+# LD L, A
+3E 00 6F
+
+# Set BC to adress X"C104"
+# LD A, #C1
+# LD B, A
+3E C1 47
+# LD A, #04
+# LD C, A
+3E 04 4F
+
+# Set DE to adress X"C208"
+# LD A, #C2
+# LD D, A
+3E C2 57
+# LD A, #08
+# LD E, A
+3E 08 5F
+
+# LD A, #03
+3E 03
+
+# default data 
+[C000] FF AA
+## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPACE
+[C200] 3E 20 77 76
+[C104] EE
+[C208] DD
+}
+
+# Testing 76
+@test { 
+# DI
+# HALT
+# LD A, #10
+# LD (HL), A
+F3 76 3E 10
+  @check {
+    [C000] FF
+  }
+}
+
+### Testing BIT
+
+
+### Tests CB40
+# BIT 0,B - CB 40
+# BIT 1,B - CB 48
+# BIT 2,B - CB 50
+# BIT 3,B - CB 58
+# BIT 4,B - CB 60
+# BIT 5,B - CB 68
+# BIT 6,B - CB 70
+# BIT 7,B - CB 78
+
+
+
+### Testing SET
+
+
+### Tests CBC0
+
+# Testing CBC0
+@test { 
+# LD B, #00
+# SET 0,B - CB C0
+# SET 1,B - CB C8
+# SET 2,B - CB D0
+# SET 3,B - CB D8
+# SET 4,B - CB E0
+# SET 5,B - CB E8
+# SET 6,B - CB F0
+# SET 7,B - CB F8
+# LD A, B
+# LD (DE), A
+06 00 CB C0 CB C8 CB D0 CB D8 CB E0 CB E8 CB FO CB F8 78 12
+  @check {
+    [C208] FF
+  }
+}
+
+# Testing CBC1
+@test { 
+# LD C, #00
+# SET 0,B - CB C1
+# SET 1,B - CB C9
+# SET 2,B - CB D1
+# SET 3,B - CB D9
+# SET 4,B - CB E1
+# SET 5,B - CB E9
+# SET 6,B - CB F1
+# SET 7,B - CB F9
+# LD A, C
+# LD (DE), A
+0E 00 CB C1 CB C9 CB D1 CB D9 CB E1 CB E9 CB F1 CB F9 79 12
+  @check {
+    [C208] FF
+  }
+}
+
+# Testing CBC2
+@test { 
+# LD D, #00
+# SET 0,B - CB C2
+# SET 1,B - CB CA
+# SET 2,B - CB D2
+# SET 3,B - CB DA
+# SET 4,B - CB E2
+# SET 5,B - CB EA
+# SET 6,B - CB F2
+# SET 7,B - CB FA
+# LD A, D
+# LD (BC), A
+16 00 CB C2 CB CA CB D2 CB DA CB E2 CB EA CB F2 CB FA 7A 02
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CBC3
+@test { 
+# LD E, #00
+# SET 0,B - CB C3
+# SET 1,B - CB CB
+# SET 2,B - CB D3
+# SET 3,B - CB DB
+# SET 4,B - CB E3
+# SET 5,B - CB EB
+# SET 6,B - CB F3
+# SET 7,B - CB FB
+# LD A, E
+# LD (BC), A
+1E 00 CB C3 CB CB CB D3 CB DB CB E3 CB EB CB F3 CB FB 7B 02
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CBC4
+@test { 
+# LD H, #00
+# SET 0,B - CB C4
+# SET 1,B - CB CC
+# SET 2,B - CB D4
+# SET 3,B - CB DC
+# SET 4,B - CB E4
+# SET 5,B - CB EC
+# SET 6,B - CB F4
+# SET 7,B - CB FC
+# LD A, H
+# LD (BC), A
+1E 00 CB C4 CB CC CB D4 CB DC CB E4 CB EC CB F4 CB FC 7C 02
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CBC5
+@test { 
+# LD L, #00
+# SET 0,B - CB C5
+# SET 1,B - CB CD
+# SET 2,B - CB D5
+# SET 3,B - CB DD
+# SET 4,B - CB E5
+# SET 5,B - CB ED
+# SET 6,B - CB F5
+# SET 7,B - CB FD
+# LD A, L
+# LD (BC), A
+26 00 CB C5 CB CD CB D5 CB DD CB E5 CB ED CB F5 CB FD 7D 02
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CBC6
+@test { 
+# LD (HL), n (n = 00)
+# SET 0,B - CB C6
+# SET 1,B - CB CE
+# SET 2,B - CB D6
+# SET 3,B - CB DE
+# SET 4,B - CB E6
+# SET 5,B - CB EE
+# SET 6,B - CB F6
+# SET 7,B - CB FE
+# LD A, (HL)
+# LD (BC), A
+36 00 CB C6 CB CE CB D6 CB DE CB E6 CB EE CB F6 CB FE 7E 02
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CBC7
+@test { 
+# LD A, #00
+# SET 0,B - CB C7
+# SET 1,B - CB CF
+# SET 2,B - CB D7
+# SET 3,B - CB DF
+# SET 4,B - CB E7
+# SET 5,B - CB EF
+# SET 6,B - CB F7
+# SET 7,B - CB FF
+# LD (BC), A
+3E 00 CB C7 CB CF CB D7 CB DF CB E7 CB EF CB F7 CB FF 02
+  @check {
+    [C104] FF
+  }
+}
