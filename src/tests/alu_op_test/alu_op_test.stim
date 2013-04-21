@@ -376,7 +376,7 @@ C6 0F 77
 # LD A, #C5
 # SUB A, B
 # LD (HL), A
-C5 90 77
+3E C5 90 77
   @check {
     [C000] 04
   }
@@ -387,7 +387,7 @@ C5 90 77
 # LD A, #C5
 # SUB A, C
 # LD (HL), A
-C5 91 77
+3E C5 91 77
   @check {
     [C000] C1
   }
@@ -398,7 +398,7 @@ C5 91 77
 # LD A, #C5
 # SUB A, D
 # LD (HL), A
-C5 92 77
+3E C5 92 77
   @check {
     [C000] 03
   }
@@ -409,7 +409,7 @@ C5 92 77
 # LD A, #C5
 # SUB A, E
 # LD (HL), A
-C5 93 77
+3E C5 93 77
   @check {
     [C000] BD
   }
@@ -420,7 +420,7 @@ C5 93 77
 # LD A, #C5
 # SUB A, H
 # LD (HL), A
-C5 94 77
+3E C5 94 77
   @check {
     [C000] 05
   }
@@ -431,7 +431,7 @@ C5 94 77
 # LD A, #C5
 # SUB A, L
 # LD (HL), A
-C5 95 77
+3E C5 95 77
   @check {
     [C000] C5
   }
@@ -442,7 +442,7 @@ C5 95 77
 # LD A, #C5
 # SUB A, (HL)
 # LD (HL), A
-C5 96 77
+3E C5 96 77
   @check {
     [C000] C6
   }
