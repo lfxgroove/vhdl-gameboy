@@ -3193,7 +3193,7 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 107
                 -- OP-codes from page 108
-                -- BIT b, A (where 8 * b is added to the OP-code)
+                -- BIT b, A (where 8 * b is added to the OP-code) -t
               when X"CB47" | X"CB4F" | X"CB57" | X"CB5F" | X"CB67" | X"CB6F" | X"CB77" | X"CB7F" =>
                 F(7) <= not A(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
@@ -3201,23 +3201,23 @@ begin
               when X"CB40" | X"CB48" | X"CB50" | X"CB58" | X"CB60" | X"CB68" | X"CB70" | X"CB78" =>
                 F(7) <= not B(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, C (where 8 * b is added to the OP-code)
+                -- BIT b, C (where 8 * b is added to the OP-code) -t
               when X"CB41" | X"CB49" | X"CB51" | X"CB59" | X"CB61" | X"CB69" | X"CB71" | X"CB79" =>
                 F(7) <= not C(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, D (where 8 * b is added to the OP-code)
+                -- BIT b, D (where 8 * b is added to the OP-code) -t
               when X"CB42" | X"CB4A" | X"CB52" | X"CB5A" | X"CB62" | X"CB6A" | X"CB72" | X"CB7A" =>
                 F(7) <= not D(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, E (where 8 * b is added to the OP-code)
+                -- BIT b, E (where 8 * b is added to the OP-code) -t
               when X"CB43" | X"CB4B" | X"CB53" | X"CB5B" | X"CB63" | X"CB6B" | X"CB73" | X"CB7B" =>
                 F(7) <= not E(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, H (where 8 * b is added to the OP-code)
+                -- BIT b, H (where 8 * b is added to the OP-code) -t
               when X"CB44" | X"CB4C" | X"CB54" | X"CB5C" | X"CB64" | X"CB6C" | X"CB74" | X"CB7C" =>
                 F(7) <= not H(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, L (where 8 * b is added to the OP-code)
+                -- BIT b, L (where 8 * b is added to the OP-code) -t
               when X"CB45" | X"CB4D" | X"CB55" | X"CB5D" | X"CB65" | X"CB6D" | X"CB75" | X"CB7D" =>
                 F(7) <= not L(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
