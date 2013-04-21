@@ -470,7 +470,7 @@ D6 CE 77
 }
 
 
-### Testing SUB A, n
+### Testing SBC A, n
 # Subtract n + Carry flag from A.
 ## n = A,B,C,D,E,H,L,(HL),#
 # Flags affected:
@@ -480,7 +480,7 @@ D6 CE 77
 # C - Set if no borrow.
 
 
-# Tests 98 - CALC: C5-C1+(carry=0) = 04
+# Tests 98 - CALC: C5-C1-(carry=0) = 04
 @test { 
 # ADD A, B - see to that carry = 0
 # LD A, #C5
@@ -493,7 +493,7 @@ D6 CE 77
 }
 
 
-# Tests 98 - CALC: C5-C1+(carry=1) = 05
+# Tests 98 - CALC: C5-C1-(carry=1) = 03
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -502,13 +502,13 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 98 77
   @check {
-    [C000] 05
+    [C000] 03
   }
 }
 
 ## 99-9F are tested in less detail 
 
-# Tests 99 - CALC: C5-04+(carry=1) = C2
+# Tests 99 - CALC: C5-04-(carry=1) = C0
 @test {
 # LD A, #FF
 # ADD A, B - see to that carry = 1 
@@ -517,11 +517,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 99 77
   @check {
-    [C000] C2
+    [C000] C0
   }
 }
 
-# Tests 9A - CALC: C5-C2+(carry=1) = 04
+# Tests 9A - CALC: C5-C2-(carry=1) = 02
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -530,11 +530,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 9A 77
   @check {
-    [C000] 04
+    [C000] 02
   }
 }
 
-# Tests 9B - CALC: C5-08+(carry=1) = BE
+# Tests 9B - CALC: C5-08-(carry=1) = BC
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -543,11 +543,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 9B 77
   @check {
-    [C000] BE
+    [C000] BC
   }
 }
 
-# Tests 9C - CALC: C5-C0+(carry=1) = 06
+# Tests 9C - CALC: C5-C0-(carry=1) = 04
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -556,11 +556,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 9C 77
   @check {
-    [C000] 06
+    [C000] 04
   }
 }
 
-# Tests 9D - CALC: C5-00+(carry=1) = C6
+# Tests 9D - CALC: C5-00-(carry=1) = C4
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -569,11 +569,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 9D 77
   @check {
-    [C000] C6
+    [C000] C4
   }
 }
 
-# Tests 9E - CALC: C5-FF+(carry=1) = C7
+# Tests 9E - CALC: C5-FF-(carry=1) = C5
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -582,11 +582,11 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 3E C5 9E 77
   @check {
-    [C000] C7
+    [C000] C5
   }
 }
 
-# Tests 9F - CALC: 03-03+(carry=1) = 01
+# Tests 9F - CALC: 03-03-(carry=1) = FF
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -594,12 +594,12 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 9F 77
   @check {
-    [C000] 01
+    [C000] FF
   }
 }
 
 
-# Tests D6 - CALC: 03-CE+(carry=1) = 36
+# Tests D6 - CALC: 03-CE-(carry=1) = 34
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
@@ -607,7 +607,7 @@ D6 CE 77
 # LD (HL), A
 3E FF 80 D6 CE 77
   @check {
-    [C000] 36
+    [C000] 34
   }
 }
 
