@@ -10,10 +10,10 @@
 # Set BC to adress X"C104"
 # LD A, #C1
 # LD B, A
-3E D0 47
+3E C1 47
 # LD A, #04
 # LD C, A
-3E 01 4F
+3E 04 4F
 
 # Set DE to adress X"C208"
 # LD A, #C2
@@ -51,7 +51,7 @@
 # LD A, #0A
 # ADD A, B
 # LD (HL), A
-35 01 47 35 0A 80 77
+3E 01 47 3E 0A 80 77
   @check {
     [C000] 0B
   }
@@ -64,7 +64,7 @@
 # LD A, #00
 # ADD A, C
 # LD (HL), A
-35 80 4F 35 00 81 77
+3E 80 4F 3E 00 81 77
   @check {
     [C000] 80
   }
@@ -78,7 +78,7 @@
 # LD A, #01
 # ADD A, D
 # LD (HL), A
-35 FF 57 35 01 82 77
+3E FF 57 3E 01 82 77
   @check {
     [C000] 00
   }
@@ -91,7 +91,7 @@
 # LD A, #0A
 # ADD A, E
 # LD (HL), A
-35 01 47 35 0A 83 77
+3E 01 5F 3E 0A 83 77
   @check {
     [C000] 0B
   }
@@ -103,10 +103,10 @@
 # LD H, A
 # LD A, #0A
 # ADD A, H
-# LD (HL), A
-35 01 47 35 0A 84 77
+# LD (BC), A
+3E 01 67 3E 0A 84 02
   @check {
-    [C000] 0B
+    [C104] 0B
   }
 }
 
@@ -116,10 +116,10 @@
 # LD L, A
 # LD A, #0A
 # ADD A, L
-# LD (HL), A
-35 01 47 35 0A 85 77
+# LD (BC), A
+3E 01 6F 3E 0A 85 02
   @check {
-    [C000] 0B
+    [C104] 0B
   }
 }
 
@@ -129,10 +129,10 @@
 # LD A, #01
 # LD (HL), A
 # ADD A, (HL) # 1+1
-# LD (HL), A
-35 01 77 86 77
+# LD (BC), A
+3E 01 77 86 02
   @check {
-    [C000] 02
+    [C104] 02
   }
 }
 
@@ -141,7 +141,7 @@
 # LD A, #02
 # ADD A, A # 2+2
 # LD (HL), A
-35 01 87 77
+3E 02 87 77
   @check {
     [C000] 04
   }
@@ -151,7 +151,7 @@
 @test { 
 # ADD A, #0F
 # LD (HL), A
-C6 77
+C6 0F 77
   @check {
     [C000] 12
   }
@@ -1608,7 +1608,7 @@ l# Tests 2D
 # RLC L
 # ADC A, L - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (BC), A
-3E 01 6F 35 00 CB 05 8D 02
+3E 01 6F 3E 00 CB 05 8D 02
   @check {
     [C104] 02
   }
@@ -1654,7 +1654,7 @@ l# Tests 2D
 # RRC B
 # ADC A, B - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (HL), A
-3E 81 47 35 00 CB 08 88 77
+3E 81 47 3E 00 CB 08 88 77
   @check {
     [C000] C1
   }
@@ -1668,7 +1668,7 @@ l# Tests 2D
 # RRC B
 # ADC A, B - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 80 47 35 00 CB 08 88 77
+3E 80 47 3E 00 CB 08 88 77
   @check {
     [C000] 40
   }
@@ -1683,7 +1683,7 @@ l# Tests 2D
 # RRC C
 # ADC A, C - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (HL), A
-3E 81 4F 35 00 CB 09 89 77
+3E 81 4F 3E 00 CB 09 89 77
   @check {
     [C000] C1
   }
@@ -1697,7 +1697,7 @@ l# Tests 2D
 # RRC C
 # ADC A, C - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 80 4F 35 00 CB 09 89 77
+3E 80 4F 3E 00 CB 09 89 77
   @check {
     [C000] 40
   }
@@ -1711,7 +1711,7 @@ l# Tests 2D
 # RRC D
 # ADC A, D - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (HL), A
-3E 81 57 35 00 CB 0A 8A 77
+3E 81 57 3E 00 CB 0A 8A 77
   @check {
     [C000] C1
   }
@@ -1725,7 +1725,7 @@ l# Tests 2D
 # RRC D
 # ADC A, D - 00+40+carry(=0) = 40
 # LD (HL), A
-3E 80 57 35 00 CB 0A 8A 77
+3E 80 57 3E 00 CB 0A 8A 77
   @check {
     [C000] 40
   }
@@ -1740,7 +1740,7 @@ l# Tests 2D
 # RRC E
 # ADC A, E - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (BC), A
-3E 81 5F 35 00 CB 0B 8B 02
+3E 81 5F 3E 00 CB 0B 8B 02
   @check {
     [C104] C1
   }
@@ -1754,7 +1754,7 @@ l# Tests 2D
 # RRC E
 # ADC A, E - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 80 5F 35 00 CB 0B 8B 02
+3E 80 5F 3E 00 CB 0B 8B 02
   @check {
     [C104] 40
   }
@@ -1769,7 +1769,7 @@ l# Tests 2D
 # RRC H
 # ADC A, H - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (BC), A
-3E 81 67 35 00 CB 0C 8C 02
+3E 81 67 3E 00 CB 0C 8C 02
   @check {
     [C104] C1
   }
@@ -1783,7 +1783,7 @@ l# Tests 2D
 # RRC H
 # ADC A, H - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 80 67 35 00 CB 0C 8C 02
+3E 80 67 3E 00 CB 0C 8C 02
   @check {
     [C104] 40
   }
@@ -1798,7 +1798,7 @@ l# Tests 2D
 # RRC L
 # ADC A, L - 00+C0+carry(=1) = C1 # tests if carry is set
 # LD (BC), A
-3E 81 6F 35 00 CB 0D 8D 02
+3E 81 6F 3E 00 CB 0D 8D 02
   @check {
     [C104] C1
   }
@@ -1812,7 +1812,7 @@ l# Tests 2D
 # RRC L
 # ADC A, L - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 80 5F 35 00 CB 0D 8D 02
+3E 80 5F 3E 00 CB 0D 8D 02
   @check {
     [C104] 40
   }
@@ -2483,7 +2483,7 @@ CB 0F 8F 77
 # JP Z,nn (nn = 00 C2)
 # LD A, B
 # LD (HL), A
-35 00 47 CB 30 CA 78 77
+3E 00 47 CB 30 CA 78 77
   @check {
     [C000] 20
   }
