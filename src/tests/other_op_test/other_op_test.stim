@@ -872,6 +872,87 @@ CB 7D 28 01 1C
   }
 }
 
+##
+# Testing CB46
+@test { 
+# LD (HL), #FF
+# BIT 0, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 1, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 2, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 3, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 4, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 5, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 6, (HL)
+# JP Z,nn (nn = 00 C2) # jumps if z=1 which it should not be
+# BIT 7, (HL)
+36 FF 
+CB 46 CA 00 C2
+CB 4E CA 00 C2
+CB 56 CA 00 C2
+CB 5E CA 00 C2
+CB 66 CA 00 C2
+CB 6E CA 00 C2
+CB 76 CA 00 C2
+CB 7E CA 00 C2
+  @check {
+    [C104] FF
+  }
+}
+
+# Testing CB46
+# idea, every bit that sets Z should NOT increment E and then
+# check in the end if E was incremented. 
+
+@test { 
+# LD E, #00
+# LD (HL), #00
+# BIT 0, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 1, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 2, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 3, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 4, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 5, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 6, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# BIT 7, (HL)
+# JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
+# INC E # This should never happen
+# LD A, E
+# LD (HL), A
+1E 00 36 00
+CB 46 28 01 1C
+CB 4E 28 01 1C
+CB 56 28 01 1C
+CB 5E 28 01 1C
+CB 66 28 01 1C
+CB 6E 28 01 1C
+CB 76 28 01 1C
+CB 7E 28 01 1C
+7B 77
+  @check {
+    [C000] 00
+  }
+}
+
 # Testing CB47
 @test { 
 # LD A, #FF

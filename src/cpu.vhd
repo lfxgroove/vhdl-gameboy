@@ -3221,7 +3221,7 @@ begin
               when X"CB45" | X"CB4D" | X"CB55" | X"CB5D" | X"CB65" | X"CB6D" | X"CB75" | X"CB7D" =>
                 F(7) <= not L(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, (HL) (where 8 * b is added to the OP-code)
+                -- BIT b, (HL) (where 8 * b is added to the OP-code) -t
               when X"CB46" | X"CB4E" | X"CB56" | X"CB5E" | X"CB66" | X"CB6E" | X"CB76" | X"CB7E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
