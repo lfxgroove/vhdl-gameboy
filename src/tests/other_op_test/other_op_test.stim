@@ -437,7 +437,7 @@ CB 78 CA 00 C2
 # BIT 7, B - CB 78 # gives Z=1
 # JR Z,n (nn = 01) # jumps over the inc instrution if Z=1
 # INC E # This should never happen
-# LD A, B
+# LD A, E
 # LD (HL), A
 1E 00 06 FE
 CB 40 28 01 1C
@@ -448,7 +448,7 @@ CB 60 28 01 1C
 CB 68 28 01 1C
 CB 70 28 01 1C
 CB 78 28 01 1C
-C2 78 77
+C2 7B 77
   @check {
     [C000] 00
   }
