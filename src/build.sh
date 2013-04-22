@@ -13,4 +13,5 @@ cp *.vhd build/
 cp -r build-data/* build/
 
 cd build
-make lab.$1
+make $1
+
