@@ -35,6 +35,7 @@
 }
 
 # Testing 76
+# Test number: 1
 @test { 
 # DI
 # HALT
@@ -64,6 +65,7 @@ F3 76 3E 10
 ### Testing SET
 
 # Testing CBC0
+# Test number: 2
 @test { 
 # LD B, #00
 # SET 0, B - CB C0
@@ -83,6 +85,7 @@ F3 76 3E 10
 }
 
 # Testing CBC1
+# Test number: 3
 @test { 
 # LD C, #00
 # SET 0, C - CB C1
@@ -102,6 +105,7 @@ F3 76 3E 10
 }
 
 # Testing CBC2
+# Test number: 4
 @test { 
 # LD D, #00
 # SET 0, D - CB C2
@@ -121,6 +125,7 @@ F3 76 3E 10
 }
 
 # Testing CBC3
+# Test number: 5
 @test { 
 # LD E, #00
 # SET 0, E - CB C3
@@ -140,6 +145,7 @@ F3 76 3E 10
 }
 
 # Testing CBC4
+# Test number: 6
 @test { 
 # LD H, #00
 # SET 0, H - CB C4
@@ -159,6 +165,7 @@ F3 76 3E 10
 }
 
 # Testing CBC5
+# Test number: 7
 @test { 
 # LD L, #00
 # SET 0, L - CB C5
@@ -178,6 +185,7 @@ F3 76 3E 10
 }
 
 # Testing CBC6
+# Test number: 8
 @test { 
 # LD (HL), n (n = 00)
 # SET 0, (HL) - CB C6
@@ -197,6 +205,7 @@ F3 76 3E 10
 }
 
 # Testing CBC7
+# Test number: 9
 @test { 
 # LD A, #00
 # SET 0, A - CB C7
@@ -218,6 +227,7 @@ F3 76 3E 10
 ### Testing RES
 
 # Testing CB80
+# Test number: 10
 @test { 
 # LD B, #FF
 # RES 0, B - CB 80
@@ -237,6 +247,7 @@ F3 76 3E 10
 }
 
 # Testing CB81
+# Test number: 11
 @test { 
 # LD C, #FF
 # RES 0, C - CB 81
@@ -256,6 +267,7 @@ F3 76 3E 10
 }
 
 # Testing CB82
+# Test number: 12
 @test { 
 # LD D, #FF
 # RES 0, D - CB 82
@@ -275,6 +287,7 @@ F3 76 3E 10
 }
 
 # Testing CB83
+# Test number: 13
 @test { 
 # LD E, #FF
 # RES 0, E - CB 83
@@ -294,6 +307,7 @@ F3 76 3E 10
 }
 
 # Testing CB84
+# Test number: 14
 @test { 
 # LD H, #FF
 # RES 0, H - CB 84
@@ -313,6 +327,7 @@ F3 76 3E 10
 }
 
 # Testing CB85
+# Test number: 15
 @test { 
 # LD L, #FF
 # RES 0, L - CB 85
@@ -332,6 +347,7 @@ F3 76 3E 10
 }
 
 # Testing CB86
+# Test number: 16
 @test { 
 # LD (HL), n (n = FF)
 # RES 0, (HL) - CB 86
@@ -351,6 +367,7 @@ F3 76 3E 10
 }
 
 # Testing CB87
+# Test number: 17
 @test { 
 # LD A, #FF
 # RES 0, A - CB 87
@@ -372,6 +389,7 @@ F3 76 3E 10
 ### Testing BIT
 
 # Testing CB40
+# Test number: 18
 @test { 
 # LD B, #FF
 # BIT 0, B - CB 40
@@ -410,6 +428,7 @@ CB 78 CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 19
 @test { 
 # LD E, #00
 # LD B, #00
@@ -455,6 +474,7 @@ CB 78 28 01 1C
 }
 
 # Testing CB41
+# Test number: 20
 @test { 
 # LD C, #FF
 # BIT 0, C
@@ -493,6 +513,7 @@ CB 79 CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 21
 @test { 
 # LD E, #00
 # LD C, #00
@@ -539,6 +560,7 @@ CB 79 28 01 1C
 
 
 # Testing CB42
+# Test number: 22
 @test { 
 # LD D, #FF
 # BIT 0, D
@@ -577,6 +599,7 @@ CB 7A CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 23
 @test { 
 # LD E, #00
 # LD D, #00
@@ -623,6 +646,7 @@ CB 7A 28 01 1C
 
 
 # Testing CB43
+# Test number: 24
 @test { 
 # LD E, #FF
 # BIT 0, E
@@ -661,6 +685,7 @@ CB 7B CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 25
 @test { 
 # LD E, #00
 # BIT 0, E
@@ -706,6 +731,7 @@ CB 7B 28 01 1C
 
 
 # Testing CB44
+# Test number: 26
 @test { 
 # LD H, #FF
 # BIT 0, H
@@ -744,6 +770,7 @@ CB 7C CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 27
 @test { 
 # LD E, #00
 # LD H, #00
@@ -790,6 +817,7 @@ CB 7C 28 01 1C
 
 
 # Testing CB45
+# Test number: 28
 @test { 
 # LD L, #FF
 # BIT 0, L
@@ -828,6 +856,7 @@ CB 7D CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 29
 @test { 
 # LD E, #00
 # LD L, #00
@@ -874,6 +903,7 @@ CB 7D 28 01 1C
 
 ##
 # Testing CB46
+# Test number: 30
 @test { 
 # LD (HL), #FF
 # BIT 0, (HL)
@@ -909,6 +939,7 @@ CB 7E CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 31
 @test { 
 # LD E, #00
 # LD (HL), #00
@@ -954,6 +985,7 @@ CB 7E 28 01 1C
 }
 
 # Testing CB47
+# Test number: 32
 @test { 
 # LD A, #FF
 # BIT 0, A
@@ -991,6 +1023,7 @@ CB 7F CA 00 C2
 # idea, every bit that sets Z should NOT increment E and then
 # check in the end if E was incremented. 
 
+# Test number: 33
 @test { 
 # LD E, #00
 # LD A, #00

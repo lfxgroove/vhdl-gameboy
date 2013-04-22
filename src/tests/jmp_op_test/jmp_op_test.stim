@@ -57,6 +57,7 @@
 ### Testing JPs..
 
 # Tests C3
+# Test number: 1
 @test { 
 # JP nn (nn = 00 02)
 C3 00 02
@@ -66,6 +67,7 @@ C3 00 02
 }
 
 # Tests C3
+# Test number: 2
 @test { 
 # JP nn (nn = 50 02)
 C3 50 02
@@ -78,6 +80,7 @@ C3 50 02
 ## correct jumps are made.
  
 # Tests C2
+# Test number: 3
 @test { 
 # SUB A, A # this should set Z. (Z=1)
 # JP NZ, nn (nn = 50 02)
@@ -89,6 +92,7 @@ C3 50 02
 }
 
 # Tests C2
+# Test number: 4
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
 # JP NZ, nn (nn = 50 02)
@@ -101,6 +105,7 @@ C3 50 02
 ## To test JP Z,nn
 
 # Tests CA
+# Test number: 5
 @test { 
 # SUB A, A # this should set Z. (Z=1)
 # JP Z, nn (nn = 50 02)
@@ -111,6 +116,7 @@ C3 50 02
 }
 
 # Tests CA
+# Test number: 6
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
 # JP Z, nn (nn = 50 02)
@@ -124,6 +130,7 @@ C3 50 02
 ## To test JP NC,nn
 
 # Tests D2
+# Test number: 7
 @test { 
 # LD A, #FF
 # ADD A, A # this should set C. (C=1)
@@ -136,6 +143,7 @@ C3 50 02
 }
 
 # Tests D2
+# Test number: 8
 @test { 
 # ADD A, A # this should Reset C. (C=0)
 # JP NC, nn (nn = 50 02)
@@ -148,6 +156,7 @@ C3 50 02
 ## To test JP C,nn
 
 # Tests DA
+# Test number: 9
 @test { 
 # LD A, #FF
 # ADD A, A # this should set C. (C=1)
@@ -159,6 +168,7 @@ C3 50 02
 }
 
 # Tests DA
+# Test number: 10
 @test { 
 # ADD A, A # this should Reset C. (C=0)
 # JP C, nn (nn = 50 02)
@@ -174,6 +184,7 @@ C3 50 02
 ### Testing relative jumps
 
 # Tests 18
+# Test number: 11
 @test { 
 # JR n (n = 02)
 # LD A, #AB
@@ -186,6 +197,7 @@ C3 50 02
 }
 
 # Tests 28
+# Test number: 12
 @test { 
 # SUB A, A # this should set Z. (Z=1)
 # JR Z, n (n = 02)
@@ -198,6 +210,7 @@ C3 50 02
 }
 
 # Tests 28
+# Test number: 13
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
 # JR Z, n (n = 02)
@@ -211,6 +224,7 @@ C3 50 02
 
 
 # Tests 20
+# Test number: 14
 @test { 
 # SUB A, A # this should set Z. (Z=1)
 # JR NZ, n (n = 02)
@@ -223,6 +237,7 @@ C3 50 02
 }
 
 # Tests 20
+# Test number: 15
 @test { 
 # SUB A, B # this should Reset Z. (Z=0)
 # JR NZ, n (n = 02)
@@ -236,6 +251,7 @@ C3 50 02
 
 
 # Tests 38
+# Test number: 16
 @test { 
 # LD A, #FF
 # ADD A, A # this should set C. (C=1)
@@ -249,6 +265,7 @@ C3 50 02
 }
 
 # Tests 38
+# Test number: 17
 @test { 
 # ADD A, A # this should Reset C. (C=0)
 # JR C, n (n = 02)
@@ -262,6 +279,7 @@ C3 50 02
 
 
 # Tests 30
+# Test number: 18
 @test { 
 # LD A, #FF
 # ADD A, A # this should set C. (C=1)
@@ -275,6 +293,7 @@ C3 50 02
 }
 
 # Tests 30
+# Test number: 19
 @test { 
 # ADD A, A # this should Reset C. (C=0)
 # JR NC, n (n = 02)
@@ -287,6 +306,7 @@ C3 50 02
 }
 
 # Tests E9
+# Test number: 20
 @test { 
 # LD HL, nn (nn = 00 C2)
 # JP (HL)
@@ -301,6 +321,7 @@ C3 50 02
 
 
 # Tests C7
+# Test number: 21
 @test { 
 # RST 0x00
 # LD A, #DD
@@ -313,6 +334,7 @@ C7 35 DD 02
 }
 
 # Tests D7
+# Test number: 22
 @test { 
 # RST 0x10
 # LD A, #DD
@@ -325,6 +347,7 @@ D7 35 DD 02
 }
 
 # Tests DF
+# Test number: 23
 @test { 
 # RST 0x18
 # LD A, #DD
@@ -337,6 +360,7 @@ DF 35 DD 02
 }
 
 # Tests E7
+# Test number: 24
 @test { 
 # RST 0x20
 # LD A, #DD
@@ -349,6 +373,7 @@ E7 35 DD 02
 }
 
 # Tests EF
+# Test number: 25
 @test { 
 # RST 0x28
 # LD A, #DD
@@ -361,6 +386,7 @@ EF 35 DD 02
 }
 
 # Tests F7
+# Test number: 26
 @test { 
 # RST 0x30
 # LD A, #DD
@@ -373,6 +399,7 @@ F7 35 DD 02
 }
 
 # Tests FF
+# Test number: 27
 @test { 
 # RST 0x38
 # LD A, #DD
