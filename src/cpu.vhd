@@ -1017,37 +1017,37 @@ begin
                 State <= Exec2;
                 -- INC B - WRONG! -t
               when X"04" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & B;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC C - WRONG -t
               when X"0C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & C;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC D -WRONG -t
               when X"14" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & D;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC E -t
               when X"1C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & E;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC H -t
               when X"24" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & H;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC L -t
               when X"2C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & L;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
