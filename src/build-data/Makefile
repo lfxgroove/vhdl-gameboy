@@ -37,7 +37,7 @@ lab.%: S=cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd
 lab.%: T=cpu_testbench.vhd
 lab.%: U=lab.ucf
 
-gpu.%: S=gpu.vhd
+gpu.%: S=gpu_logic.vhd gpu.vhd
 gpu.%: T=
 gpu.%: U=lab.ucf
 

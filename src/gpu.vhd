@@ -7,14 +7,19 @@ use IEEE.numeric_std.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity gpu is
+entity Gpu is
     Port ( Clk,Rst : in  STD_LOGIC;
            vgaRed, vgaGreen : out  STD_LOGIC_VECTOR (2 downto 0);
            vgaBlue : out  STD_LOGIC_VECTOR (2 downto 1);
-           Hsync,Vsync : out  STD_LOGIC);
-end gpu;
+           Hsync,Vsync : out  STD_LOGIC;
+           Current_Row : out std_logic_vector(7 downto 0);
+           -- High bit and low bit of color
+           Row_Buffer_High : in std_logic_vector(159 downto 0);
+           Row_Buffer_Low : in std_logic_vector(159 downto 0)
+           );
+end Gpu;
 
-architecture Behavioral of gpu is
+architecture Behavioral of Gpu is
   --component leddriver
   --  Port ( Clk,Rst : in  STD_LOGIC;
   --         ca,cb,cc,cd,ce,cf,cg,dp : out  STD_LOGIC;
@@ -23,17 +28,13 @@ architecture Behavioral of gpu is
   --end component;
 
   -- Screen size in large pixels
-  constant Screen_Width : std_logic_vector(8 downto 0) := "010100000";  -- 160
-  constant Screen_Height : std_logic_vector(8 downto 0) := "010010000";  -- 144
-  -- Syncing constants in small pixels
-  constant Hsync_Length : std_logic_vector(8 downto 0) := "0" & X"35";  -- 53
-  constant Vsync_Length : std_logic_vector(8 downto 0) := "0" & X"0D";  -- 13
-  constant Vsync_Start : std_logic_vector(8 downto 0) := "010100011"; -- 163
+  constant Screen_Width : std_logic_vector(7 downto 0) := "10100000";  -- 160
+  constant Screen_Height : std_logic_vector(7 downto 0) := "10010000";  -- 144
   -- Small pixel counters
   signal X_Counter,Y_Counter : std_logic_vector(9 downto 0) := "0000000000";
   -- BIG pixel counters
-  signal Row : std_logic_vector(8 downto 0) := "000000000";
-  signal Column : std_logic_vector(8 downto 0) := "000000000";
+  signal Row : std_logic_vector(7 downto 0) := "00000000";
+  signal Column : std_logic_vector(7 downto 0) := "00000000";
   signal Video : std_logic_vector(1 downto 0);
   signal Next_Pixel_Counter : std_logic_vector(1 downto 0) := "00";
   -- Small to big pixels sync
@@ -42,6 +43,8 @@ architecture Behavioral of gpu is
   -- HS VS
   signal HS, VS : std_logic := '0';
 begin
+  Current_Row <= Row;
+
   -- Pixel clock generation.
   process(Clk)
   begin
@@ -75,7 +78,7 @@ begin
         end if;
         
         if unsigned(X_Counter) = 799 then
-          Column <= "0" & X"00";
+          Column <= X"00";
           X_Counter <= "0000000000";
           Small_To_Big_X <= "00";
         else
@@ -97,6 +100,8 @@ begin
 
         if unsigned(Y_Counter) = 520 then
           Y_Counter <= "0000000000";
+          Small_To_Big_Y <= "00";
+          Row <= X"00";
         else
           Y_Counter <= std_logic_vector(unsigned(Y_Counter) + 1);
         end if;
@@ -117,25 +122,11 @@ begin
   process(Clk)
   begin
     if rising_edge(Clk) then
-      --if Row < Screen_Height then
-      --  if Column < Screen_Width then
-      --    if Next_Pixel_Counter = "11" then
-      --      if unsigned(Column) < 10 then
-      --        Video <= "11";
-      --      else
-      --        Video <= "00";
-      --      end if;
-      --    end if;
-      --  else
-      --    Video <= "10";
-      --  end if;
-      --else
-      --  Video <= "10";
-      --end if;
       if unsigned(Y_Counter) < 480 then
         if unsigned(X_Counter) < 640 then
           if Next_Pixel_Counter = "11" then
-            Video <= X_Counter(1 downto 0);
+            Video(1) <= Row_Buffer_High(to_integer(unsigned(Column)));
+            Video(0) <= Row_Buffer_Low(to_integer(unsigned(Column)));
           end if;
         else
           Video <= "00";
@@ -146,9 +137,6 @@ begin
     end if;
   end process;
 
-  --vgaRed(2 downto 0) <= "101"; -- (Video & Video(1));
-  --vgaGreen(2 downto 0) <= "010"; -- (Video & Video(1));
-  --vgaBlue(2 downto 1) <= "10"; -- (Video);
   vgaRed(2 downto 0) <= (Video & Video(1));
   vgaGreen(2 downto 0) <= (Video & Video(1));
   vgaBlue(2 downto 1) <= (Video);
