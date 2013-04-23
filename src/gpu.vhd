@@ -13,6 +13,7 @@ entity Gpu is
            vgaBlue : out  STD_LOGIC_VECTOR (2 downto 1);
            Hsync,Vsync : out  STD_LOGIC;
            Current_Row : out std_logic_vector(7 downto 0);
+           Next_Row : out std_logic;
            -- High bit and low bit of color
            Row_Buffer_High : in std_logic_vector(159 downto 0);
            Row_Buffer_Low : in std_logic_vector(159 downto 0)
@@ -92,11 +93,15 @@ begin
   process(Clk)
   begin
     if rising_edge(Clk) then
-      if unsigned(X_Counter) = 799 and Next_Pixel_Counter = "00" then
+      Next_Row <= '0';
+      if unsigned(X_Counter) = 670 and Next_Pixel_Counter = "11" then
         Small_To_Big_Y <= std_logic_vector(unsigned(Small_To_Big_Y) + 1);
         if Small_To_Big_Y = "10" then
-          Row <= std_logic_vector(unsigned(Column) + 1);
+          Row <= std_logic_vector(unsigned(Row) + 1);
+          Next_Row <= '1';
         end if;
+
+      elsif unsigned(X_Counter) = 799 and Next_Pixel_Counter = "00" then
 
         if unsigned(Y_Counter) = 520 then
           Y_Counter <= "0000000000";
