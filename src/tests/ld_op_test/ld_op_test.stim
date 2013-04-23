@@ -42,6 +42,7 @@
 }
 
 # Testing the setup done by prepare
+# Test number: 1
 @test { 
   @check {
     [C000] FF
@@ -52,6 +53,7 @@
 }
 
 # Testing the setup done by prepare
+# Test number: 2
 @test { 
 # LD (HL), A
 # LD (BC), A
@@ -69,6 +71,7 @@
 
 # Tests 77,3E
 # 3E is tested implicitly.
+# Test number: 3
 @test { 
 # LD (HL), A
 77
@@ -78,6 +81,7 @@
 }
 
 # Tests 47,70
+# Test number: 4
 @test {
 # LD B, A
 # LD (HL), B
@@ -88,6 +92,7 @@
 }
   
 # Tests 4F,71
+# Test number: 5
 @test {
 # LD C, A
 # LD (HL), C
@@ -98,6 +103,7 @@
 }
 
 # Tests 57,72 - KOLLA HÄR SEN
+# Test number: 6
 @test {
 # LD D, A
 # LD (HL), D
@@ -108,6 +114,7 @@
 }
 
 # Tests 5F,73
+# Test number: 7
 @test {
 # LD E, A
 # LD (HL), E
@@ -118,6 +125,7 @@
 }
 
 # Tests 67,7C,02
+# Test number: 8
 @test {
 # LD H, A	- store 03 in H
 # LD A, #FF	- "destroy" A
@@ -130,6 +138,7 @@
 }
 
 # Tests 6F
+# Test number: 9
 @test {
 # LD L, A	- store 03 in L
 # LD A, #FF	- "destroy" A
@@ -142,6 +151,7 @@
 }
 
 # Tests 74
+# Test number: 10
 @test {
 # LD (HL), H	
 74
@@ -151,6 +161,7 @@
 }
 
 # Tests 75
+# Test number: 11
 @test {
 # LD (HL), L	
 75
@@ -161,6 +172,7 @@
 
 
 # Tests 36
+# Test number: 12
 @test {
 # LD (HL), n	
 36 E4
@@ -172,6 +184,7 @@
 ### Testing LD X, B
 
 # Tests 40
+# Test number: 13
 @test {
 # LD B, B
 # LD (HL), B
@@ -182,6 +195,7 @@
 }
 
 # Tests 48
+# Test number: 14
 @test {
 # LD C, B
 # LD (HL), C
@@ -192,6 +206,7 @@
 }
 
 # Tests 50
+# Test number: 15
 @test {
 # LD D, B
 # LD (HL), D
@@ -202,6 +217,7 @@
 }
 
 # Tests 58
+# Test number: 16
 @test {
 # LD E, B
 # LD (HL), E
@@ -213,6 +229,7 @@
 
 
 # Tests 60
+# Test number: 17
 @test {
 # LD A, #C0
 # LD B, A
@@ -226,6 +243,7 @@
 
 
 # Tests 68
+# Test number: 18
 @test {
 # LD A, #00
 # LD B, A
@@ -241,6 +259,7 @@
 ### Testing LD X, C
 
 # Tests 41
+# Test number: 19
 @test {
 # LD B, C
 # LD (HL), B
@@ -251,6 +270,7 @@
 }
   
 # Tests 49
+# Test number: 20
 @test {
 # LD C, C
 # LD (HL), C
@@ -261,6 +281,7 @@
 }
 
 # Tests 51
+# Test number: 21
 @test {
 # LD D, C
 # LD (HL), D
@@ -271,6 +292,7 @@
 }
 
 # Tests 59
+# Test number: 22
 @test {
 # LD E, C
 # LD (HL), E
@@ -281,6 +303,7 @@
 }
 
 # Tests 61
+# Test number: 23
 @test {
 ## C is 04..
 # LD H, C
@@ -294,6 +317,7 @@
 
 
 # Tests 69
+# Test number: 24
 @test {
 ## C is 04..
 # LD L, C
@@ -306,6 +330,7 @@
 }
 
 # Tests 7F
+# Test number: 25
 @test {
 # LD A, A
 # LD (HL), A
@@ -319,6 +344,7 @@
 ### Testing LD X, D
 
 # Tests 42
+# Test number: 26
 @test {
 # LD B, D
 # LD (HL), B
@@ -329,6 +355,7 @@
 }
   
 # Tests 4A
+# Test number: 27
 @test {
 # LD C, D
 # LD (HL), C
@@ -339,6 +366,7 @@
 }
 
 # Tests 52
+# Test number: 28
 @test {
 # LD D, D
 # LD (HL), D
@@ -349,6 +377,7 @@
 }
 
 # Tests 5A
+# Test number: 29
 @test {
 # LD E, D
 # LD (HL), E
@@ -360,6 +389,7 @@
 
 
 # Tests 62
+# Test number: 30
 @test {
 # LD A, #CO
 # LD D, A
@@ -373,6 +403,7 @@
 
 
 # Tests 6A
+# Test number: 31
 @test {
 # LD A, #00
 # LD D, A
@@ -388,6 +419,7 @@
 ### Testing LD X, E
 
 # Tests 43
+# Test number: 32
 @test {
 # LD B, E
 # LD (HL), B
@@ -398,6 +430,7 @@
 }
   
 # Tests 4B
+# Test number: 33
 @test {
 # LD C, E
 # LD (HL), C
@@ -408,6 +441,7 @@
 }
 
 # Tests 53
+# Test number: 34
 @test {
 # LD D, E
 # LD (HL), D
@@ -418,6 +452,7 @@
 }
 
 # Tests 5B
+# Test number: 35
 @test {
 # LD E, E
 # LD (HL), E
@@ -429,6 +464,7 @@
 
 
 # Tests 63
+# Test number: 36
 @test {
 # LD A, #C1
 # LD E, A
@@ -442,6 +478,7 @@
 
 
 # Tests 6B
+# Test number: 37
 @test {
 # LD A, #00
 # LD E, A
@@ -457,6 +494,7 @@
 ### Testing LD X, H
 
 # Tests 44
+# Test number: 38
 @test {
 # LD B, H
 # LD (HL), B
@@ -467,6 +505,7 @@
 }
   
 # Tests 4C
+# Test number: 39
 @test {
 # LD C, H
 # LD (HL), C
@@ -477,6 +516,7 @@
 }
 
 # Tests 54
+# Test number: 40
 @test {
 # LD D, H
 # LD (HL), D
@@ -487,6 +527,7 @@
 }
 
 # Tests 5C
+# Test number: 41
 @test {
 # LD E, H
 # LD (HL), E
@@ -498,6 +539,7 @@
 
 
 # Tests 64
+# Test number: 42
 @test {
 # LD H, H
 # LD (HL), H
@@ -509,6 +551,7 @@
 
 
 # Tests 6C 
+# Test number: 43
 @test {
 # LD L, H
 # LD (HL), L
@@ -523,6 +566,7 @@
 ### Testing LD X, L
 
 # Tests 45
+# Test number: 44
 @test {
 # LD B, L
 # LD (HL), B
@@ -533,6 +577,7 @@
 }
   
 # Tests 4D
+# Test number: 45
 @test {
 # LD C, L
 # LD (HL), C
@@ -543,6 +588,7 @@
 }
 
 # Tests 55
+# Test number: 46
 @test {
 # LD D, L
 # LD (HL), D
@@ -553,6 +599,7 @@
 }
 
 # Tests 5D
+# Test number: 47
 @test {
 # LD E, L
 # LD (HL), E
@@ -564,6 +611,7 @@
 
 
 # Tests 65
+# Test number: 48
 @test {
 # LD H, L
 # LD A, H
@@ -575,6 +623,7 @@
 }
 
 # Tests 6D
+# Test number: 49
 @test {
 # LD L, L
 # LD (HL), L
@@ -588,6 +637,7 @@
 ### Testing LD X, (HL)
 
 # Tests 7E
+# Test number: 50
 @test {
 # LD A, (HL) - (HL) contains FF
 # LD (BC), A
@@ -598,6 +648,7 @@
 }
 
 # Tests 46,12
+# Test number: 51
 @test {
 # LD B, (HL)
 # LD A, B
@@ -610,6 +661,7 @@
 
 
 # Tests 4E
+# Test number: 52
 @test {
 # LD C, (HL)
 # LD A, C
@@ -622,6 +674,7 @@
 
 
 # Tests 56
+# Test number: 53
 @test {
 # LD D, (HL)
 # LD A, D
@@ -633,6 +686,7 @@
 }
 
 # Tests 5E
+# Test number: 54
 @test {
 # LD E, (HL)
 # LD A, E
@@ -644,6 +698,7 @@
 }
 
 # Tests 66
+# Test number: 55
 @test {
 # LD H, (HL)
 # LD A, H
@@ -655,6 +710,7 @@
 }
 
 # Tests 6E
+# Test number: 56
 @test {
 # LD L, (HL)
 # LD A, L
@@ -668,6 +724,7 @@
 ### Testing LD A, (C/D/E)
 
 # Tests 79
+# Test number: 57
 @test {
 # LD A, C
 # LD (HL), A
@@ -679,6 +736,7 @@
 
 
 # Tests 7A
+# Test number: 58
 @test {
 # LD A, D
 # LD (HL), A
@@ -690,6 +748,7 @@
 
 
 # Tests 7B
+# Test number: 59
 @test {
 # LD A, E
 # LD (HL), A
@@ -705,6 +764,7 @@
 ## so if nn=01 then that really is 10
 
 # Tests 01
+# Test number: 60
 @test {
 # LD BC, #C208
 # LD (BC), A
@@ -715,6 +775,7 @@
 }
 
 # Tests 0A
+# Test number: 61
 @test {
 # LD A, (BC)
 # LD (HL), A
@@ -725,6 +786,7 @@
 }
 
 # Tests 1A
+# Test number: 62
 @test {
 # LD A, (DE)
 # LD (HL), A
@@ -736,6 +798,7 @@
 
 
 # Tests 2A
+# Test number: 63
 @test {
 # LD A, (HL+) # A = FF, HL = C001
 # LD (HL), A
@@ -747,6 +810,7 @@
 
 
 # Tests 22
+# Test number: 64
 @test {
 # LD (HL+), A
 # LD (HL), A
@@ -758,6 +822,7 @@
 }
 
 # Tests 3A
+# Test number: 65
 @test {
 # LD A, #01 # HL = C001
 # LD L, A
@@ -771,6 +836,7 @@
 
 
 # Tests 32
+# Test number: 66
 @test {
 # LD (HL-), A
 32
@@ -784,6 +850,7 @@
 ### Testing stuff with nn...
 
 # Tests 01
+# Test number: 67
 @test {
 # LD BC,nn (nn=04C1)
 # LD (BC), A
@@ -794,6 +861,7 @@
 }
 
 # Tests 01
+# Test number: 68
 @test {
 # LD BC, nn (nn=00C0)
 # LD (BC), A
@@ -804,6 +872,7 @@
 }
 
 # Tests 11
+# Test number: 69
 @test {
 # LD DE, nn (nn=00C0)
 # LD (DE), A
@@ -814,6 +883,7 @@
 }
 
 # Tests 21
+# Test number: 70
 @test {
 # LD HL, nn (nn=00C0)
 # LD (HL), A
@@ -825,6 +895,7 @@
 
 
 # Tests EA
+# Test number: 71
 @test {
 # LD nn, A (nn=00C0)
 # LD nn, A (nn=30C1)
@@ -838,6 +909,7 @@ EA 30 C1
 
 
 # Tests FA
+# Test number: 72
 @test {
 # LD A, (nn) (nn=00C0)
 # LD (BC), A
@@ -851,6 +923,7 @@ FA 00 C0 02
 
 
 # Tests 31,08
+# Test number: 73
 @test {
 # LD SP, nn (nn=3412)
 # LD (nn), SP (nn=00C1)
@@ -862,6 +935,7 @@ FA 00 C0 02
 
 
 # Tests F9
+# Test number: 74
 @test {
 # LD SP, HL (C000)
 # LD (nn), SP (nn=00C1)
@@ -873,6 +947,7 @@ F9 08 00 C1
 
 
 # Tests F8 CALC: SP+n=ABCD+02=ABCF
+# Test number: 75
 @test {
 # LD SP, nn (nn=CDAB)
 # LD HL, SP+n (n=02)
@@ -890,6 +965,7 @@ F9 08 00 C1
 ## OBS values have to be between FF80-FFFD
 
 # Tests F0 CALC: FF00+81=FF81 -> (FF81) = A1
+# Test number: 76
 @test {
 # LD A, ($FF00+n)
 # LD (HL), A
@@ -900,6 +976,7 @@ F0 81 77
 }
 
 # Tests F2 CALC: 04+FF00=FF04 -> (FF84) = A4
+# Test number: 77
 @test {
 # LD A, #84
 # LD C, A
@@ -912,6 +989,7 @@ F0 81 77
 }
 
 # Tests E0 
+# Test number: 78
 @test {
 # LD (n+$FF00), A
 E0 80 
@@ -921,6 +999,7 @@ E0 80
 }
 
 # Tests E2
+# Test number: 79
 @test {
 # LD C, n (n=80)
 # LD (C+$FF00), A
@@ -935,6 +1014,7 @@ E0 80
 ### Testing LD X, n
 
 # Tests 06
+# Test number: 80
 @test {
 # LD B, n (n = 10)
 # LD A, B
@@ -946,6 +1026,7 @@ E0 80
 }
 
 # Tests 0E
+# Test number: 81
 @test {
 # LD C, n
 # LD A, C
@@ -957,6 +1038,7 @@ E0 80
 }
 
 # Tests 16
+# Test number: 82
 @test {
 # LD D, n
 # LD A, D
@@ -968,6 +1050,7 @@ E0 80
 }
 
 # Tests 1E
+# Test number: 83
 @test {
 # LD E, n
 # LD A, E
@@ -979,6 +1062,7 @@ E0 80
 }
 
 # Tests 26
+# Test number: 84
 @test {
 # LD H, n
 # LD A, H
@@ -990,6 +1074,7 @@ E0 80
 }
 
 # Tests 2E
+# Test number: 85
 @test {
 # LD L, n
 # LD A, L
@@ -1005,6 +1090,7 @@ E0 80
 
 
 # Tests 3F 
+# Test number: 86
 @test { 
 # ADD A, B - see to that carry = 0
 # LD A, #03
@@ -1018,6 +1104,7 @@ E0 80
 }
 
 # Tests 3F
+# Test number: 87
 @test { 
 # LD A, #FF
 # ADD A, B - FF+C1 will make carry = 1
@@ -1033,6 +1120,7 @@ E0 80
 
 
 # Tests 37
+# Test number: 88
 @test { 
 # SCF
 # ADC A, B - 03+C1+(carry = 1) = C5
@@ -1044,6 +1132,7 @@ E0 80
 }
 
 # Tests 37
+# Test number: 89
 @test { 
 # ADD A, B - 03+C1 will make carry = 0
 # LD A, #03

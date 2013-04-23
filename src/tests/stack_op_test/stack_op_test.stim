@@ -28,7 +28,7 @@
 
 # default data 
 [C000] FF AA
-## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPAE
+## OBS REMEMBER THAT THIS MUST NOT BE TOO LONG AS TO GO INTO C208 SPACE
 [C200] 3E 20 77 76
 [C104] EE
 [C208] DD
@@ -45,6 +45,7 @@
 }
 
 # Testing the setup done by prepare
+# Test number: 1
 @test { 
   @check {
     [C000] FF
@@ -54,6 +55,7 @@
 }
 
 # Testing the setup done by prepare
+# Test number: 2
 @test { 
 # LD (HL), A
 # LD (BC), A
@@ -69,6 +71,7 @@
 ## Testing PUSH and POP
 
 # Tests C1,D5
+# Test number: 3
 @test {
 # PUSH DE - C2 08 to the stack
 # POP BC  - C2 08
@@ -84,6 +87,7 @@ D5 C1 70 79 12
 
 
 # Tests E5
+# Test number: 4
 @test {
 # PUSH HL - C0 00 to the stack
 # POP BC  - C0 00
@@ -99,6 +103,7 @@ E5 C1 70 79 12
 
 
 # Tests D1
+# Test number: 5
 @test {
 # PUSH HL - C0 00 to the stack
 # POP DE  - C0 00
@@ -113,6 +118,7 @@ E5 D1 72 7B 02
 }
 
 # Tests C5
+# Test number: 6
 @test {
 # PUSH BC - C1 04 to the stack
 # POP DE  - C1 04
@@ -127,6 +133,7 @@ C5 D1 72 7B 12
 }
 
 # Tests E1
+# Test number: 7
 @test {
 # PUSH BC - C1 04 to the stack
 # POP HL  - C1 04
@@ -142,6 +149,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests E1
+# Test number: 8
 @test {
 # PUSH BC - C1 04 to the stack
 # POP HL  - C1 04
@@ -157,6 +165,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests C9
+# Test number: 9
 @test {
 # LD HL , nn (nn = 00 C2)
 # PUSH HL - C2 00 to the stack
@@ -168,6 +177,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests C0
+# Test number: 10
 @test {
 # ADD A, B - resets Z (Z=0)
 # LD HL , nn (nn = 00 C2)
@@ -181,6 +191,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests C0
+# Test number: 11
 @test {
 # SUB A, A - Sets Z (Z=1)
 # LD HL , nn (nn = 00 C2)
@@ -195,6 +206,7 @@ C5 E1 7C 02 7D 12
 
 
 # Tests C8
+# Test number: 12
 @test {
 # ADD A, B - resets Z (Z=0)
 # LD HL , nn (nn = 00 C2)
@@ -208,6 +220,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests C8
+# Test number: 13
 @test {
 # SUB A, A - Sets Z (Z=1)
 # LD HL , nn (nn = 00 C2)
@@ -221,6 +234,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests D0
+# Test number: 14
 @test {
 # LD A, #FF
 # ADD A, B - Sets C (C=1)
@@ -235,6 +249,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests D0
+# Test number: 15
 @test {
 # ADD A, B - Resets C (C=0)
 # LD HL , nn (nn = 00 C2)
@@ -249,6 +264,7 @@ C5 E1 7C 02 7D 12
 
 
 # Tests D8
+# Test number: 16
 @test {
 # LD A, #FF
 # ADD A, B - Sets C (C=1)
@@ -263,6 +279,7 @@ C5 E1 7C 02 7D 12
 }
 
 # Tests D8
+# Test number: 17
 @test {
 # ADD A, B - Resets C (C=0)
 # LD HL , nn (nn = 00 C2)
@@ -279,6 +296,7 @@ C5 E1 7C 02 7D 12
 
 
 # Tests CD
+# Test number: 18
 @test {
 # CALL nn (nn = 10 C2) # At address C210 there is: LD A, #EE, RET
 # LD (HL), A
@@ -289,6 +307,7 @@ CD 10 C2 77
 }
 
 # Tests C4
+# Test number: 19
 @test {
 # ADD A, B - resets Z (Z=0)
 # CALL NZ, nn (nn = 10 C2)
@@ -300,6 +319,7 @@ CD 10 C2 77
 }
 
 # Tests C4
+# Test number: 20
 @test {
 # SUB A, A - Sets Z (Z=1)
 # CALL NZ, nn (nn = 10 C2)
@@ -311,6 +331,7 @@ CD 10 C2 77
 }
 
 # Tests CC
+# Test number: 21
 @test {
 # ADD A, B - resets Z (Z=0)
 # CALL NZ, nn (nn = 10 C2)
@@ -322,6 +343,7 @@ CD 10 C2 77
 }
 
 # Tests CC
+# Test number: 22
 @test {
 # SUB A, A - Sets Z (Z=1)
 # CALL NZ, nn (nn = 10 C2)
@@ -333,6 +355,7 @@ CD 10 C2 77
 }
 
 # Tests D4
+# Test number: 23
 @test {
 # ADD A, B - resets C (C=0)
 # CALL NC, nn (nn = 10 C2)
@@ -344,6 +367,7 @@ CD 10 C2 77
 }
 
 # Tests D4
+# Test number: 24
 @test {
 # LD A, #FF
 # ADD A, B - Sets C (C=1)
@@ -356,6 +380,7 @@ CD 10 C2 77
 }
 
 # Tests DC
+# Test number: 25
 @test {
 # ADD A, B - resets C (C=0)
 # CALL C, nn (nn = 10 C2)
@@ -367,6 +392,7 @@ CD 10 C2 77
 }
 
 # Tests DC
+# Test number: 26
 @test {
 # LD A, #FF
 # ADD A, B - Sets C (C=1)
@@ -381,6 +407,7 @@ CD 10 C2 77
 ### POP AND PUSH ON AF
 
 # Tests F5
+# Test number: 27
 @test {
 # ADD A, A #Sets all flags to 0 (no Carry/halfCarry, not Z, not a subtraction)
 # LD A, #FF
@@ -398,6 +425,7 @@ CD 10 C2 77
 }
 
 # Tests F5
+# Test number: 28
 @test {
 # SUB A, A # sets F = C0
 # LD A, #FF
@@ -415,10 +443,11 @@ CD 10 C2 77
 }
 
 # Tests F1
+# Test number: 29
 @test {
 # LD BC,nn (nn = C100)
 # PUSH BC
-# POP AF <- AF = C1C0
+# POP AF <- AF = C100
 # LD (HL), A
 # LD A, #00
 # ADC A, A # 00+00+CARRY(=0) = 0
@@ -432,9 +461,25 @@ CD 10 C2 77
 }
 
 
+# Tests F1, F5
+# Test number: 30
+@test {
+# PUSH BC
+# POP AF
+# PUSH AF
+# POP DE
+# LD (DE), A
+C5 F1 F5 D1 12
+  @check {
+    [C104] 03
+  }
+}
+
+
 ### NOP test
 
 # Tests DC
+# Test number: 31
 @test {
 # LD A, #10
 # NOP

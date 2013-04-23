@@ -1015,39 +1015,39 @@ begin
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC B -t
+                -- INC B - WRONG! -t
               when X"04" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & B;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC C -t
+                -- INC C - WRONG -t
               when X"0C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & C;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC D -t
+                -- INC D -WRONG -t
               when X"14" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & D;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC E -t
               when X"1C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & E;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC H -t
               when X"24" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & H;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
                 -- INC L -t
               when X"2C" =>
-                Alu_A <= X"00" & A;
+                Alu_A <= X"00" & L;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
@@ -1216,7 +1216,7 @@ begin
                 -- OP-codes from page 97
                 -- NOP -t
               when X"00" =>
-                -- HALT
+                -- HALT -t
               when X"76" =>
                 State <= Halted;
                 -- END op-codes from page 97
@@ -1989,11 +1989,11 @@ begin
               when X"3C" =>
                 F <= Alu_Flags;
                 A <= Alu_Result(7 downto 0);
-                -- INC B
+                -- INC B 
               when X"04" =>
                 F <= Alu_Flags;
                 B <= Alu_Result(7 downto 0);
-                -- INC C
+                -- INC C 
               when X"0C" =>
                 F <= Alu_Flags;
                 C <= Alu_Result(7 downto 0);
@@ -3193,89 +3193,89 @@ begin
                 State <= Mb_Exec2;
                 -- END op-codes from page 107
                 -- OP-codes from page 108
-                -- BIT b, A (where 8 * b is added to the OP-code)
+                -- BIT b, A (where 8 * b is added to the OP-code) -t
               when X"CB47" | X"CB4F" | X"CB57" | X"CB5F" | X"CB67" | X"CB6F" | X"CB77" | X"CB7F" =>
                 F(7) <= not A(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, B (where 8 * b is added to the OP-code)
+                -- BIT b, B (where 8 * b is added to the OP-code) -t
               when X"CB40" | X"CB48" | X"CB50" | X"CB58" | X"CB60" | X"CB68" | X"CB70" | X"CB78" =>
                 F(7) <= not B(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, C (where 8 * b is added to the OP-code)
+                -- BIT b, C (where 8 * b is added to the OP-code) -t
               when X"CB41" | X"CB49" | X"CB51" | X"CB59" | X"CB61" | X"CB69" | X"CB71" | X"CB79" =>
                 F(7) <= not C(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, D (where 8 * b is added to the OP-code)
+                -- BIT b, D (where 8 * b is added to the OP-code) -t
               when X"CB42" | X"CB4A" | X"CB52" | X"CB5A" | X"CB62" | X"CB6A" | X"CB72" | X"CB7A" =>
                 F(7) <= not D(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, E (where 8 * b is added to the OP-code)
+                -- BIT b, E (where 8 * b is added to the OP-code) -t
               when X"CB43" | X"CB4B" | X"CB53" | X"CB5B" | X"CB63" | X"CB6B" | X"CB73" | X"CB7B" =>
                 F(7) <= not E(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, H (where 8 * b is added to the OP-code)
+                -- BIT b, H (where 8 * b is added to the OP-code) -t
               when X"CB44" | X"CB4C" | X"CB54" | X"CB5C" | X"CB64" | X"CB6C" | X"CB74" | X"CB7C" =>
                 F(7) <= not H(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, L (where 8 * b is added to the OP-code)
+                -- BIT b, L (where 8 * b is added to the OP-code) -t
               when X"CB45" | X"CB4D" | X"CB55" | X"CB5D" | X"CB65" | X"CB6D" | X"CB75" | X"CB7D" =>
                 F(7) <= not L(to_integer(unsigned(Mem_Read(5 downto 3))));
                 F(6 downto 5) <= "01";
-                -- BIT b, (HL) (where 8 * b is added to the OP-code)
+                -- BIT b, (HL) (where 8 * b is added to the OP-code) -t
               when X"CB46" | X"CB4E" | X"CB56" | X"CB5E" | X"CB66" | X"CB6E" | X"CB76" | X"CB7E" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 108
                 -- OP-codes from page 109
-                -- SET b, A (where 8 * b is added to the OP-code)
+                -- SET b, A (where 8 * b is added to the OP-code) -t
               when X"CBC7" | X"CBCF" | X"CBD7" | X"CBDF" | X"CBE7" | X"CBEF" | X"CBF7" | X"CBFF" =>
                 A(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, B (where 8 * b is added to the OP-code)
+                -- SET b, B (where 8 * b is added to the OP-code) -t
               when X"CBC0" | X"CBC8" | X"CBD0" | X"CBD8" | X"CBE0" | X"CBE8" | X"CBF0" | X"CBF8" =>
                 B(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, C (where 8 * b is added to the OP-code)
+                -- SET b, C (where 8 * b is added to the OP-code) -t
               when X"CBC1" | X"CBC9" | X"CBD1" | X"CBD9" | X"CBE1" | X"CBE9" | X"CBF1" | X"CBF9" =>
                 C(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, D (where 8 * b is added to the OP-code)
+                -- SET b, D (where 8 * b is added to the OP-code) -t
               when X"CBC2" | X"CBCA" | X"CBD2" | X"CBDA" | X"CBE2" | X"CBEA" | X"CBF2" | X"CBFA" =>
                 D(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, E (where 8 * b is added to the OP-code)
+                -- SET b, E (where 8 * b is added to the OP-code) -t
               when X"CBC3" | X"CBCB" | X"CBD3" | X"CBDB" | X"CBE3" | X"CBEB" | X"CBF3" | X"CBFB" =>
                 E(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, H (where 8 * b is added to the OP-code)
+                -- SET b, H (where 8 * b is added to the OP-code) -t
               when X"CBC4" | X"CBCC" | X"CBD4" | X"CBDC" | X"CBE4" | X"CBEC" | X"CBF4" | X"CBFC" =>
                 H(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, L (where 8 * b is added to the OP-code)
+                -- SET b, L (where 8 * b is added to the OP-code) -t
               when X"CBC5" | X"CBCD" | X"CBD5" | X"CBDD" | X"CBE5" | X"CBED" | X"CBF5" | X"CBFD" =>
                 L(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '1';
-                -- SET b, (HL) (where 8 * b is added to the OP-code)
+                -- SET b, (HL) (where 8 * b is added to the OP-code) -t
               when X"CBC6" | X"CBCE" | X"CBD6" | X"CBDE" | X"CBE6" | X"CBEE" | X"CBF6" | X"CBFE" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
                 -- END op-codes from page 109
                 -- OP-codes from page 110
-                -- RES b, A (where 8 * b is added to the OP-code)
+                -- RES b, A (where 8 * b is added to the OP-code) -t
               when X"CB87" | X"CB8F" | X"CB97" | X"CB9F" | X"CBA7" | X"CBAF" | X"CBB7" | X"CBBF" =>
                 A(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, B (where 8 * b is added to the OP-code)
+                -- RES b, B (where 8 * b is added to the OP-code) -t
               when X"CB80" | X"CB88" | X"CB90" | X"CB98" | X"CBA0" | X"CBA8" | X"CBB0" | X"CBB8" =>
                 B(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, C (where 8 * b is added to the OP-code)
+                -- RES b, C (where 8 * b is added to the OP-code) -t
               when X"CB81" | X"CB89" | X"CB91" | X"CB99" | X"CBA1" | X"CBA9" | X"CBB1" | X"CBB9" =>
                 C(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, D (where 8 * b is added to the OP-code)
+                -- RES b, D (where 8 * b is added to the OP-code) -t
               when X"CB82" | X"CB8A" | X"CB92" | X"CB9A" | X"CBA2" | X"CBAA" | X"CBB2" | X"CBBA" =>
                 D(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, E (where 8 * b is added to the OP-code)
+                -- RES b, E (where 8 * b is added to the OP-code) -t
               when X"CB83" | X"CB8B" | X"CB93" | X"CB9B" | X"CBA3" | X"CBAB" | X"CBB3" | X"CBBB" =>
                 E(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, H (where 8 * b is added to the OP-code)
+                -- RES b, H (where 8 * b is added to the OP-code) -t
               when X"CB84" | X"CB8C" | X"CB94" | X"CB9C" | X"CBA4" | X"CBAC" | X"CBB4" | X"CBBC" =>
                 H(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, L (where 8 * b is added to the OP-code)
+                -- RES b, L (where 8 * b is added to the OP-code) -t
               when X"CB85" | X"CB8D" | X"CB95" | X"CB9D" | X"CBA5" | X"CBAD" | X"CBB5" | X"CBBD" =>
                 L(to_integer(unsigned(Mem_Read(5 downto 3)))) <= '0';
-                -- RES b, (HL) (where 8 * b is added to the OP-code)
+                -- RES b, (HL) (where 8 * b is added to the OP-code) -t
               when X"CB86" | X"CB8E" | X"CB96" | X"CB9E" | X"CBA6" | X"CBAE" | X"CBB6" | X"CBBE" =>
                 Mem_Addr <= H & L;
                 State <= Mb_Exec2;
