@@ -1,4 +1,6 @@
 /rom.txt
 /result.txt
 /errors.txt
-
+*.map
+*.sym
+*.gb
