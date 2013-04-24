@@ -105,7 +105,7 @@ begin
        Result_Carry(16);
   H <= Result_Half(4) when High_Flags = '0' else
        Result_Half(12);
-  N <= '1' when Mode = "001" else
+  N <= '1' when Mode = "0001" else
        '0';
   Z <= '1' when Tmp_Result = X"0000" else
        '0';

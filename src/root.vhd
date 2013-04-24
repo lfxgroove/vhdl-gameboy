@@ -43,9 +43,9 @@ architecture Behavioural of Root is
   signal Mem_Read : std_logic_vector(7 downto 0);
   signal Mem_Addr : std_logic_vector(15 downto 0);
   signal Mem_Write_Enable : std_logic;
-  signal Rom_Write_Enable : std_logic;
-  signal Rom_Addr : std_logic_vector(15 downto 0);
-  signal Rom_Write : std_logic_vector(7 downto 0);
+  signal Rom_Write_Enable : std_logic := '0';
+  signal Rom_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal Rom_Write : std_logic_vector(7 downto 0) := X"00";
 begin
   Gpu_Port : Gpu_Logic port map (
     Clk => Clk,
@@ -69,6 +69,7 @@ begin
     Reset => Rst,
     Mem_Write => Mem_Write,
     Mem_Read => Mem_Read,
+    Mem_Addr => Mem_Addr,
     Mem_Write_Enable => Mem_Write_Enable,
     Rom_Write_Enable => Rom_Write_Enable,
     Rom_Addr => Rom_Addr,
