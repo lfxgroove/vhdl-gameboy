@@ -638,15 +638,14 @@ D6 CE 77
   }
 }
 
-
-# Tests D6 - CALC: C0-CE-(carry=1) = F1
+# Tests DE - CALC: C0-CE-(carry=1) = F1
 # Test number: 42
 @test { 
 # LD A, #FF
 # ADD A, B - see to that carry = 1
 # SBC A, #CE
 # LD (HL), A
-3E FF 80 D6 CE 77
+3E FF 80 DE CE 77
   @check {
     [C000] F1
   }
@@ -864,14 +863,15 @@ A4 77
   }
 }
 
-# Tests A5 - CALC: 03 & 01 = 01
+# Tests A5 - CALC: 03 & 0F = 03
 # Test number: 57
 @test { 
+# LD L, #0F
 # AND A, L
 # LD (BC), A
-A5 02
+2E 0F A5 02
   @check {
-    [C104] 01
+    [C104] 03
   }
 }
 
@@ -1328,7 +1328,7 @@ A8 77
 # LD (DE), A
 1C 12
   @check {
-    [C309] 03
+    [C209] 03
   }
 }
 
@@ -1339,7 +1339,7 @@ A8 77
 # LD (DE), A
 1D 12
   @check {
-    [C307] 03
+    [C207] 03
   }
 }
 
@@ -1374,7 +1374,7 @@ A8 77
 # LD (HL), A
 3E C5 67 25 77
   @check {
-    [C400] 03
+    [C400] C5
   }
 }
 
@@ -1387,7 +1387,7 @@ A8 77
 # LD (HL), A
 3E C5 67 2B 77
   @check {
-    [C4FF] 03
+    [C4FF] C5
   }
 }
 
@@ -1409,7 +1409,7 @@ l# Tests 2D
 # LD L, A 
 # DEC L
 # LD (HL), A
-3E C5 6F 2D 77
+3E 03 6F 2D 77
   @check {
     [C002] 03
   }
@@ -1423,7 +1423,7 @@ l# Tests 2D
 # LD (nn), SP
 31 04 C1 33 08 00 C0
   @check {
-    [C000] C1 05
+    [C000] 05 C1
   }
 }
 
@@ -1455,7 +1455,7 @@ l# Tests 2D
 # LD (nn), P
 31 04 C1 3B 08 00 C0
   @check {
-    [C000] C1 03
+    [C000] 03 C1
   }
 }
 
@@ -1517,11 +1517,11 @@ l# Tests 2D
 # LD B, A
 # LD A, #81
 # RRCA
-# ADC A,B - 40+00+carry(=1) = C2
+# ADC A,B - C0+00+carry(=1) = C1
 # LD (HL), A
 3E 00 47 3E 81 0F 88 77
   @check {
-    [C000] C2
+    [C000] C1
   }
 }
 
@@ -1533,7 +1533,7 @@ l# Tests 2D
 # LD (HL), A
 3E 81 17 77
   @check {
-    [C000] 03
+    [C000] 02
   }
 }
 
@@ -1546,7 +1546,7 @@ l# Tests 2D
 # LD (HL), A
 3E 81 1F 77
   @check {
-    [C000] C0
+    [C000] 40
   }
 }
 
@@ -1557,11 +1557,11 @@ l# Tests 2D
 # LD B, A
 # LD A, #00
 # RLC B
-# ADC A, B - 00+03+carry(=1) = 03 # tests if carry is set
+# ADC A, B - 00+03+carry(=1) = 04 # tests if carry is set
 # LD (HL), A
 3E 81 47 3E 00 CB 00 88 77
   @check {
-    [C000] 03
+    [C000] 04
   }
 }
 
@@ -1651,11 +1651,11 @@ l# Tests 2D
 # LD E, A
 # LD A, #00
 # RLC E
-# ADC A, E - 00+02+carry(=1) = 03 # tests if carry is set
+# ADC A, E - 00+03+carry(=1) = 04 # tests if carry is set
 # LD (HL), A
 3E 81 5F 3E 00 CB 03 8B 77
   @check {
-    [C000] 03
+    [C000] 04
   }
 }
 
@@ -1666,11 +1666,11 @@ l# Tests 2D
 # LD E, A
 # LD A, #00
 # RLC E
-# ADC A, E - 00+03+carry(=0) = 03 # tests if carry is set
+# ADC A, E - 00+02+carry(=0) = 02 # tests if carry is set
 # LD (HL), A
 3E 01 5F 3E 00 CB 03 8B 77
   @check {
-    [C000] 03
+    [C000] 02
   }
 }
 
@@ -1744,11 +1744,11 @@ l# Tests 2D
 # LD (HL), n (n = 83)
 # RLC (HL)
 # ADC A, B - 00+00+carry(=1) = 01 # tests if carry is set
-# LD (BC), A
-3E 00 47 36 83 CB 06 8D 02
+# LD (DE), A
+3E 00 47 36 83 CB 06 88 12
   @check {
     [C000] 07
-    [C104] 01
+    [C208] 01
   }
 }
 
@@ -1948,7 +1948,7 @@ l# Tests 2D
 # RRC L
 # ADC A, L - 00+40+carry(=0) = 40
 # LD (BC), A
-3E 80 5F 3E 00 CB 0D 8D 02
+3E 80 6F 3E 00 CB 0D 8D 02
   @check {
     [C104] 40
   }
@@ -1962,7 +1962,7 @@ l# Tests 2D
 # LD A, (HL)
 # ADC A, B - E6+C1+carry(=1) = A8 # tests if carry is set
 # LD (BC), A
-36 CD CB 0E 7E 87 02
+36 CD CB 0E 7E 88 02
   @check {
     [C104] A8
   }
@@ -1976,7 +1976,7 @@ l# Tests 2D
 # LD A, (HL)
 # ADC A, B - 40+C1+carry(=0) = 01 # tests if carry is set
 # LD (BC), A
-36 80 CB 0E 7E 87 02
+36 80 CB 0E 7E 88 02
   @check {
     [C104] 01
   }
@@ -2016,8 +2016,9 @@ CB 0F 8F 77
 # LD A, #82
 # LD C, A
 # RL C
+# LD A, C
 # LD (HL), A
-3E 82 4F CB 11 77
+3E 82 4F CB 11 79 77
   @check {
     [C000] 04
   }
@@ -2031,8 +2032,9 @@ CB 0F 8F 77
 # LD C, A
 # RL C 
 # RL C # to see if a 1 pops back in from the right again.
+# LD A, C
 # LD (HL), A
-3E 82 4F CB 11 CB 11 77
+3E 82 4F CB 11 CB 11 79 77
   @check {
     [C000] 09
   }
@@ -2044,8 +2046,9 @@ CB 0F 8F 77
 # LD A, #82
 # LD D, A
 # RL D
+# LD A, D
 # LD (HL), A
-3E 82 57 CB 12 77
+3E 82 57 CB 12 7A 77
   @check {
     [C000] 04
   }
@@ -2059,8 +2062,9 @@ CB 0F 8F 77
 # LD D, A
 # RL D 
 # RL D # to see if a 1 pops back in from the right again.
+# LD A, D
 # LD (HL), A
-3E 82 57 CB 12 CB 12 77
+3E 82 57 CB 12 CB 12 7A 77
   @check {
     [C000] 09
   }
@@ -2072,8 +2076,9 @@ CB 0F 8F 77
 # LD A, #82
 # LD E, A
 # RL E
+# LD A, E
 # LD (HL), A
-3E 82 5F CB 13 77
+3E 82 5F CB 13 7B 77
   @check {
     [C000] 04
   }
@@ -2087,8 +2092,9 @@ CB 0F 8F 77
 # LD E, A
 # RL E 
 # RL E # to see if a 1 pops back in from the right again.
+# LD A, E
 # LD (HL), A
-3E 82 5F CB 13 CB 13 77
+3E 82 5F CB 13 CB 13 7B 77
   @check {
     [C000] 09
   }
@@ -2100,8 +2106,9 @@ CB 0F 8F 77
 # LD A, #82
 # LD H, A
 # RL H
+# LD A, H
 # LD (BC), A
-3E 82 67 CB 14 02
+3E 82 67 CB 14 7C 02
   @check {
     [C104] 04
   }
@@ -2115,8 +2122,9 @@ CB 0F 8F 77
 # LD H, A
 # RL H 
 # RL H # to see if a 1 pops back in from the right again.
+# LD A, H
 # LD (BC), A
-3E 82 67 CB 14 CB 14 02
+3E 82 67 CB 14 CB 14 7C 02
   @check {
     [C104] 09
   }
@@ -2128,8 +2136,9 @@ CB 0F 8F 77
 # LD A, #82
 # LD L, A
 # RL L
+# LD A, L
 # LD (BC), A
-3E 82 6F CB 15 02
+3E 82 6F CB 15 7D 02
   @check {
     [C104] 04
   }
@@ -2143,8 +2152,9 @@ CB 0F 8F 77
 # LD L, A
 # RL L 
 # RL L # to see if a 1 pops back in from the right again.
+# LD A, L
 # LD (BC), A
-3E 82 6F CB 15 CB 15 02
+3E 82 6F CB 15 CB 15 7D 02
   @check {
     [C104] 09
   }
@@ -2155,10 +2165,9 @@ CB 0F 8F 77
 @test {
 # LD (HL), n (n = 82)
 # RL (HL)
-# LD (BC), A
-36 82 CB 16 02
+36 82 CB 16
   @check {
-    [C104] 04
+    [C000] 04
   }
 }
 
@@ -2169,8 +2178,7 @@ CB 0F 8F 77
 # LD (HL), n (n = 82)
 # RL (HL) 
 # RL (HL) # to see if a 1 pops back in from the right again.
-# LD (BC), A
-36 82 CB 16 CB 16 02
+36 82 CB 16 CB 16
   @check {
     [C104] 09
   }
@@ -2212,8 +2220,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD B, A
 # RR B
+# LD A, B
 # LD (HL), A
-3E 81 47 CB 18 77
+3E 81 47 CB 18 78 77
   @check {
     [C000] 40
   }
@@ -2227,8 +2236,9 @@ CB 0F 8F 77
 # LD B, A
 # RR B 
 # RR B # to see if a 1 pops back in from the right again.
+# LD A, B
 # LD (HL), A
-3E 81 47 CB 18 CB 18 77
+3E 81 47 CB 18 CB 18 78 77
   @check {
     [C000] A0
   }
@@ -2240,8 +2250,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD C, A
 # RR C
+# LD A, C
 # LD (HL), A
-3E 81 4F CB 19 77
+3E 81 4F CB 19 79 77
   @check {
     [C000] 40
   }
@@ -2255,8 +2266,9 @@ CB 0F 8F 77
 # LD C, A
 # RR C 
 # RR C # to see if a 1 pops back in from the right again.
+# LD A, C
 # LD (HL), A
-3E 81 4F CB 19 CB 19 77
+3E 81 4F CB 19 CB 19 79 77
   @check {
     [C000] A0
   }
@@ -2268,8 +2280,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD D, A
 # RR D
+# LD A, D
 # LD (HL), A
-3E 81 57 CB 1A 77
+3E 81 57 CB 1A 7A 77
   @check {
     [C000] 40
   }
@@ -2283,8 +2296,9 @@ CB 0F 8F 77
 # LD D, A
 # RR D 
 # RR D # to see if a 1 pops back in from the right again.
+# LD A, D
 # LD (HL), A
-3E 81 57 CB 1A CB 1A 77
+3E 81 57 CB 1A CB 1A 7A 77
   @check {
     [C000] A0
   }
@@ -2296,8 +2310,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD E, A
 # RR E
+# LD A, E
 # LD (HL), A
-3E 81 5F CB 1B 77
+3E 81 5F CB 1B 7B 77
   @check {
     [C000] 40
   }
@@ -2311,8 +2326,9 @@ CB 0F 8F 77
 # LD E, A
 # RR E 
 # RR E # to see if a 1 pops back in from the right again.
+# LD A, E
 # LD (HL), A
-3E 81 5F CB 1B CB 1B 77
+3E 81 5F CB 1B CB 1B 7B 77
   @check {
     [C000] A0
   }
@@ -2324,8 +2340,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD H, A
 # RR H
+# LD A, H
 # LD (BC), A
-3E 81 67 CB 1C 02
+3E 81 67 CB 1C 7C 02
   @check {
     [C104] 40
   }
@@ -2339,8 +2356,9 @@ CB 0F 8F 77
 # LD H, A
 # RR H 
 # RR H # to see if a 1 pops back in from the right again.
+# LD A, H
 # LD (BC), A
-3E 81 67 CB 1C CB 1C 02
+3E 81 67 CB 1C CB 1C 7C 02
   @check {
     [C104] A0
   }
@@ -2352,8 +2370,9 @@ CB 0F 8F 77
 # LD A, #81
 # LD L, A
 # RR L
+# LD A, L
 # LD (BC), A
-3E 81 6F CB 1D 02
+3E 81 6F CB 1D 7D 02
   @check {
     [C104] 40
   }
@@ -2367,8 +2386,9 @@ CB 0F 8F 77
 # LD L, A
 # RR L 
 # RR L # to see if a 1 pops back in from the right again.
+# LD A, L
 # LD (BC), A
-3E 81 6F CB 1D CB 1D 02
+3E 81 6F CB 1D CB 1D 7D 02
   @check {
     [C104] A0
   }
@@ -2379,10 +2399,9 @@ CB 0F 8F 77
 @test {
 # LD (HL), n (n = 81)
 # RR (HL)
-# LD (BC), A
-36 81 CB 1E 02
+36 81 CB 1E
   @check {
-    [C104] 40
+    [C000] 40
   }
 }
 
@@ -2393,10 +2412,9 @@ CB 0F 8F 77
 # LD (HL), n (n = 81)
 # RR (HL) 
 # RR (HL) # to see if a 1 pops back in from the right again.
-# LD (BC), A
-36 81 CB 1E CB 1E 02
+36 81 CB 1E CB 1E
   @check {
-    [C104] A0
+    [C000] A0
   }
 }
 

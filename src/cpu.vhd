@@ -1015,19 +1015,19 @@ begin
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC B - WRONG! -t
+                -- INC -t
               when X"04" =>
                 Alu_A <= X"00" & B;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC C - WRONG -t
+                -- INC C -t
               when X"0C" =>
                 Alu_A <= X"00" & C;
                 Alu_Mode <= Alu_Inc;
                 Alu_Flags_In <= F;
                 State <= Exec2;
-                -- INC D -WRONG -t
+                -- INC D -t
               when X"14" =>
                 Alu_A <= X"00" & D;
                 Alu_Mode <= Alu_Inc;
