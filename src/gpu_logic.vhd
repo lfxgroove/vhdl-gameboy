@@ -35,7 +35,7 @@ architecture Behavioral of Gpu_Logic is
   signal Next_Row_Buffer_Low : std_logic_vector(159 downto 0) := (2 | 3 | 4 | 6 => '0', others => '1');
 
   -- 8 kb video ram starting at address 0x8000
-  type Video_Ram_Type is array(8192 downto 0) of std_logic_vector(7 downto 0);
+  type Video_Ram_Type is array(8191 downto 0) of std_logic_vector(7 downto 0);
   signal Video_Ram : Video_Ram_Type := (others => X"15");
 
   -- 160 byte ram for OBJ, sprites
