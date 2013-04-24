@@ -1248,7 +1248,7 @@ begin
                 A(0) <= F(4);
                 F(4) <= A(7);
                 F(6 downto 5) <= "00";
-                if A(6 downto 0) = "000000" and F(4) = '0' then
+                if A(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -1274,7 +1274,7 @@ begin
                 A(7) <= F(4);
                 F(4) <= A(0);
                 F(6 downto 5) <= "00";
-                if A(7 downto 1) = "000000" and F(4) = '0' then
+                if A(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2715,7 +2715,7 @@ begin
                 A(0) <= F(4);
                 F(4) <= A(7);
                 F(6 downto 5) <= "00";
-                if A(6 downto 0) = "000000" and F(4) = '0' then
+                if A(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2726,7 +2726,7 @@ begin
                 B(0) <= F(4);
                 F(4) <= B(7);
                 F(6 downto 5) <= "00";
-                if B(6 downto 0) = "000000" and F(4) = '0' then
+                if B(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2737,7 +2737,7 @@ begin
                 C(0) <= F(4);
                 F(4) <= C(7);
                 F(6 downto 5) <= "00";
-                if C(6 downto 0) = "000000" and F(4) = '0' then
+                if C(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2748,7 +2748,7 @@ begin
                 D(0) <= F(4);
                 F(4) <= D(7);
                 F(6 downto 5) <= "00";
-                if D(6 downto 0) = "000000" and F(4) = '0' then
+                if D(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2759,7 +2759,7 @@ begin
                 E(0) <= F(4);
                 F(4) <= E(7);
                 F(6 downto 5) <= "00";
-                if E(6 downto 0) = "000000" and F(4) = '0' then
+                if E(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2770,7 +2770,7 @@ begin
                 H(0) <= F(4);
                 F(4) <= H(7);
                 F(6 downto 5) <= "00";
-                if H(6 downto 0) = "000000" and F(4) = '0' then
+                if H(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2781,7 +2781,7 @@ begin
                 L(0) <= F(4);
                 F(4) <= L(7);
                 F(6 downto 5) <= "00";
-                if L(6 downto 0) = "000000" and F(4) = '0' then
+                if L(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2888,7 +2888,7 @@ begin
                 A(7) <= F(4);
                 F(4) <= A(0);
                 F(6 downto 5) <= "00";
-                if A(7 downto 1) = "000000" and F(4) = '0' then
+                if A(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2899,7 +2899,7 @@ begin
                 B(7) <= F(4);
                 F(4) <= B(0);
                 F(6 downto 5) <= "00";
-                if B(7 downto 1) = "000000" and F(4) = '0' then
+                if B(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2910,7 +2910,7 @@ begin
                 C(7) <= F(4);
                 F(4) <= C(0);
                 F(6 downto 5) <= "00";
-                if C(7 downto 1) = "000000" and F(4) = '0' then
+                if C(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2921,7 +2921,7 @@ begin
                 D(7) <= F(4);
                 F(4) <= D(0);
                 F(6 downto 5) <= "00";
-                if D(7 downto 1) = "000000" and F(4) = '0' then
+                if D(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2932,7 +2932,7 @@ begin
                 E(7) <= F(4);
                 F(4) <= E(0);
                 F(6 downto 5) <= "00";
-                if E(7 downto 1) = "000000" and F(4) = '0' then
+                if E(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2943,7 +2943,7 @@ begin
                 H(7) <= F(4);
                 F(4) <= H(0);
                 F(6 downto 5) <= "00";
-                if H(7 downto 1) = "000000" and F(4) = '0' then
+                if H(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -2954,7 +2954,7 @@ begin
                 L(7) <= F(4);
                 F(4) <= L(0);
                 F(6 downto 5) <= "00";
-                if L(7 downto 1) = "000000" and F(4) = '0' then
+                if L(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -3320,7 +3320,7 @@ begin
                 Mem_Write(0) <= F(4);
                 F(4) <= Mem_Read(7);
                 F(6 downto 5) <= "00";
-                if Mem_Read(6 downto 0) = "000000" and F(4) = '0' then
+                if Mem_Read(6 downto 0) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
@@ -3347,7 +3347,7 @@ begin
                 Mem_Write(7) <= F(4);
                 F(4) <= Mem_Read(0);
                 F(6 downto 5) <= "00";
-                if Mem_Read(7 downto 1) = "000000" and F(4) = '0' then
+                if Mem_Read(7 downto 1) = "0000000" and F(4) = '0' then
                   F(7) <= '1';
                 else
                   F(7) <= '0';
