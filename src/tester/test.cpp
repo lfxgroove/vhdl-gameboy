@@ -131,7 +131,7 @@ bool Test::check(const std::string& results_path)
 	  if (data != Util::to_bin(int(*it)))
 	    {
 	      all_ok = false;
-	      DiffInfo d = { data, Util::to_bin(int(*it)), addr + 1 };
+	      DiffInfo d = { data, Util::to_bin(int(*it)), addr + i };
 	      m_diff.add_diff(d);
 	    }
 	  // std::cout << " RAD: " << curr_line << " DATA: " << Util::to_bin(int(*it)) << std::endl;

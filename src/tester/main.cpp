@@ -6,7 +6,7 @@
 #include "parser.hpp"
 #include "tokenizer.hpp"
 
-void run_test(const std::string& dir_name, const std::string& test_name, int test_num)
+void run_test(const std::string& dir_name, const std::string& test_name, int test_num, bool one_test_only)
 {
   Tokenizer t(dir_name + "/" + test_name + ".stim");
   Parser p(t, dir_name  + "/");
@@ -42,7 +42,7 @@ void run_test(const std::string& dir_name, const std::string& test_name, int tes
 		}
 	    }
 	  else
-	    if (i > test_num)
+	    if (i > test_num && one_test_only)
 	      break;
 	}
     }
@@ -112,7 +112,7 @@ int main(int argc, char** argv)
   
   std::string dir_name, test_name;
   int test_num = -1;
-  bool dir_found = false, num_found = false;
+  bool dir_found = false, num_found = false, only_one_found = false;
   
   for (int i = 1; i < argc; ++i)
     {
@@ -128,6 +128,10 @@ int main(int argc, char** argv)
 	  ss >> test_num;
 	  if (test_num > 0)
 	    num_found = true;
+	}
+      else if (strcmp(argv[i], "-o") == 0)
+	{
+	  only_one_found = true;
 	}
     }
   
@@ -154,7 +158,7 @@ int main(int argc, char** argv)
   std::cout << "Dir name is: " << dir_name << std::endl;
   std::cout << "Test name is:" << test_name << std::endl;
   
-  run_test(dir_name, test_name, test_num);
+  run_test(dir_name, test_name, test_num, only_one_found);
 
   return 0;
 }
