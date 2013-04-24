@@ -45,9 +45,9 @@ architecture Behavioral of Gpu_Logic is
   signal Internal_Hsync, Internal_Vsync : std_logic;
   signal On_Next_Row : std_logic;
 
-  type State_Type is (Read_Bg, Sprites, Sprites_B, Sprites_C, Done);
+  type State_Type is (Read_Bg, Read_BG_B, Sprites, Sprites_B, Sprites_C, Done);
   signal State : State_Type := Done;
-  signal Bg_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal Bg_Addr : std_logic_vector(7 downto 0) := X"00";
   signal Bg_Added : std_logic_vector(15 downto 0) := X"0000";
 
   -- BG offsets
@@ -94,6 +94,7 @@ begin
     variable Sprite_High_Data : std_logic_vector(7 downto 0);
     variable Sprite_Low_Data : std_logic_vector(7 downto 0);
     variable Sprite_Tmp_X : integer range 0 to 255;
+    variable Tmp_Addr : integer range 0 to 65535;
   begin
     if rising_edge(Clk) then
       if Rst = '1' then
@@ -111,28 +112,33 @@ begin
         State <= Read_Bg;
         if Bg_Sprite_Line_Offset = X"07" then
           Bg_Sprite_Line_Offset <= X"00";
-          Bg_First_Sprite_Offset <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 16 * 20);
+          Bg_First_Sprite_Offset <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 32);
         else
           Bg_Sprite_Line_Offset <= std_logic_vector(unsigned(Bg_Sprite_Line_Offset) + 1);
         end if;
-        -- TODO: Better start address... Replace the 0
-        Bg_Addr <= std_logic_vector(0 + unsigned(Bg_First_Sprite_Offset) + unsigned(Bg_Sprite_Line_Offset));
         Bg_Added <= X"0000";
       else
         case State is
           when Done =>
             null;
           when Read_Bg =>
+            --TODO: Switch between two mem locations, 1800 should be able to be replaced
+            Tmp_Addr := to_integer(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added));
+            Bg_Addr <= Video_Ram(Tmp_Addr);
+            State <= Read_Bg_B;
+          when Read_Bg_B =>
             if unsigned(Bg_Added) = 20 then
               State <= Sprites;
               Sprite_Addr <= X"00";
             else
-              Next_Row_Buffer_High(7 downto 0) <= Video_Ram(to_integer(unsigned(Bg_Addr)));
-              Next_Row_Buffer_Low(7 downto 0) <= Video_Ram(to_integer(unsigned(Bg_Addr) + 1));
+              Tmp_Addr := to_integer(unsigned(Bg_Addr) * 16 + unsigned(Next_Row));
+              
+              Next_Row_Buffer_High(7 downto 0) <= Video_Ram(Tmp_Addr);
+              Next_Row_Buffer_Low(7 downto 0) <= Video_Ram(Tmp_Addr + 1);
               Next_Row_Buffer_High(159 downto 8) <= Next_Row_Buffer_High(151 downto 0);
               Next_Row_Buffer_Low(159 downto 8) <= Next_Row_Buffer_Low(151 downto 0);
-              Bg_Addr <= std_logic_vector(unsigned(Bg_Addr) + 16);
               Bg_Added <= std_logic_vector(unsigned(Bg_Added) + 1);
+              State <= Read_Bg;
             end if;
           when Sprites =>
             Sprite_Y <= Obj_Ram(to_integer(unsigned(Sprite_Addr)));
