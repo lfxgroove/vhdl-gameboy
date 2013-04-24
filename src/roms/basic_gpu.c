@@ -25,8 +25,16 @@ struct obj {
 //Get memory address
 #define AT(x) (*((byte *)(x)))
 
+//NOTE: This assumes DMA is working. Otherwise change to 0xFE00
 //Get/set OBJ
-#define OBJ_NR(x) (*((struct obj *)0xFE00 + (x)))
+#define OBJ_NR(x) (*((struct obj *)0xC000 + (x)))
+
+void copy_obj() {
+  byte i;
+  AT(0xFF46) = 0xC0;
+  //Wait approx 160 cycles
+  for (i = 40; i != 0; i--);
+}
 
 //Get/set a sprite's n'th byte. Low characters(0x8000-0x97FF)
 #define CHAR_LOW(sprite, n) (*((byte *)0x8000 + (sprite) * 16 + (n)))
@@ -118,6 +126,35 @@ const byte grey_sprite[] = {
   0xFF, 0x00,
 };
 
+const byte lt_grey_sprite[] = {
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+  0x00, 0xFF,
+};
+
+const byte overlay_sprite[] = {
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+  0x3B, 0xFB,
+};
+
+void wait() {
+  byte a, b;
+  for (a = 0; a != 0x0F; a++) {
+    for (b = 0; b != 0xFF; b++);
+  }
+}
+
 void main() {
   int i = 0;
   struct obj *o;
@@ -130,6 +167,8 @@ void main() {
   set_sprite(white_sprite, 0);
   set_sprite(black_sprite, 1);
   set_sprite(grey_sprite, 2);
+  set_sprite(lt_grey_sprite, 3);
+  set_sprite(overlay_sprite, 4);
 
   for (i = 0; i < 32 * 18; i++) {
     BG_CODE_LOW(i, 0) = 0;
@@ -141,20 +180,58 @@ void main() {
   //NOTE: The sprites are not currently working on an emulator...
 
   for (i = 0; i < 40; i++) {
-    while (STAT & 0x03 == 0);
-    while (STAT & 0x03 != 0);
-
     o = &OBJ_NR(i);
     o->y = o->x = 0xFF;
   }
 
   o = &OBJ_NR(0);
-  o->x = 30;
-  o->y = 30;
-  o->character = 2;
+  o->x = 0;
+  o->y = 0;
+  o->character = 4;
   o->attribute = OBJ_FRONT | OBJ_LOW_PALETTE;
 
+  o = &OBJ_NR(1);
+  o->x = 0;
+  o->y = 0;
+  o->character = 3;
+  o->attribute = OBJ_BACK | OBJ_LOW_PALETTE;
 
-  //I do not know what will happen if we exit main... Don't let it happen!
-  while (1) {}
+  o = &OBJ_NR(2);
+  o->x = 0;
+  o->y = 0;
+  o->character = 3;
+  o->attribute = OBJ_FRONT | OBJ_LOW_PALETTE;
+
+  copy_obj();
+
+  while (1) {
+    byte at;
+    for (at = 8; at < 160; at++) {
+      OBJ_NR(0).x = at;
+      OBJ_NR(0).y = at;
+      OBJ_NR(1).x = at - 5;
+      OBJ_NR(1).y = at - 5;
+      OBJ_NR(2).x = at;
+      OBJ_NR(2).y = at - 4;
+
+      SCX = SCY = at >> 2;
+
+      wait();
+      copy_obj();
+    }
+
+    for (at = 160; at > 8; at--) {
+      OBJ_NR(0).x = at;
+      OBJ_NR(0).y = at;
+      OBJ_NR(1).x = at - 5;
+      OBJ_NR(1).y = at - 5;
+      OBJ_NR(2).x = at;
+      OBJ_NR(2).y = at - 4;
+
+      SCX = SCY = at >> 2;
+
+      wait();
+      copy_obj();
+    }
+  }
 }
