@@ -2,6 +2,8 @@
 // Various types which might be good to have
 typedef unsigned char byte;
 
+void memcpy(byte *dest, byte *src, byte size);
+
 //OBJ:s. Located from address 0xFE00-0xFEFF
 struct obj {
   byte y;
@@ -34,6 +36,9 @@ void copy_obj() {
   AT(0xFF46) = 0xC0;
   //Wait approx 160 cycles
   for (i = 40; i != 0; i--);
+
+  //Do a copy without dma since our cpu does not yet support dma.
+  memcpy(0xFE00, 0xC000, sizeof(struct obj) * 40);
 }
 
 //Get/set a sprite's n'th byte. Low characters(0x8000-0x97FF)
