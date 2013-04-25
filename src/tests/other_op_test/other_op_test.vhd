@@ -6,10 +6,10 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-entity ld_op_Test is
-end ld_op_Test;
+entity other_op_Test is
+end other_op_Test;
 
-architecture Behavior of ld_op_Test is
+architecture Behavior of other_op_Test is
 -- Component Decalaration
   
   component Bus_Controller
@@ -106,8 +106,8 @@ begin
     variable In_Line, Out_Line : line;
     variable Curr_Addr : std_logic_vector(15 downto 0) := X"0150";
     variable Data_Byte : std_logic_vector(7 downto 0);
-    file In_File : text open read_mode is "tests/ld_op_test/stimulus/feed.txt";
-    file Out_File : text open write_mode is "tests/ld_op_test/results/results.txt";
+    file In_File : text open read_mode is "tests/other_op_test/stimulus/feed.txt";
+    file Out_File : text open write_mode is "tests/other_op_test/results/results.txt";
   begin
     Cpu_Allowed <= '1';
   --writes one byte at a time to the memory

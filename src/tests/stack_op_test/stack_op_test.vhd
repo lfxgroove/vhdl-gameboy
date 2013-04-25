@@ -6,23 +6,27 @@ use ieee.numeric_std.all;
 library std;
 use std.textio.all;
 
-entity Stack_Op_Test is
-end Stack_Op_Test;
+entity stack_op_Test is
+end stack_op_Test;
 
-architecture Behavior of Stack_Op_Test is
+architecture Behavior of stack_op_Test is
 -- Component Decalaration
-
+  
   component Bus_Controller
     port(Clk, Reset : in std_logic;
          Mem_Write : in std_logic_vector(7 downto 0);
          Mem_Read : out std_logic_vector(7 downto 0);
          Mem_Addr : in std_logic_vector(15 downto 0);
          Mem_Write_Enable : in std_logic;
+         Gpu_Write : out std_logic_vector(7 downto 0);
+         Gpu_Read : in std_logic_vector(7 downto 0);
+         Gpu_Addr : out std_logic_vector(15 downto 0);
+         Gpu_Write_Enable : out std_logic;
          Rom_Write_Enable : in std_logic;
          Rom_Addr : in std_logic_vector(15 downto 0);
          Rom_Write : in std_logic_vector(7 downto 0));
   end component;
-
+  
   component Cpu
     port(Clk, Reset : in std_logic;
          Mem_Write : out std_logic_vector(7 downto 0);
@@ -45,6 +49,12 @@ architecture Behavior of Stack_Op_Test is
   signal Internal_Mem_Write : std_logic_vector(7 downto 0);
   signal Internal_Mem_Write_Enable : std_logic := '0';
   
+  --Dummy signals, these arent used
+  signal Gpu_Write : std_logic_vector(7 downto 0);
+  signal Gpu_Read : std_logic_vector(7 downto 0);
+  signal Gpu_Addr : std_logic_vector(15 downto 0);
+  signal Gpu_Write_Enable : std_logic;
+  
 begin
 -- compnent instantiation
   Bus_Ports : Bus_Controller port map(
@@ -54,6 +64,10 @@ begin
     Mem_Read => Mem_Read,
     Mem_Addr => Mem_Addr,
     Mem_Write_Enable => Mem_Write_Enable,
+    Gpu_Write => Gpu_Write,
+    Gpu_Write_Enable => Gpu_Write_Enable,
+    Gpu_Addr => Gpu_Addr,
+    Gpu_Read => Gpu_Read,
     Rom_Write_Enable => Rom_Write_Enable,
     Rom_Addr => Rom_Addr,
     Rom_Write => Rom_Write);

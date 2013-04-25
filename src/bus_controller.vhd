@@ -14,12 +14,16 @@ entity Bus_Controller is
         Mem_Read : out std_logic_vector(7 downto 0);
         Mem_Addr : in std_logic_vector(15 downto 0);
         Mem_Write_Enable : in std_logic;
+        -- Output to the GPU
+        Gpu_Write : out std_logic_vector(7 downto 0);
+        Gpu_Read : in std_logic_vector(7 downto 0);
+        Gpu_Addr : out std_logic_vector(15 downto 0);
+        Gpu_Write_Enable : out std_logic;
         -- These three signals writes to the large rom.
         Rom_Write_Enable : in std_logic;
         Rom_Addr : in std_logic_vector(15 downto 0);
         Rom_Write : in std_logic_vector(7 downto 0));
 end Bus_Controller;
-
 
 architecture Bus_Controller_Behaviour of Bus_Controller is
   type Ram_8KType is array (0 to 8191) of std_logic_vector(7 downto 0);
@@ -59,15 +63,12 @@ begin
         elsif Mem_Addr < X"8000" then
           -- The addresses 4000-7FFF is switchable in som ROMS, implement!
           -- No writing allowed here!
-        elsif Mem_Addr < X"9800" then
-          -- Character data. Send to GPU.
-          -- Not implemented yet!
-        elsif Mem_Addr < X"9C00" then
-          -- Character codes (BG data 1). Send to GPU.
-          -- Not implemented yet!
         elsif Mem_Addr < X"A000" then
+          -- Character data. Send to GPU.
+          -- Character codes (BG data 1). Send to GPU.
           -- Character codes (BG data 2). Send to GPU.
-          -- Not implemented yet!
+          Gpu_Write_Enable <= '1';
+          Gpu_Write <= Mem_Write;
         elsif Mem_Addr < X"C000" then
           -- External expansion working RAM 8KB.
           External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0)))) <= Mem_Write;
@@ -90,9 +91,14 @@ begin
         else
           -- Undefined.
         end if;
+      else
+        Gpu_Write_Enable <= '0';
       end if;
     end if;
   end process;
+
+  -- Ensure GPU addr is correct
+  Gpu_Addr <= Mem_Addr;
 
   -- Reading memory:
   Mem_Read <=
@@ -110,15 +116,9 @@ begin
     when Mem_Addr < X"8000" else
 
     -- Character data. Send to GPU.
-    X"00"
-    when Mem_Addr < X"9800" else
-
     -- Character codes (BG data 1). Send to GPU.
-    X"00"
-    when Mem_Addr < X"9C00" else
-
     -- Character codes (BG data 2). Send to GPU.
-    X"00"
+    Gpu_Read
     when Mem_Addr < X"A000" else
 
     -- External expansion working RAM 8KB.

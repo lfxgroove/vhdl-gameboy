@@ -16,8 +16,7 @@ entity Gpu is
            Next_Row : out std_logic;
            -- High bit and low bit of color
            Row_Buffer_High : in std_logic_vector(159 downto 0);
-           Row_Buffer_Low : in std_logic_vector(159 downto 0)
-           );
+           Row_Buffer_Low : in std_logic_vector(159 downto 0));
 end Gpu;
 
 architecture Behavioral of Gpu is
