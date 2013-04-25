@@ -18,6 +18,7 @@ function show_help {
 function run_test {
     name=$1
     dir=$2
+    test_nr=$3
 
     echo "Compiling ${dir}/${test_name}_test.vhd..."
     ghdl -a --ieee=synopsys ${dir}/${name}_test.vhd || exit
@@ -34,10 +35,14 @@ function run_test {
 	echo Creating ${dir}/results
 	mkdir ${dir}/results
     fi
-
-    if [ $# -gt 2 ]
-    then
-	./tester/tester -n $3 -d ${dir}
+    
+    if [ $# -gt 2 ]; then
+	if [ "$4" -eq "$4" ] 2>/dev/null; then 
+	    #To get here run with something like: ./compile.sh ld_op t -1 100
+	    ./tester/tester -n ${test_nr} -d ${dir} -t ${4} 
+	else
+	    ./tester/tester -n ${test_nr} -d ${dir} 	    
+	fi
     else
 	./tester/tester -d ${dir}
     fi
@@ -81,7 +86,7 @@ if [ $# -gt 1 ]; then
 	test_path=${model_name}_test
 	echo "Compiling and running test ${test_name}"
 	if [ -e "./tests/${test_path}" ]; then
-	    run_test ${test_name} ./tests/${test_path}/ $3
+	    run_test ${test_name} ./tests/${test_path}/ $3 $4
 	else
 	    echo "The test: ${test_name} doesn't exist"
 	fi
