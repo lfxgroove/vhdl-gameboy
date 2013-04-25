@@ -3403,7 +3403,7 @@ begin
                 -- RES b, (HL) (where 8 * b is added to the OP-code)
               when X"CB86" | X"CB8E" | X"CB96" | X"CB9E" | X"CBA6" | X"CBAE" | X"CBB6" | X"CBBE" =>
                 Mem_Write <= Mem_Read;
-                Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '1';
+                Mem_Write(to_integer(unsigned(MB_IR(5 downto 3)))) <= '0';
                 Mem_Write_Enable <= '1';
                 Mem_Addr <= H & L;
 
