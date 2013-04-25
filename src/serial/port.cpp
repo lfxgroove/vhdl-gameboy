@@ -2,14 +2,101 @@
 
 #include "port.h"
 
+#ifdef _WIN32
+
+#include <sstream>
+
+Port::Port(const String &port, int baud) {
+  handle = INVALID_HANDLE_VALUE;
+  openPort(port, baud);
+}
+
+Port::~Port() {
+  close();
+}
+
+bool Port::isOpen() const {
+  return handle != INVALID_HANDLE_VALUE;
+}
+
+void Port::write(byte *buffer, nat size) {
+  while (size > 0) {
+    DWORD ret;
+    if (WriteFile(handle, buffer, size, &ret, 0) == FALSE) {
+      //ERROR!
+      break;
+    }
+    buffer += ret;
+    size -= ret;
+  }
+}
+
+nat Port::read(byte *buffer, nat size) {
+  DWORD r;
+  if (ReadFile(handle, buffer, size, &r, 0) == FALSE) return 0;
+  return r;
+}
+
+void Port::openPort(const String &port, int baud) {
+  handle = CreateFile(("\\\\.\\" + port).c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
+  if (!isOpen()) {
+    DEBUG("Failed to open " << port << ": " << int(GetLastError()));
+    return;
+  }
+
+  std::ostringstream oss;
+  oss << baud << ",n,8,1";
+
+  DCB dcb;
+  FillMemory(&dcb, sizeof(dcb), 0);
+  dcb.DCBlength = sizeof(dcb);
+  if (!BuildCommDCB(oss.str().c_str(), &dcb)) {
+    DEBUG("Failed to set parameters " << oss.str());
+    close();
+    return;
+  }
+
+  dcb.fRtsControl = RTS_CONTROL_DISABLE;
+  dcb.fDtrControl = DTR_CONTROL_DISABLE;
+  dcb.fDsrSensitivity = FALSE;
+
+  if (!SetCommState(handle, &dcb)) {
+    DEBUG("Failed to set port marameters");
+    close();
+    return;
+  }
+
+  EscapeCommFunction(handle, CLRRTS);
+  EscapeCommFunction(handle, CLRDTR);
+
+  COMMTIMEOUTS timeout;
+  timeout.ReadIntervalTimeout = 0;
+  timeout.ReadTotalTimeoutConstant = 200;
+  timeout.ReadTotalTimeoutMultiplier = 0;
+  timeout.WriteTotalTimeoutConstant = 200;
+  timeout.WriteTotalTimeoutMultiplier = 20;
+
+  SetCommTimeouts(handle, &timeout);
+}
+
+void Port::close() {
+  if (handle != INVALID_HANDLE_VALUE) {
+    CloseHandle(handle);
+    handle = INVALID_HANDLE_VALUE;
+  }
+}
+
+#else
+
 #include <fcntl.h>
 #include <errno.h>
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 
-#include <iostream>
-#include <fstream>
+bool Port::isOpen() const {
+  return portFd != -1;
+}
 
 void setrts(int fd, int on) {
   int controlbits;
@@ -134,3 +221,4 @@ void Port::openPort(const String &port, int baud) {
   setdtr(portFd, false);
 }
 
+#endif

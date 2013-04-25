@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "port.h"
 
+#include <algorithm>
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
-#include <unistd.h>
 
 const nat FILE_SIZE_BYTES = 2;
 const nat MAX_FILE_SIZE = 1 << (FILE_SIZE_BYTES * 8) - 1;
@@ -60,6 +60,9 @@ int main(int argc, char **argv) {
 
   DEBUG("Sending " << file << " to " << port << " at " << baud << " baud...");
 
+  //Calculate a simple checksum
+  byte checksum = 0;
+
   //Send size. LSB first.
   nat s = size;
   byte buffer[CHUNK];
@@ -77,9 +80,17 @@ int main(int argc, char **argv) {
     p.write(buffer, toSend);
     sent += toSend;
 
+    for (nat i = 0; i < toSend; i++) {
+      checksum += buffer[i];
+    }
+
     std::cout << "\rSending..." << sent << "/" << size << " bytes" << std::flush;
   }
   std::cout << std::endl;
+
+  //Sent checksum
+  checksum = byte((0x100 - int(checksum)) & 0xFF);
+  p.write(&checksum, 1);
 
   DEBUG("Done!");
 
