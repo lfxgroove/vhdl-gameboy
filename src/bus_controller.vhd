@@ -25,7 +25,6 @@ entity Bus_Controller is
         Rom_Write : in std_logic_vector(7 downto 0));
 end Bus_Controller;
 
-
 architecture Bus_Controller_Behaviour of Bus_Controller is
   type Ram_8KType is array (0 to 8191) of std_logic_vector(7 downto 0);
   type Ram_127Type is array (0 to 126) of std_logic_vector(7 downto 0);
