@@ -7,6 +7,7 @@ use IEEE.numeric_std.all;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+
 entity Gpu_Logic is
     Port ( Clk,Rst : in  std_logic;
            vgaRed, vgaGreen : out  std_logic_vector (2 downto 0);
@@ -50,7 +51,10 @@ architecture Behavioral of Gpu_Logic is
   signal Bg_Addr : std_logic_vector(7 downto 0) := X"00";
   signal Bg_Added : std_logic_vector(15 downto 0) := X"0000";
 
-  -- BG offsets
+  -- High when the next screen should be drawn
+  signal Next_Screen : std_logic := '0';
+
+  -- BG offsets. Keeps track of the current row and the current pixel in the background
   signal Bg_First_Sprite_Offset : std_logic_vector(15 downto 0) := X"0000";
   signal Bg_Sprite_Line_Offset : std_logic_vector(7 downto 0) := X"00";
 
@@ -97,25 +101,40 @@ begin
     end if;
   end process;
 
-  --Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Id) * 16 + unsigned(Sprite_Row));
-
-  
+  -- Detect next row, and increment the row counter. Also tell the scanline
+  -- generator when the entire screen has been drawn.
   process (Clk)
-    variable Sprite_Tmp_X : integer range 0 to 255;
   begin
     if rising_edge(Clk) then
       if Rst = '1' then
-        Next_Row_Buffer_Low <= (others => '0');
-        Next_Row_Buffer_High <= (others => '0');
+        -- Reset the row generator as well
+        Next_Screen <= '1';
       elsif On_Next_Row = '1' then
         if unsigned(Current_Row) > 143 then
           Next_Row <= X"00";
-          Bg_First_Sprite_Offset <= X"0000";
-          Bg_Sprite_Line_Offset <= X"00";
+          Next_Screen <= '1';
         else
           Next_Row <= std_logic_vector(unsigned(Current_Row) + 1);
+          Next_Screen <= '0';
         end if;
-        -- TODO: Reset other stuff
+      else
+        Next_Screen <= '0';
+      end if;
+    end if;
+  end process;
+
+  process (Clk) is
+    variable Sprite_Tmp_X : integer range 0 to 255;
+  begin
+    if rising_edge(Clk) then
+      -- Next_Screen also works as a reset for this process. See process above.
+      if Next_Screen = '1' then
+        Next_Row_Buffer_Low <= (others => '0');
+        Next_Row_Buffer_High <= (others => '0');
+
+        Bg_First_Sprite_Offset <= X"0000";
+        Bg_Sprite_Line_Offset <= X"00";
+      elsif On_Next_Row = '1' then
         State <= Read_Bg;
         if Bg_Sprite_Line_Offset = X"07" then
           Bg_Sprite_Line_Offset <= X"00";
@@ -124,6 +143,7 @@ begin
           Bg_Sprite_Line_Offset <= std_logic_vector(unsigned(Bg_Sprite_Line_Offset) + 1);
         end if;
         Bg_Added <= X"0000";
+
       else
         case State is
           when Done =>
@@ -134,10 +154,10 @@ begin
             State <= Read_Bg_B;
           when Read_Bg_B =>
             --Sprite_Id <= Video_Ram(to_integer(unsigned(Bg_Map_Addr)));
-            Sprite_Row <= Next_Row;
+            -- Sprite_Row <= Next_Row;
             --calculates the sprite's row address using the current sprite row
             --and the sprite id, ie: sprite_id*16 + sprite_row
-            Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Bg_Map_Addr)))) * 16 + unsigned(Next_Row)); 
+            Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Bg_Map_Addr)))) * 16 + unsigned(Bg_Sprite_Line_Offset)); 
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 20 then
