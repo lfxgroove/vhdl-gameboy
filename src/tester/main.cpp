@@ -6,17 +6,16 @@
 #include "parser.hpp"
 #include "tokenizer.hpp"
 
-void run_test(const std::string& dir_name, const std::string& test_name, int test_num, bool one_test_only)
+void run_test(const std::string& dir_name, const std::string& test_name, int test_num, bool one_test_only, int simulation_time)
 {
   Tokenizer t(dir_name + "/" + test_name + ".stim");
   Parser p(t, dir_name  + "/");
-  std::cout << "Skickade in: " << dir_name + "/" << " som base path" << std::endl;
-  // std::cout << "Skickar in: " << dir_name + "/" + test_name + ".stim" << std::endl;
   Tests to_run = p.parse();
   Tests faulty;
   bool all_ok = true;
   int i = 1;
   int num_tests = to_run.size();
+  //TODO: Fix this kludge..
   if (test_num != -1)
     {
       std::cout << "Running test " << test_num << " of " 
@@ -27,7 +26,7 @@ void run_test(const std::string& dir_name, const std::string& test_name, int tes
 	{
 	  if (i == test_num) 
 	    {
-	      if ((*it).run(test_name))
+	      if ((*it).run(test_name, simulation_time))
 		{
 		  std::cout << "OK" << std::endl;
 		}
@@ -54,7 +53,7 @@ void run_test(const std::string& dir_name, const std::string& test_name, int tes
 	   ++it, ++i) 
 	{
 	  std::cout << "Test " << i << " of " << num_tests << ":" << std::flush;
-	  if ((*it).run(test_name))
+	  if ((*it).run(test_name, simulation_time))
 	    {
 	      std::cout << "OK" << std::endl;
 	    }
@@ -82,6 +81,8 @@ void print_usage(const char* name)
   cout << "-n NUMBER  runs a certain test for the given DIRNAME" << endl;
   cout << "           ie: tester -n 10 -d tests/derp_test/ would" << endl;
   cout << "           run the tenth test in tests/derp_test/derp_test.stim" << endl;
+  cout << "-o         Run only one test, use in conjunction with -n" << endl;
+  cout << "-t NUMBER  Simulate each test for NUMBER microseconds, default is 1600" << endl;
 }
 
 std::string find_test_name(std::string& dir_name)
@@ -111,8 +112,8 @@ int main(int argc, char** argv)
     }
   
   std::string dir_name, test_name;
-  int test_num = -1;
-  bool dir_found = false, num_found = false, only_one_found = false;
+  int test_num = -1, simulation_us = 1600; //1600 us is default
+  bool dir_found = false, num_found = false, only_one_found = false, sim_time_found = false;
   
   for (int i = 1; i < argc; ++i)
     {
@@ -132,6 +133,16 @@ int main(int argc, char** argv)
       else if (strcmp(argv[i], "-o") == 0)
 	{
 	  only_one_found = true;
+	}
+      else if (strcmp(argv[i], "-t") == 0)
+	{
+	  std::stringstream ss;
+	  ss << argv[++i];
+	  ss >> simulation_us;
+	  if (simulation_us > 0)
+	    sim_time_found = true;
+	  else
+	    simulation_us = 1600; //Kludge..
 	}
     }
   
@@ -155,10 +166,11 @@ int main(int argc, char** argv)
   if (test_name == "")
     return 0;
   
+  std::cout << "Running with simulation time of: " << simulation_us << std::endl;
   std::cout << "Dir name is: " << dir_name << std::endl;
   std::cout << "Test name is:" << test_name << std::endl;
   
-  run_test(dir_name, test_name, test_num, only_one_found);
+  run_test(dir_name, test_name, test_num, only_one_found, simulation_us);
 
   return 0;
 }

@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <string>
+#include <sstream>
 
 #include "addrdata.hpp"
 #include "typedefs.hpp"
@@ -36,7 +37,7 @@ public:
       // && !m_test_addresses.empty()
       && !m_check_addresses.empty();
   };
-  bool run(const std::string& test_name);
+  bool run(const std::string& test_name, int simulation_time);
   
   const static int BASE_CHECK_OFFSET = 0xC000;
   

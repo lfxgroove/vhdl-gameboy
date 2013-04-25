@@ -38,7 +38,7 @@ void Test::reset()
   m_prep_addresses.clear();
 }
 
-bool Test::run(const std::string& name)
+bool Test::run(const std::string& name, int simulation_time)
 {
   //Generate a file and give it to the vhdl program
   TestFile tf(this);
@@ -56,16 +56,20 @@ bool Test::run(const std::string& name)
       if ((*it) == '_')
 	std::transform(it+1, it+2, it+1, ::toupper);
     }
-  std::string arg = "ghdl --elab-run --ieee=synopsys " 
-    + test_name + 
-    //1600 us will be enough for now, might be subject to change..
-    " --vcd=" + test_name + ".vcd --stop-time=1600us";
+  std::stringstream arg;
 #ifdef _WIN32
-  arg = "\"" + arg + " > NUL 2>NUL\"";
-#else
-  arg = arg + " > /dev/null 2>&1";
+  arg << "\"";
 #endif
-  std::system(arg.c_str());
+  arg << "ghdl --elab-run --ieee=synopsys" 
+      << " " << test_name
+      << " --vcd=" << test_name << ".vcd"
+      << " --stop-time=" << simulation_time << "us";
+#ifdef _WIN32
+  arg << " > NUL 2>NUL\"";
+#else
+  arg << " > /dev/null 2>&1";
+#endif
+  std::system(arg.str().c_str());
   
   return check(m_base_path + "/results/results.txt");
 }
