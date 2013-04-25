@@ -12,7 +12,12 @@ entity Gpu_Logic is
     Port ( Clk,Rst : in  std_logic;
            vgaRed, vgaGreen : out  std_logic_vector (2 downto 0);
            vgaBlue : out  std_logic_vector (2 downto 1);
-           Hsync,Vsync : out  std_logic);
+           Hsync,Vsync : out  std_logic;
+           -- Writing to the memory and registers of the GPU
+           Gpu_Write : in std_logic_vector(7 downto 0);
+           Gpu_Read : out std_logic_vector(7 downto 0);
+           Gpu_Addr : in std_logic_vector(15 downto 0);
+           Gpu_Write_Enable : in std_logic);
 end Gpu_Logic;
 
 architecture Behavioral of Gpu_Logic is
@@ -37,7 +42,7 @@ architecture Behavioral of Gpu_Logic is
 
   -- 8 kb video ram starting at address 0x8000
   type Video_Ram_Type is array(8191 downto 0) of std_logic_vector(7 downto 0);
-  signal Video_Ram : Video_Ram_Type := (others => X"15");
+  signal Video_Ram : Video_Ram_Type := (others => X"F0");
 
   -- 160 byte ram for OBJ, sprites
   type Obj_Ram_Type is array(159 downto 0) of std_logic_vector(7 downto 0);
@@ -242,5 +247,23 @@ begin
       end if;
     end if;
   end process;
-  
+
+  -- Writing to video memory
+  process (Clk) is
+  begin
+    if rising_edge(Clk) then
+      if Gpu_Write_Enable = '1' then
+        if Gpu_Addr < X"A000" then
+          -- Starts at 0x8000
+          Video_Ram(to_integer(unsigned(Gpu_Addr(12 downto 0)))) <= Gpu_Write;
+        elsif Gpu_Addr < X"FEA0" then
+          -- Starts at 0xFE00.
+          Obj_Ram(to_integer(unsigned(Gpu_Addr(4 downto 0)))) <= Gpu_Write;
+        end if;
+      end if;
+    end if;
+  end process;
+
+  -- Reading not implemented yet!
+  Gpu_Read <= X"00";
 end Behavioral;
