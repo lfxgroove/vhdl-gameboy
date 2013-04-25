@@ -29,11 +29,13 @@ function run_test {
     then
 	echo Creating ${dir}/stimulus
 	mkdir ${dir}/stimulus
+	echo "feed.txt" > ${dir}/stimulus/.gitignore
     fi
     if [ ! -d ${dir}/results ]
     then
 	echo Creating ${dir}/results
 	mkdir ${dir}/results
+	echo "results.txt" > ${dir}/results/.gitignore
     fi
     
     if [ $# -gt 2 ]; then
