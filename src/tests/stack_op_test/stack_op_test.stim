@@ -200,7 +200,7 @@ C5 E1 7C 02 7D 12
 # LD (HL), A
 97 21 00 C2 E5 C0 77
   @check {
-    [C200] 03
+    [C200] 00
   }
 }
 
@@ -211,11 +211,11 @@ C5 E1 7C 02 7D 12
 # ADD A, B - resets Z (Z=0)
 # LD HL , nn (nn = 00 C2)
 # PUSH HL - C2 00 to the stack
-# RET Z
+# RET Z - Should not jump.
 # LD (HL), A
 80 21 00 C2 E5 C8 77
   @check {
-    [C200] 20
+    [C200] C4
   }
 }
 
@@ -410,7 +410,7 @@ CD 10 C2 77
 # Test number: 27
 @test {
 # ADD A, A #Sets all flags to 0 (no Carry/halfCarry, not Z, not a subtraction)
-# LD A, #FF
+# LD A, #FFZ
 # PUSH AF <- AF = FF00
 # POP BC <- B = FF, C = 00
 # LD A, B
@@ -433,7 +433,7 @@ CD 10 C2 77
 # POP BC <- B = FF, C = C0
 # LD A, B
 # LD (HL), A
-# LD A, C
+# LD A, C  
 # LD (DE), A
 97 3E FF F5 C1 78 77 79 77
   @check {
@@ -468,10 +468,19 @@ CD 10 C2 77
 # POP AF
 # PUSH AF
 # POP DE
+# LD A, #03
 # LD (DE), A
-C5 F1 F5 D1 12
+# BELOW IS JUST FOR DEBUGGING
+# LD A, D
+# LD (BC), A
+# LD A, E
+# LD (HL), A
+C5 F1 F5 D1 3E 03 12 # DEBUGGING   7A 12 7B 77
   @check {
-    [C104] 03
+# REAL TEST.    [C104] 03 - adress c104 since bc->af->e
+# BELOW IS JUST DEBUGING
+    [C104] C1 # adress c104 since bc->af->e
+    [C000] 04 # adress c104 since bc->af->e
   }
 }
 

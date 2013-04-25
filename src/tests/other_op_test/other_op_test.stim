@@ -1,4 +1,4 @@
-@prepare {
+o@prepare {
 # Set HL to adress X"C000"
 # LD A, #C0
 # LD H, A
@@ -46,22 +46,6 @@ F3 76 3E 10
     [C000] FF
   }
 }
-
-### Testing BIT
-
-
-### Tests CB40
-# BIT 0,B - CB 40
-# BIT 1,B - CB 48
-# BIT 2,B - CB 50
-# BIT 3,B - CB 58
-# BIT 4,B - CB 60
-# BIT 5,B - CB 68
-# BIT 6,B - CB 70
-# BIT 7,B - CB 78
-
-
-
 ### Testing SET
 
 # Testing CBC0
@@ -78,7 +62,7 @@ F3 76 3E 10
 # SET 7, B - CB F8
 # LD A, B
 # LD (DE), A
-06 00 CB C0 CB C8 CB D0 CB D8 CB E0 CB E8 CB FO CB F8 78 12
+06 00 CB C0 CB C8 CB D0 CB D8 CB E0 CB E8 CB F0 CB F8 78 12
   @check {
     [C208] FF
   }
@@ -240,7 +224,7 @@ F3 76 3E 10
 # RES 7, B - CB B8
 # LD A, B
 # LD (DE), A
-06 FF CB 80 CB 88 CB 90 CB 98 CB A0 CB A8 CB BO CB B8 78 12
+06 FF CB 80 CB 88 CB 90 CB 98 CB A0 CB A8 CB B0 CB B8 78 12
   @check {
     [C208] 00
   }
@@ -416,7 +400,7 @@ CB 50 CA 00 C2
 CB 58 CA 00 C2
 CB 60 CA 00 C2
 CB 68 CA 00 C2
-CB 7O CA 00 C2
+CB 70 CA 00 C2
 CB 78 CA 00 C2
 78 12
   @check {
@@ -464,9 +448,9 @@ CB 48 28 01 1C
 CB 50 28 01 1C
 CB 58 28 01 1C
 CB 60 28 01 1C
-CB 68 28 01 1C
-CB 70 28 01 1C
-CB 78 28 01 1C
+# CB 68 28 01 1C
+# CB 70 28 01 1C
+# CB 78 28 01 1C
 7B 77
   @check {
     [C000] 00
