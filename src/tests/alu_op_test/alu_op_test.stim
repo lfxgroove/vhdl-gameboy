@@ -27,7 +27,7 @@
 3E 03
 
 # default data 
-[C200] 35 20 FF 77 76 # if a jump is made to here write 20 to (HL) and HALT.
+[C200] 35 20 77 76 # if a jump is made to here write 20 to (HL) and HALT.
 [C000] FF
 [C104] EE
 [C208] DD
@@ -2180,7 +2180,7 @@ CB 0F 8F 77
 # RL (HL) # to see if a 1 pops back in from the right again.
 36 82 CB 16 CB 16
   @check {
-    [C104] 09
+    [C000] 09
   }
 }
 
@@ -2453,9 +2453,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD B, A
 # SLA B
+# LD A, #03
 # ADC A, B - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (HL), A
-3E 82 47 CB 20 88 77
+3E 82 47 CB 20 3E 03 88 77
   @check {
     [C000] 08
   }
@@ -2468,9 +2469,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD C, A
 # SLA C
+# LD A, #03
 # ADC A, C - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (HL), A
-3E 82 4F CB 21 89 77
+3E 82 4F CB 21 3E 03 89 77
   @check {
     [C000] 08
   }
@@ -2482,9 +2484,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD D, A
 # SLA D
+# LD A, #03
 # ADC A, D - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (HL), A
-3E 82 57 CB 22 8A 77
+3E 82 57 CB 22 3E 03 8A 77
   @check {
     [C000] 08
   }
@@ -2496,9 +2499,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD E, A
 # SLA E
+# LD A, #03
 # ADC A, E - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (HL), A
-3E 82 5F CB 23 8B 77
+3E 82 5F CB 23 3E 03 8B 77
   @check {
     [C000] 08
   }
@@ -2510,9 +2514,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD H, A
 # SLA H
+# LD A, #03
 # ADC A, H - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (BC), A
-3E 82 67 CB 24 8C 02
+3E 82 67 CB 24 3E 03 8C 02
   @check {
     [C104] 08
   }
@@ -2524,9 +2529,10 @@ CB 0F 8F 77
 # LD A, #82
 # LD L, A
 # SLA L
+# LD A, #03
 # ADC A, L - 03+04+carry(=1) = 08 # tests if carry is set
 # LD (BC), A
-3E 82 6F CB 25 8D 02
+3E 82 6F CB 25 3E 03 8D 02
   @check {
     [C104] 08
   }
@@ -2538,11 +2544,11 @@ CB 0F 8F 77
 # LD (HL), n (n = 82)
 # SLA (HL)
 # LD A, (HL)
-# ADC A, A - 03+03+carry(=1) = 07 # tests if carry is set
+# ADC A, A - 04+04 +carry(=1) = 09 # tests if carry is set
 # LD (BC), A
 36 82 CB 26 7E 8F 02
   @check {
-    [C104] 07
+    [C104] 09
   }
 }
 
@@ -2551,9 +2557,10 @@ CB 0F 8F 77
 @test {
 # LD A, #82
 # SLA A
+# LD A, #03
 # ADC A, A - 03+03+carry(=1) = 07 # tests if carry is set
 # LD (HL), A
-3E 82 CB 27 8F 77
+3E 82 CB 27 3E 03 8F 77
   @check {
     [C000] 07
   }
@@ -2568,9 +2575,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD B, A
 # SRA B
+# LD A, #03
 # ADC A, B - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (HL), A
-3E 89 47 CB 28 88 77
+3E 89 47 CB 28 3E 03 88 77
   @check {
     [C000] C8
   }
@@ -2583,9 +2591,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD C, A
 # SRA C
+# LD A, #03
 # ADC A, C - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (HL), A
-3E 89 4F CB 29 89 77
+3E 89 4F CB 29 3E 03 89 77
   @check {
     [C000] C8
   }
@@ -2597,9 +2606,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD D, A
 # SRA D
+# LD A, #03
 # ADC A, D - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (HL), A
-3E 89 57 CB 2A 8A 77
+3E 89 57 CB 2A 3E 03 8A 77
   @check {
     [C000] C8
   }
@@ -2611,9 +2621,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD E, A
 # SRA E
+# LD A, #03
 # ADC A, E - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (HL), A
-3E 89 5F CB 2B 8B 77
+3E 89 5F CB 2B 3E 03 8B 77
   @check {
     [C000] C8
   }
@@ -2625,9 +2636,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD H, A
 # SRA H
+# LD A, #03
 # ADC A, H - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (BC), A
-3E 89 67 CB 2C 8C 02
+3E 89 67 CB 2C 3E 03 8C 02
   @check {
     [C104] C8
   }
@@ -2639,9 +2651,10 @@ CB 0F 8F 77
 # LD A, #89
 # LD L, A
 # SRA L
+# LD A, #03
 # ADC A, L - 03+C4+carry(=1) = C8 # tests if carry is set
 # LD (BC), A
-3E 89 6F CB 2D 8D 02
+3E 89 6F CB 2D 3E 03 8D 02
   @check {
     [C104] C8
   }
@@ -2732,7 +2745,7 @@ CB 0F 8F 77
 # LD (HL), A
 3E 80 57 CB 32 7A 77
   @check {
-    [C000] 01
+    [C000] 08
   }
 } 
 
@@ -2810,9 +2823,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD B, A
 # SRL B
+# LD A, #03
 # ADC A, B - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 47 CB 28 88 77
+3E AB 47 CB 28 3E 03 88 77
   @check {
     [C000] 59
   }
@@ -2825,9 +2839,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD C, A
 # SRL C
+# LD A, #03
 # ADC A, C - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 4F CB 29 89 77
+3E AB 4F CB 29 3E 03 89 77
   @check {
     [C000] 59
   }
@@ -2839,9 +2854,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD D, A
 # SRL D
+# LD A, #03
 # ADC A, D - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 57 CB 2A 8A 77
+3E AB 57 CB 2A 3E 03 8A 77
   @check {
     [C000] 59
   }
@@ -2853,9 +2869,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD E, A
 # SRL E
+# LD A, #03
 # ADC A, E - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 5F CB 2B 8B 77
+3E AB 5F CB 2B 3E 03 8B 77
   @check {
     [C000] 59
   }
@@ -2867,9 +2884,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD H, A
 # SRL H
+# LD A, #03
 # ADC A, H - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (BC), A
-3E AB 67 CB 2C 8C 02
+3E AB 67 CB 2C 3E 03 8C 02
   @check {
     [C104] 59
   }
@@ -2881,9 +2899,10 @@ CB 0F 8F 77
 # LD A, #AB
 # LD L, A
 # SRL L
+# LD A, #03
 # ADC A, L - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (BC), A
-3E AB 6F CB 2D 8D 02
+3E AB 6F CB 2D 3E 03 8D 02
   @check {
     [C104] 59
   }

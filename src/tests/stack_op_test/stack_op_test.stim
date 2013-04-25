@@ -196,11 +196,11 @@ C5 E1 7C 02 7D 12
 # SUB A, A - Sets Z (Z=1)
 # LD HL , nn (nn = 00 C2)
 # PUSH HL - C2 00 to the stack
-# RET NZ
+# RET NZ - Sould not jump
 # LD (HL), A
 97 21 00 C2 E5 C0 77
   @check {
-    [C200] 00
+    [C200] 03
   }
 }
 
@@ -215,7 +215,7 @@ C5 E1 7C 02 7D 12
 # LD (HL), A
 80 21 00 C2 E5 C8 77
   @check {
-    [C200] C4
+    [C200] 20
   }
 }
 
@@ -360,7 +360,7 @@ CD 10 C2 77
 # ADD A, B - resets C (C=0)
 # CALL NC, nn (nn = 10 C2)
 # LD (HL), A
-80 CC 10 C2 77
+80 D4 10 C2 77
   @check {
     [C000] EE
   }
