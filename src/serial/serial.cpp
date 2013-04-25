@@ -8,7 +8,7 @@
 
 const nat FILE_SIZE_BYTES = 2;
 const nat MAX_FILE_SIZE = 1 << (FILE_SIZE_BYTES * 8) - 1;
-const nat CHUNK = 1; //1024;
+const nat CHUNK = 1024;
 
 void printHelp(char *name) {
   DEBUG(name << " [port] [-b baud] [file]");

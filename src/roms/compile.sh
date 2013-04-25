@@ -2,9 +2,10 @@
 
 if [ $# -lt 1 ]
 then
-    echo "Usage: $0 [file_to_compile] [r]"
+    echo "Usage: $0 [file_to_compile] [r/port]"
     echo "Example: $0 fill_memory"
     echo "Note: Assumes the command lcc is the gameboy c-compiler and that visualboyadvance is avaliable for running the rom"
+    echo "If port is specified, the rom will be uploaded to the specified port using ../serial/serial"
     exit 1
 fi
 
@@ -22,7 +23,12 @@ then
     echo "Running"
     if [ $# -gt 1 ]
     then
-	visualboyadvance $1.gb
+	if [ $2 = r ]
+	then
+	    visualboyadvance $1.gb
+	else
+	    ../serial/serial $2 $1.gb
+	fi
     fi
 else
     echo "Compilation failed..."
