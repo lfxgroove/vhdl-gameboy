@@ -27,7 +27,7 @@
 3E 03
 
 # default data 
-[C200] 35 20 77 76 # if a jump is made to here write 20 to (HL) and HALT.
+[C200] 3E 20 77 76 # if a jump is made to here write 20 to (HL) and HALT.
 [C000] FF
 [C104] EE
 [C208] DD
@@ -2701,7 +2701,7 @@ CB 0F 8F 77
 # JP Z,nn (nn = 00 C2)
 # LD A, B
 # LD (HL), A
-3E 00 47 CB 30 CA 78 77
+3E 00 47 CB 30 CA 00 C2 78 77
   @check {
     [C000] 20
   }
@@ -2826,7 +2826,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, B - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 47 CB 28 3E 03 88 77
+3E AB 47 CB 38 3E 03 88 77
   @check {
     [C000] 59
   }
@@ -2842,7 +2842,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, C - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 4F CB 29 3E 03 89 77
+3E AB 4F CB 39 3E 03 89 77
   @check {
     [C000] 59
   }
@@ -2857,7 +2857,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, D - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 57 CB 2A 3E 03 8A 77
+3E AB 57 CB 3A 3E 03 8A 77
   @check {
     [C000] 59
   }
@@ -2872,7 +2872,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, E - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (HL), A
-3E AB 5F CB 2B 3E 03 8B 77
+3E AB 5F CB 3B 3E 03 8B 77
   @check {
     [C000] 59
   }
@@ -2887,7 +2887,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, H - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (BC), A
-3E AB 67 CB 2C 3E 03 8C 02
+3E AB 67 CB 3C 3E 03 8C 02
   @check {
     [C104] 59
   }
@@ -2902,7 +2902,7 @@ CB 0F 8F 77
 # LD A, #03
 # ADC A, L - 03+55+carry(=1) = 59 # tests if carry is set
 # LD (BC), A
-3E AB 6F CB 2D 3E 03 8D 02
+3E AB 6F CB 3D 3E 03 8D 02
   @check {
     [C104] 59
   }
@@ -2916,7 +2916,7 @@ CB 0F 8F 77
 # LD A, (HL)
 # ADC A, A - 55+55+carry(=1) = AB # tests if carry is set
 # LD (BC), A
-36 AB CB 2E 7E 8F 02
+36 AB CB 3E 7E 8F 02
   @check {
     [C104] AB
   }
@@ -2929,7 +2929,7 @@ CB 0F 8F 77
 # SRL A
 # ADC A, A - 55+55+carry(=1) = AB # tests if carry is set
 # LD (HL), A
-3E AB CB 2F 8F 77
+3E AB CB 3F 8F 77
   @check {
     [C000] AB
   }
