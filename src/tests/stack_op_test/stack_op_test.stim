@@ -435,7 +435,7 @@ CD 10 C2 77
 # LD (HL), A
 # LD A, C  
 # LD (DE), A
-97 3E FF F5 C1 78 77 79 77
+97 3E FF F5 C1 78 77 79 12
   @check {
     [C000] FF
     [C208] C0
@@ -449,11 +449,13 @@ CD 10 C2 77
 # PUSH BC
 # POP AF <- AF = C100
 # LD (HL), A
+# Moved the JP Z since ADC affects the flags and set the zero flag, which made the jump
+# even if the test was OK
+# JP Z, nn (nn = 00 C2) <- Should NOT do this jump - if it does it ruins the check.
 # LD A, #00
 # ADC A, A # 00+00+CARRY(=0) = 0
 # LD (DE), A
-# JP Z, nn (nn = 00 C2) <- Should NOT do this jump - if it does it ruins the check.
-01 C1 00 C5 F1 77 35 00 8F 12 CA 00 C2
+01 00 C1 C5 F1 77 CA 00 C2 3E 00 8F 12
   @check {
     [C000] C1
     [C208] 00
@@ -477,10 +479,11 @@ CD 10 C2 77
 # LD (HL), A
 C5 F1 F5 D1 3E 03 12 # DEBUGGING   7A 12 7B 77
   @check {
-# REAL TEST.    [C104] 03 - adress c104 since bc->af->e
+# REAL TEST.
+    [C104] 03 # - adress c104 since bc->af->e
 # BELOW IS JUST DEBUGING
-    [C104] C1 # adress c104 since bc->af->e
-    [C000] 04 # adress c104 since bc->af->e
+#   [C104] C1 # adress c104 since bc->af->e
+#   [C000] 04 # adress c104 since bc->af->e
   }
 }
 

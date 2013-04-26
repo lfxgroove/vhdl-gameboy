@@ -69,6 +69,7 @@ begin
           -- Character codes (BG data 2). Send to GPU.
           Gpu_Write_Enable <= '1';
           Gpu_Write <= Mem_Write;
+          Gpu_Addr <= Mem_Addr; -- Needs to be like this now...
         elsif Mem_Addr < X"C000" then
           -- External expansion working RAM 8KB.
           External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0)))) <= Mem_Write;
@@ -98,7 +99,8 @@ begin
   end process;
 
   -- Ensure GPU addr is correct
-  Gpu_Addr <= Mem_Addr;
+  -- NOTE: Will ruin writes to the GPU memory. Do something better!
+  -- Gpu_Addr <= Mem_Addr;
 
   -- Reading memory:
   Mem_Read <=
