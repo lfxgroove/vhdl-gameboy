@@ -88,8 +88,7 @@ int main(int argc, char **argv) {
   }
   std::cout << std::endl;
 
-  //Sent checksum
-  checksum = byte((0x100 - int(checksum)) & 0xFF);
+  //Send checksum
   p.write(&checksum, 1);
 
   DEBUG("Done!");
