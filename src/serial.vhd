@@ -5,7 +5,7 @@ use ieee.numeric_std.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
+-- use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -70,21 +70,21 @@ begin
       if rst = '1' then
         counter <= B"00_0000_0000";
         rcving <= B"00000";
-      elsif rx1 = '0' and rx2 = '1' and counter = 0 then
+      elsif rx1 = '0' and rx2 = '1' and counter = "000000000" then
         rcving <= B"01011"; --11
         counter <= B"0110110010"; --434;                 -- 868 / 2
-      elsif rcving > 1 and counter = 0 then
+      elsif unsigned(rcving) > 1 and counter = "000000000" then
         sp <= '1';
-        rcving <= rcving - 1;
+        rcving <= std_logic_vector(unsigned(rcving) - 1);
         counter <= B"1101100100"; --868;
-      elsif rcving = 1 and counter = 860 then
+      elsif unsigned(rcving) = 1 and unsigned(counter) = 860 then
         if sreg(9) = '1' and sreg(0) = '0' then
           lp <= '1';
         end if;
         counter <= B"00_0000_0000";
         rcving <= B"00000";--0;
-      elsif rcving /= 0 then
-        counter <= counter - 1;
+      elsif unsigned(rcving) /= 0 then
+        counter <= std_logic_vector(unsigned(counter) - 1);
       end if;
     end if;
   end process;
