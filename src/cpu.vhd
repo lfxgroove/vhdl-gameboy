@@ -1610,7 +1610,7 @@ begin
                 State <= Exec3;
                 -- PUSH AF
               when X"F5" =>
-                Tmp := std_logic_vector(unsigned(SP) + 1);
+                Tmp := std_logic_vector(unsigned(SP) - 1);
                 Mem_Write <= F;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';

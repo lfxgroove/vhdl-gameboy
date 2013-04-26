@@ -417,7 +417,7 @@ CD 10 C2 77
 # LD (HL), A
 # LD A, C
 # LD (DE), A
-87 3E FF F5 C1 78 77 79 77
+87 3E FF F5 C1 78 77 79 12
   @check {
     [C000] FF
     [C208] 00
