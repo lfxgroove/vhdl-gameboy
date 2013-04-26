@@ -91,8 +91,6 @@ begin
         else
           -- Undefined.
         end if;
-      else
-        Gpu_Write_Enable <= '0';
       end if;
     end if;
   end process;

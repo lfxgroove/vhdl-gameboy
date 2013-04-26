@@ -518,7 +518,7 @@ begin
                 -- PUSH AF tested well enough I belive -t
               when X"F5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= A;
+                Mem_Write <= F;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
@@ -526,7 +526,7 @@ begin
                 -- PUSH BC -t
               when X"C5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= B;
+                Mem_Write <= C;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
@@ -534,7 +534,7 @@ begin
                 -- PUSH DE -t
               when X"D5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= D;
+                Mem_Write <= E;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
@@ -542,7 +542,7 @@ begin
                 -- PUSH HL -t
               when X"E5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= H;
+                Mem_Write <= L;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
@@ -1611,52 +1611,52 @@ begin
                 -- PUSH AF
               when X"F5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= F;
+                Mem_Write <= A;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH BC
               when X"C5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= C;
+                Mem_Write <= B;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH DE
               when X"D5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= E;
+                Mem_Write <= D;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- PUSH HL
               when X"E5" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
-                Mem_Write <= L;
+                Mem_Write <= H;
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
                 SP <= Tmp;
                 -- POP AF
               when X"F1" =>
-                F <= Mem_Read;
+                A <= Mem_Read;
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP BC
               when X"C1" =>
-                C <= Mem_Read;
+                B <= Mem_Read;
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP DE
               when X"D1" =>
-                E <= Mem_Read;
+                D <= Mem_Read;
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
                 -- POP HL
               when X"E1" =>
-                L <= Mem_Read;
+                H <= Mem_Read;
                 Mem_Addr <= SP;
                 SP <= std_logic_vector(unsigned(SP) + 1);
                 State <= Exec3;
@@ -2287,16 +2287,16 @@ begin
                 State <= Exec4;
                 -- POP AF
               when X"F1" =>
-                A <= Mem_Read;
+                F <= Mem_Read;
                 -- POP BC
               when X"C1" =>
-                B <= Mem_Read;
+                C <= Mem_Read;
                 -- POP DE
               when X"D1" =>
-                D <= Mem_Read;
+                E <= Mem_Read;
                 -- POP HL
               when X"E1" =>
-                H <= Mem_Read;
+                L <= Mem_Read;
               when X"85" =>
                 -- ADD A, (HL)
               when X"86" =>
