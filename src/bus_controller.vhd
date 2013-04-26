@@ -67,9 +67,7 @@ begin
           -- Character data. Send to GPU.
           -- Character codes (BG data 1). Send to GPU.
           -- Character codes (BG data 2). Send to GPU.
-          Gpu_Write_Enable <= '1';
-          Gpu_Write <= Mem_Write;
-          Gpu_Addr <= Mem_Addr; -- Needs to be like this now...
+          -- Writes are handled below.
         elsif Mem_Addr < X"C000" then
           -- External expansion working RAM 8KB.
           External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0)))) <= Mem_Write;
@@ -80,6 +78,7 @@ begin
           -- Prohibited. Undefined value!
         elsif Mem_Addr < X"FEA0" then
           -- OAM memory, send to GPU.
+          -- Writes are handled below.
         elsif Mem_Addr < X"FF00" then
           -- Prohibited. Undefined value!
         elsif Mem_Addr < X"FF80" then
@@ -99,8 +98,16 @@ begin
   end process;
 
   -- Ensure GPU addr is correct
-  -- NOTE: Will ruin writes to the GPU memory. Do something better!
-  -- Gpu_Addr <= Mem_Addr;
+  Gpu_Addr <= Mem_Addr;
+  Gpu_Write <= Mem_Write;
+
+  -- Writing to GPU. Must be in an async process since we need to
+  -- write in one cp.
+  Gpu_Write_Enable <=
+    '1' when Mem_Addr >= X"8000" and Mem_Addr < X"A000" else
+    '1' when Mem_Addr >= X"FE00" and Mem_Addr < X"FEA0" else
+    '0';
+  
 
   -- Reading memory:
   Mem_Read <=
