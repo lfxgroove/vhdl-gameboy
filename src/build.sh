@@ -8,7 +8,7 @@ then
 fi
 
 mkdir build
-cp lab.ucf build/
+cp *.ucf build/
 cp *.vhd build/
 cp -r build-data/* build/
 

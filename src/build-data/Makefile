@@ -41,7 +41,11 @@ gpu.%: S=gpu_logic.vhd gpu.vhd
 gpu.%: T=
 gpu.%: U=lab.ucf
 
-gb.%: S=root.vhd cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd gpu_logic.vhd gpu.vhd
+serial.%: S=serial.vhd
+serial.%: T=
+serial.%: U=serial.ucf
+
+gb.%: S=root.vhd cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd gpu_logic.vhd gpu.vhd serial.vhd
 gb.%: T=
 gb.%: U=lab.ucf
 

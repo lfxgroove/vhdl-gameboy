@@ -33,20 +33,20 @@ architecture Behavioral of Gpu_Logic is
   end component;
 
   signal Current_Row : std_logic_vector(7 downto 0);
-  signal Current_Row_Buffer_High : std_logic_vector(159 downto 0) := (2 | 4 | 6 | 158 => '0', others => '1');
-  signal Current_Row_Buffer_Low : std_logic_vector(159 downto 0) := (2 | 3 | 4 | 6 => '0', others => '1');
+  signal Current_Row_Buffer_High : std_logic_vector(159 downto 0) := (others => '0');
+  signal Current_Row_Buffer_Low : std_logic_vector(159 downto 0) := (others => '0');
 
   signal Next_Row : std_logic_vector(7 downto 0);
-  signal Next_Row_Buffer_High : std_logic_vector(159 downto 0) := (2 | 4 | 6 | 158 => '0', others => '1');
-  signal Next_Row_Buffer_Low : std_logic_vector(159 downto 0) := (2 | 3 | 4 | 6 => '0', others => '1');
+  signal Next_Row_Buffer_High : std_logic_vector(159 downto 0) := (others => '0');
+  signal Next_Row_Buffer_Low : std_logic_vector(159 downto 0) := (others => '0');
 
   -- 8 kb video ram starting at address 0x8000
   type Video_Ram_Type is array(8191 downto 0) of std_logic_vector(7 downto 0);
-  signal Video_Ram : Video_Ram_Type := (others => X"F0");
+  signal Video_Ram : Video_Ram_Type := (others => X"F0");  -- was F0
 
   -- 160 byte ram for OBJ, sprites
   type Obj_Ram_Type is array(159 downto 0) of std_logic_vector(7 downto 0);
-  signal Obj_Ram : Obj_Ram_Type := (others => X"15");
+  signal Obj_Ram : Obj_Ram_Type := (others => X"00");  --was 15
 
   signal Internal_Hsync, Internal_Vsync : std_logic;
   signal On_Next_Row : std_logic;
@@ -155,14 +155,15 @@ begin
             null;
           when Read_Bg =>
             --TODO: Switch between two mem locations, 6144 (0x1800) should be able to be replaced
-            Bg_Map_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added));
+            Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added));
             State <= Read_Bg_B;
           when Read_Bg_B =>
             --Sprite_Id <= Video_Ram(to_integer(unsigned(Bg_Map_Addr)));
             -- Sprite_Row <= Next_Row;
             --calculates the sprite's row address using the current sprite row
             --and the sprite id, ie: sprite_id*16 + sprite_row
-            Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Bg_Map_Addr)))) * 16 + unsigned(Bg_Sprite_Line_Offset)); 
+            Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
+                                                * 16 + unsigned(Bg_Sprite_Line_Offset)); 
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 20 then
@@ -255,10 +256,10 @@ begin
       if Gpu_Write_Enable = '1' then
         if Gpu_Addr < X"A000" then
           -- Starts at 0x8000
-          Video_Ram(to_integer(unsigned(Gpu_Addr(12 downto 0)))) <= Gpu_Write;
+          Video_Ram(to_integer(unsigned(Gpu_Addr(13 downto 0)))) <= Gpu_Write;
         elsif Gpu_Addr < X"FEA0" then
           -- Starts at 0xFE00.
-          Obj_Ram(to_integer(unsigned(Gpu_Addr(4 downto 0)))) <= Gpu_Write;
+          Obj_Ram(to_integer(unsigned(Gpu_Addr(7 downto 0)))) <= Gpu_Write;
         end if;
       end if;
     end if;
