@@ -487,7 +487,6 @@ C5 F1 F5 D1 3E 03 12 # DEBUGGING   7A 12 7B 77
   }
 }
 
-
 ### NOP test
 
 # Tests DC
@@ -506,3 +505,36 @@ C5 F1 F5 D1 3E 03 12 # DEBUGGING   7A 12 7B 77
 }
 
 
+### Tests how the push pushes 16-bitvalues on the stack.
+# Example text from a z80 instruction manual.
+# http://www.phy.davidson.edu/fachome/dmb/py310/Z80.Instruction%20set.pdf
+# Page 117
+#This instruction first
+#decrements SP and loads the high order byte of IX to the memory address 
+#specified by SP; then decrements SP again and loads the low order byte to 
+#the memory location corresponding to this new address in SP.
+
+#If the AF register pair contains 2233H and the Stack Pointer contains 
+#1007H, at instruction PUSH AF memory address 1006H contains 22H, 
+#memory address 1005H contains 33H, and the Stack Pointer contains 
+#1005H.
+
+# Tests PUSH HL just to se where stuff ends upp
+# Test number: 32
+@test {
+# LD SP, nn (nn = 00 E0)
+# LD HL,  nn (nn = BB AA)
+# PUSH HL
+# LD A, H
+# LD (DE), A
+# LD A, L
+# LD (BC), A
+31 00 E0 21 BB AA E5 7C 12 7D 02
+  @check {
+#   [E000] # SP should be decremeted before something is pushed onto it.
+    [DFFF] AA  # Higest bits should be pushed first
+    [DFFE] BB  # Lowest bits should be pushed second
+    [C208] AA  # H = AA
+    [C104] BB  # L = BB
+  }
+}
