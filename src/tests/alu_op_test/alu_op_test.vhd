@@ -104,7 +104,7 @@ begin
   
   Stimuli_Generator : process
     variable In_Line, Out_Line : line;
-    variable Curr_Addr : std_logic_vector(15 downto 0) := X"0150";
+    variable Curr_Addr : std_logic_vector(15 downto 0) := X"0000";
     variable Data_Byte : std_logic_vector(7 downto 0);
     file In_File : text open read_mode is "tests/alu_op_test/stimulus/feed.txt";
     file Out_File : text open write_mode is "tests/alu_op_test/results/results.txt";

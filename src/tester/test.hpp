@@ -27,6 +27,7 @@ public:
   void add_check_addr_data(AddrData data);
   inline const AddrDatas& get_check_addr_data() const { return m_check_addresses;};
   void set_prep_addrs(AddrDatas addrs);
+  inline AddrDatas& get_prep_addr_data_vol() { return m_prep_addresses; };
   inline const AddrDatas& get_prep_addr_data() const { return m_prep_addresses;};
   void reset();
   

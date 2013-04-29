@@ -3,7 +3,42 @@
   
 void TestFile::generate_input() 
 {
-  //Lets begin with the PrepareStatements
+  //Makefix solution for addrs above 0x150
+  AddrDatas& addrs = m_test->get_prep_addr_data_vol();
+  addrs.sort();
+  
+  for (AddrDatas::iterator it = addrs.begin();
+       it != addrs.end();
+       ++it)
+    {
+      int to_addr = it->get_addr();
+      if (to_addr > 0x150)
+	{
+	  pad_addr(0x150);
+	  break;
+	}
+      
+      AddrDatas::iterator to_del = it;
+      
+      if (m_curr_addr < to_addr)
+  	{
+	  //Get the address up to what we are doing right now
+  	  pad_addr(to_addr);
+	  add_bytes(it);
+	  ++it;
+	  addrs.erase(to_del);
+  	}
+      else if (m_curr_addr == it->get_addr())
+  	{
+	  add_bytes(it);
+	  ++it;
+	  addrs.erase(to_del);
+  	}
+    }
+  
+  pad_addr(0x150);
+
+  //Lets  continue with the PrepareStatements
   const PrepareStatements& prep = m_test->get_prepare();
   for (PrepareStatements::const_iterator it = prep.begin();
        it != prep.end();
@@ -25,6 +60,18 @@ void TestFile::pad_addr(int to)
   while (m_curr_addr < to)
     {
       m_bytes.push_back(EMPTY_OPCODE);
+      ++m_curr_addr;
+    }
+}
+
+void TestFile::add_bytes(AddrDatas::iterator& it)
+{
+  const ByteList& bytes = it->get_bytes();
+  for (ByteList::const_iterator it = bytes.begin();
+       it != bytes.end();
+       ++it)
+    {
+      m_bytes.push_back(*it);
       ++m_curr_addr;
     }
 }
@@ -145,9 +192,9 @@ void TestFile::fill(const std::string& file_name)
 TestFile::TestFile()
 {}
 
-TestFile::TestFile(const Test* t)
+TestFile::TestFile(Test* t)
   : m_test(t),
-    m_curr_addr(0x150)
+    m_curr_addr(0x0)
 {}
 
 TestFile::~TestFile()

@@ -13,7 +13,7 @@ class TestFile
 {
 public:
   TestFile();
-  TestFile(const Test* t);
+  TestFile(Test* t);
   virtual ~TestFile();
   
   void generate_input();
@@ -30,11 +30,12 @@ private:
   //Pads the m_curr_addr up to to
   // (fills with 0x0)
   void pad_addr(int to);
+  void add_bytes(AddrDatas::iterator& it);
   void add_bytes(AddrDatas::const_iterator& it);
   
   std::string to_bin(int i);
   
-  const Test* m_test;
+  Test* m_test;
   int m_curr_addr;
   //Bytes that we're going to write later
   std::list<byte> m_bytes;
