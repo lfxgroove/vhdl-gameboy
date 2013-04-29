@@ -19,7 +19,7 @@ architecture Cpu_Implementation of Cpu is
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
   -- Halted is a state used when the CPU should wait for interrupts.
   -- Mb_Exec is the execution stages for multi-byte op-codes.
-  type State_Type is (Waiting, Fetch, Exec, Exec2, Exec3, Exec4, Mb_Exec, Mb_Exec2, Halted);
+  type State_Type is (Waiting, Fetch, Fetch2, Exec, Exec2, Exec3, Exec4, Mb_Exec, Mb_Exec2, Halted);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -121,16 +121,18 @@ begin
             -- TODO: Wait for interrupt.
           when Fetch =>
             Mem_Addr <= PC;
-            State <= Exec;
+            State <= Fetch2;--Exec;
             PC <= std_logic_vector(unsigned(PC) + 1);
+          when Fetch2 =>
+            IR <= Mem_Read;
+            State <= Exec;
           when Exec =>
             -- Set the state to Waiting first, so that
             -- if any instruction needs the Exec2 or Exec3 states
             -- they can safely set them anyway.
             State <= Waiting;
-            IR <= Mem_Read;
-
-            case (Mem_Read) is
+            
+            case (IR) is
               -- OP-codes from page 69 in GBCPUman.
               -- LD A, A (empty implementation since it does not do anything
               -- LD A, A -t

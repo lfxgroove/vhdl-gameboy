@@ -36,7 +36,7 @@ $(PROJNAME)-synthdir/layoutdefault/%.ngd: $(PROJNAME)-synthdir/synth/design.edf 
 	if [ "$(U)" == "" ]; then \
 		cd $(@D); $(XILINX_INIT) ngdbuild -sd . -dd _ngo -mt 2 -ol std -nt timestamp -p $(PART) ../synth/design.edf  design.ngd;\
 	else \
-		cd $(@D); $(XILINX_INIT) ngdbuild -sd . -dd _ngo -mt 2 -ol std -nt timestamp -p $(PART) -uc $(call fixpath2,$(U)) ../synth/design.edf  design.ngd;\
+		cd $(@D); $(XILINX_INIT) ngdbuild -sd . -dd _ngo -mt 2 -nt timestamp -p $(PART) -uc $(call fixpath2,$(U)) ../synth/design.edf  design.ngd;\
 	fi
 
 
@@ -59,7 +59,7 @@ $(PROJNAME)-synthdir/layout%/design.ngd: $(PROJNAME)-synthdir/synth/design.ngc $
         fi
 	sed 's/^\(TIMESPEC *".*" *= *PERIOD *".*"\) *[0-9\.]\+ *ns *HIGH  *50 *%; *$$/\1 $* HIGH 50%;/' < $(U) > $(@D)/design.ucf
 	@echo "*** UCF file setup for timespec $* ***"
-	cd $(@D); $(XILINX_INIT) ngdbuild -sd . -dd _ngo -nt timestamp -p $(PART) -ol std -mt 2 -uc design.ucf  ../synth/design.ngc  design.ngd
+	cd $(@D); $(XILINX_INIT) ngdbuild -sd . -dd _ngo -nt timestamp -p $(PART) -mt 2 -uc design.ucf  ../synth/design.ngc  design.ngd
 
 
 
@@ -68,14 +68,14 @@ $(PROJNAME)-synthdir/layout%/design_map.ncd $(PROJNAME)-synthdir/layout%/design.
 	@echo
 	@echo '*** Mapping design ***'
 	@echo
-	cd $(@D);$(XILINX_INIT) map -detail -u -p  $(PART) -pr b -c 100 -ol std -mt 2 -o design_map.ncd design.ngd design.pcf
+	cd $(@D);$(XILINX_INIT) map -detail -u -p  $(PART) -pr b -c 100 -mt 2 -o design_map.ncd design.ngd design.pcf
 
 # Rule for placing and routing a design
 $(PROJNAME)-synthdir/layout%/design.ncd: $(PROJNAME)-synthdir/layout%/design_map.ncd $(PROJNAME)-synthdir/layout%/design.pcf
 	@echo
 	@echo '*** Routing design ***'
 	@echo
-	cd $(@D); $(XILINX_INIT) par -nopad -w  -ol std -mt 2 design_map.ncd design.ncd design.pcf 
+	cd $(@D); $(XILINX_INIT) par -nopad -w  -ol high -mt 2 design_map.ncd design.ncd design.pcf 
 #-ol high changed to normal
 
 $(PROJNAME)-synthdir/layoutdefault/design_postpar.vhd: $(PROJNAME)-synthdir/layoutdefault/design.ncd
