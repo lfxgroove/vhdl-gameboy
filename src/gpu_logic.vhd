@@ -77,6 +77,17 @@ architecture Behavioral of Gpu_Logic is
   --pointer to the current bg-sprite index
   signal Bg_Map_Addr : std_logic_vector(15 downto 0) := X"0000";
 
+  function reverse_any_vector (a: in std_logic_vector)
+    return std_logic_vector is
+    variable result: std_logic_vector(a'RANGE);
+    alias aa: std_logic_vector(a'REVERSE_RANGE) is a;
+  begin
+    for i in aa'RANGE loop
+      result(i) := aa(i);
+    end loop;
+    return result;
+  end; -- function reverse_any_vector
+  
 begin
   Gpu_Port : Gpu port map (
     Clk => Clk,
@@ -91,10 +102,10 @@ begin
     Row_Buffer_High => Current_Row_Buffer_High,
     Row_Buffer_Low => Current_Row_Buffer_Low,
     Next_Screen => Next_Screen);
-
+  
   Hsync <= Internal_Hsync;
   Vsync <= Internal_Vsync;
-
+  
   -- Process for outputting next scanline
   process (Clk)
   begin
@@ -167,16 +178,20 @@ begin
               State <= Done;            --was Sprites
               Sprite_Addr <= X"00";
             else
-              Next_Row_Buffer_High(7 downto 0) <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
-              Next_Row_Buffer_High(159 downto 8) <= Next_Row_Buffer_High(151 downto 0);
+              --Flip the bits and shift right
+              Next_Row_Buffer_High(159 downto 152) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+              
+              Next_Row_Buffer_High(151 downto 0) <= Next_Row_Buffer_High(159 downto 8);
               State <= Read_Bg_D;
               -- increase the addr here so that the compiler understands that
               -- we want to use RAM :D:D:D:D
               Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
             end if;
           when Read_Bg_D =>
-            Next_Row_Buffer_Low(7 downto 0) <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
-            Next_Row_Buffer_Low(159 downto 8) <= Next_Row_Buffer_Low(151 downto 0);
+            --Flip the bits and shift right
+            Next_Row_Buffer_Low(159 downto 152) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+
+            Next_Row_Buffer_Low(151 downto 0) <= Next_Row_Buffer_Low(159 downto 8);
             Bg_Added <= std_logic_vector(unsigned(Bg_Added) + 1);
             State <= Read_Bg;
           when Sprites =>
