@@ -70,10 +70,10 @@ begin
       if rst = '1' then
         counter <= B"00_0000_0000";
         rcving <= B"00000";
-      elsif rx1 = '0' and rx2 = '1' and counter = "000000000" then
+      elsif rx1 = '0' and rx2 = '1' and counter = B"0_00000000_0" then
         rcving <= B"01011"; --11
         counter <= B"0110110010"; --434;                 -- 868 / 2
-      elsif unsigned(rcving) > 1 and counter = "000000000" then
+      elsif unsigned(rcving) > 1 and counter = B"0_00000000_0" then
         sp <= '1';
         rcving <= std_logic_vector(unsigned(rcving) - 1);
         counter <= B"1101100100"; --868;

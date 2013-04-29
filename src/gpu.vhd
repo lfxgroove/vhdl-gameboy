@@ -16,7 +16,9 @@ entity Gpu is
            Next_Row : out std_logic;
            -- High bit and low bit of color
            Row_Buffer_High : in std_logic_vector(159 downto 0);
-           Row_Buffer_Low : in std_logic_vector(159 downto 0));
+           Row_Buffer_Low : in std_logic_vector(159 downto 0);
+           -- Data to gpu_logic to know when to draw a new screen
+           Next_Screen : out std_logic);
 end Gpu;
 
 architecture Behavioral of Gpu is
@@ -42,6 +44,7 @@ architecture Behavioral of Gpu is
   signal Small_To_Big_Y : std_logic_vector(1 downto 0) := "00";
   -- HS VS
   signal HS, VS : std_logic := '0';
+  
 begin
   Current_Row <= Row;
 
@@ -67,10 +70,10 @@ begin
         if Small_To_Big_X = "11" then
           Small_To_Big_X <= "00";
           Column <= std_logic_vector(unsigned(Column) + 1);
-
+          
           --MAKE A VSYNC HAPPEN :D:D:D
         end if;
-
+        
         if unsigned(X_Counter) = 670 then
           HS <= '1';
         elsif unsigned(X_Counter) = 766 then
@@ -93,13 +96,18 @@ begin
   begin
     if rising_edge(Clk) then
       Next_Row <= '0';
+      Next_Screen <= '0';
+
       if unsigned(X_Counter) = 670 and Next_Pixel_Counter = "11" then
         Small_To_Big_Y <= std_logic_vector(unsigned(Small_To_Big_Y) + 1);
-        if Small_To_Big_Y = "10" then
+        if Small_To_Big_Y = "10" then   --10
           Row <= std_logic_vector(unsigned(Row) + 1);
           Next_Row <= '1';
+          Small_To_Big_Y <= "00";
+          if Row >= Screen_Height then
+            Next_Screen <= '1';
+          end if;
         end if;
-
       elsif unsigned(X_Counter) = 799 and Next_Pixel_Counter = "00" then
 
         if unsigned(Y_Counter) = 520 then

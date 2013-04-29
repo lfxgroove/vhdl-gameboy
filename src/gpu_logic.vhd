@@ -29,7 +29,8 @@ architecture Behavioral of Gpu_Logic is
            Current_Row : out std_logic_vector(7 downto 0);
            Next_Row : out std_logic;
            Row_Buffer_High : in std_logic_vector(159 downto 0);
-           Row_Buffer_Low : in std_logic_vector(159 downto 0));
+           Row_Buffer_Low : in std_logic_vector(159 downto 0);
+           Next_Screen : out std_logic);
   end component;
 
   signal Current_Row : std_logic_vector(7 downto 0);
@@ -45,13 +46,14 @@ architecture Behavioral of Gpu_Logic is
   signal Video_Ram : Video_Ram_Type := (others => X"F0");  -- was F0
 
   -- 160 byte ram for OBJ, sprites
-  type Obj_Ram_Type is array(159 downto 0) of std_logic_vector(7 downto 0);
-  signal Obj_Ram : Obj_Ram_Type := (others => X"00");  --was 15
+  type Obj_Ram_Type is array(79 downto 0) of std_logic_vector(7 downto 0);
+  signal Obj_Ram_Even, Obj_Ram_Odd : Obj_Ram_Type := (others => X"00");  --was 15
 
   signal Internal_Hsync, Internal_Vsync : std_logic;
   signal On_Next_Row : std_logic;
 
-  type State_Type is (Read_Bg, Read_BG_B, Read_Bg_C, Read_Bg_D, Sprites, Sprites_B, Sprites_C, Sprites_D, Sprites_E, Sprites_F, Done);
+  type State_Type is (Read_Bg, Read_BG_B, Read_Bg_C, Read_Bg_D, Sprites, Sprites_B, Sprites_C, Sprites_D,
+                      Sprites_E, Sprites_F, Done);
   signal State : State_Type := Done;
   signal Bg_Addr : std_logic_vector(7 downto 0) := X"00";
   signal Bg_Added : std_logic_vector(15 downto 0) := X"0000";
@@ -87,7 +89,8 @@ begin
     Current_Row => Current_Row,
     Next_Row => On_Next_Row,
     Row_Buffer_High => Current_Row_Buffer_High,
-    Row_Buffer_Low => Current_Row_Buffer_Low);
+    Row_Buffer_Low => Current_Row_Buffer_Low,
+    Next_Screen => Next_Screen);
 
   Hsync <= Internal_Hsync;
   Vsync <= Internal_Vsync;
@@ -100,8 +103,8 @@ begin
         Current_Row_Buffer_Low <= (others => '0');
         Current_Row_Buffer_High <= (others => '0');
       elsif On_Next_Row = '1' then
-        Current_Row_Buffer_Low <= Next_Row_Buffer_Low;
-        Current_Row_Buffer_High <= Next_Row_Buffer_High;
+          Current_Row_Buffer_Low <= Next_Row_Buffer_Low;
+          Current_Row_Buffer_High <= Next_Row_Buffer_High;
       end if;
     end if;
   end process;
@@ -113,21 +116,14 @@ begin
     if rising_edge(Clk) then
       if Rst = '1' then
         -- Reset the row generator as well
-        Next_Screen <= '1';
+      elsif Next_Screen = '1' then
+        Next_Row <= X"00";
       elsif On_Next_Row = '1' then
-        if unsigned(Current_Row) > 143 then
-          Next_Row <= X"00";
-          Next_Screen <= '1';
-        else
-          Next_Row <= std_logic_vector(unsigned(Current_Row) + 1);
-          Next_Screen <= '0';
-        end if;
-      else
-        Next_Screen <= '0';
+        Next_Row <= std_logic_vector(unsigned(Current_Row) + 1);
       end if;
     end if;
   end process;
-
+  
   process (Clk) is
     variable Sprite_Tmp_X : integer range 0 to 255;
   begin
@@ -136,11 +132,12 @@ begin
       if Next_Screen = '1' then
         Next_Row_Buffer_Low <= (others => '0');
         Next_Row_Buffer_High <= (others => '0');
-
+        
         Bg_First_Sprite_Offset <= X"0000";
         Bg_Sprite_Line_Offset <= X"00";
       elsif On_Next_Row = '1' then
         State <= Read_Bg;
+        
         if Bg_Sprite_Line_Offset = X"07" then
           Bg_Sprite_Line_Offset <= X"00";
           Bg_First_Sprite_Offset <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 32);
@@ -148,7 +145,7 @@ begin
           Bg_Sprite_Line_Offset <= std_logic_vector(unsigned(Bg_Sprite_Line_Offset) + 1);
         end if;
         Bg_Added <= X"0000";
-
+        
       else
         case State is
           when Done =>
@@ -163,18 +160,18 @@ begin
             --calculates the sprite's row address using the current sprite row
             --and the sprite id, ie: sprite_id*16 + sprite_row
             Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
-                                                * 16 + unsigned(Bg_Sprite_Line_Offset)); 
+                                                * 16 + unsigned(Bg_Sprite_Line_Offset) * 2); 
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 20 then
-              State <= Sprites;
+              State <= Done;            --was Sprites
               Sprite_Addr <= X"00";
             else
               Next_Row_Buffer_High(7 downto 0) <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
               Next_Row_Buffer_High(159 downto 8) <= Next_Row_Buffer_High(151 downto 0);
               State <= Read_Bg_D;
               -- increase the addr here so that the compiler understands that
-              -- we want to use RAM :D:D:D:
+              -- we want to use RAM :D:D:D:D
               Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
             end if;
           when Read_Bg_D =>
@@ -184,18 +181,18 @@ begin
             State <= Read_Bg;
           when Sprites =>
             --If we're past this address, we've read all the sprites available
-            if unsigned(Sprite_Addr) = 160 then
+            if unsigned(Sprite_Addr) = 80 then
               State <= Done;
             else
-              Sprite_Y <= Obj_Ram(to_integer(unsigned(Sprite_Addr)));
-              Sprite_X <= Obj_Ram(to_integer(unsigned(Sprite_Addr) + 1));
-              Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 2);
+              Sprite_Y <= Obj_Ram_Even(to_integer(unsigned(Sprite_Addr)));
+              Sprite_X <= Obj_Ram_Odd(to_integer(unsigned(Sprite_Addr)));
+              Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 1);
               State <= Sprites_B;
-            end if;       
+            end if;
           when Sprites_B =>
-            Sprite_Tile_Number <= Obj_Ram(to_integer(unsigned(Sprite_Addr)));
-            Sprite_Options <= Obj_Ram(to_integer(unsigned(Sprite_Addr) + 1));
-            Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 2);
+            Sprite_Tile_Number <= Obj_Ram_Even(to_integer(unsigned(Sprite_Addr)));
+            Sprite_Options <= Obj_Ram_Odd(to_integer(unsigned(Sprite_Addr)));
+            Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 1);
             State <= Sprites_C;
           when Sprites_C =>
             if unsigned(Sprite_Y) <= unsigned(Next_Row) + 16
@@ -220,30 +217,24 @@ begin
             Sprite_Low_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
             State <= Sprites_F;
           when Sprites_F =>
-            for I in 7 downto 0 loop
-              Sprite_Tmp_X := I + to_integer(unsigned(Sprite_X)) - 8;
-              -- TODO: Check if the sprite is above or below and if the bg is
-              -- transparent
-              if Sprite_Options(7) = '1' then
-                -- If below background:
-                if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
-                  and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
-                  Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
-                  Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
-                end if;
-              else
-                -- If above background
-                Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
-                Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
-              end if;
-            end loop;
-
-            -- Double check the value 9C
-            if Sprite_Addr = X"9C" then
-              State <= Done;
-            else
-              Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 4);
-            end if;
+            --for I in 7 downto 0 loop
+            --  Sprite_Tmp_X := I + to_integer(unsigned(Sprite_X)) - 8;
+            --  -- TODO: Check if the sprite is above or below and if the bg is
+            --  -- transparent
+            --  if Sprite_Options(7) = '1' then
+            --    -- If below background:
+            --    if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
+            --      and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
+            --      Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
+            --      Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
+            --    end if;
+            --  else
+            --    -- If above background
+            --    Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
+            --    Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
+            --  end if;
+            --end loop;
+            State <= Sprites;
         end case;
       end if;
     end if;
@@ -259,7 +250,11 @@ begin
           Video_Ram(to_integer(unsigned(Gpu_Addr(13 downto 0)))) <= Gpu_Write;
         elsif Gpu_Addr < X"FEA0" then
           -- Starts at 0xFE00.
-          Obj_Ram(to_integer(unsigned(Gpu_Addr(7 downto 0)))) <= Gpu_Write;
+          if Gpu_Addr(0) = '0' then
+            Obj_Ram_Even(to_integer(unsigned(Gpu_Addr(7 downto 1)))) <= Gpu_Write;
+          else
+            Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 1)))) <= Gpu_Write;
+          end if;
         end if;
       end if;
     end if;
