@@ -37,7 +37,8 @@ lab.%: S=cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd
 lab.%: T=cpu_testbench.vhd
 lab.%: U=lab.ucf
 
-gpu.%: S=gpu_logic.vhd gpu.vhd
+# includes serial communication aswell
+gpu.%: S=gpu_root.vhd gpu_logic.vhd gpu.vhd serial.vhd
 gpu.%: T=
 gpu.%: U=lab.ucf
 
