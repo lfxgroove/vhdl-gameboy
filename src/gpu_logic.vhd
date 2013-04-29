@@ -76,6 +76,7 @@ architecture Behavioral of Gpu_Logic is
   signal Sprite_Low_Data : std_logic_vector(7 downto 0) := X"00";
   --pointer to the current bg-sprite index
   signal Bg_Map_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal Sprite_Pixel_Counter : std_logic_vector(3 downto 0) := X"0";
 
   function reverse_any_vector (a: in std_logic_vector)
     return std_logic_vector is
@@ -175,7 +176,7 @@ begin
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 20 then
-              State <= Done;            --was Sprites
+              State <= Sprites;            --was Sprites
               Sprite_Addr <= X"00";
             else
               --Flip the bits and shift right
@@ -216,7 +217,7 @@ begin
               -- in the following states
               -- TODO: Replace 0 with a more suitable address
               Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
-                                                  + unsigned(Next_Row) - unsigned(Sprite_Y) + 16 + 0);  
+                                                  + (unsigned(Next_Row) - unsigned(Sprite_Y) + 16) * 2 + 0);  
               State <= Sprites_D;
             else
               --Nothing in range to draw on screen, read next bg sprite
@@ -224,32 +225,41 @@ begin
             end if;
           when Sprites_D =>
             --Read the high data from vram and increase the sprite row addr
-            Sprite_High_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
+            Sprite_High_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
             Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
             State <= Sprites_E;   
           when Sprites_E =>
             --Read the low data from vram
-            Sprite_Low_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
+            Sprite_Low_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
             State <= Sprites_F;
+            Sprite_Pixel_Counter <= X"0";
           when Sprites_F =>
+            if Sprite_Pixel_Counter = X"8" then
+              State <= Sprites;
+            else
+                Sprite_Tmp_X := to_integer(unsigned(Sprite_Pixel_Counter) + unsigned(Sprite_X)) - 8;
+                -- TODO: Check if the sprite is above or below and if the bg is
+                -- transparent
+                if Sprite_Options(7) = '1' then
+                  -- If below background:
+                  if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
+                    and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
+                    Next_Row_Buffer_High(Sprite_Tmp_X) <=
+                      Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                    Next_Row_Buffer_Low(Sprite_Tmp_X) <=
+                      Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                  end if;
+                else
+                  -- if above background
+                  Next_Row_Buffer_High(Sprite_Tmp_X) <=
+                    Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                  Next_Row_Buffer_Low(Sprite_Tmp_X) <=
+                    Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                end if;
+                Sprite_Pixel_Counter <= std_logic_vector(unsigned(Sprite_Pixel_Counter) + 1);
+            end if;
+            --This line tells a story D:
             --for I in 7 downto 0 loop
-            --  Sprite_Tmp_X := I + to_integer(unsigned(Sprite_X)) - 8;
-            --  -- TODO: Check if the sprite is above or below and if the bg is
-            --  -- transparent
-            --  if Sprite_Options(7) = '1' then
-            --    -- If below background:
-            --    if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
-            --      and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
-            --      Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
-            --      Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
-            --    end if;
-            --  else
-            --    -- If above background
-            --    Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_High_Data(I);
-            --    Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Low_Data(I);
-            --  end if;
-            --end loop;
-            State <= Sprites;
         end case;
       end if;
     end if;
@@ -266,9 +276,9 @@ begin
         elsif Gpu_Addr < X"FEA0" then
           -- Starts at 0xFE00.
           if Gpu_Addr(0) = '0' then
-            Obj_Ram_Even(to_integer(unsigned(Gpu_Addr(7 downto 1)))) <= Gpu_Write;
+            Obj_Ram_Even(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) <= Gpu_Write;
           else
-            Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 1)))) <= Gpu_Write;
+            Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) <= Gpu_Write;
           end if;
         end if;
       end if;
