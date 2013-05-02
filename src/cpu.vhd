@@ -71,6 +71,8 @@ architecture Cpu_Implementation of Cpu is
   signal Daa_Flags : std_logic_vector(7 downto 0);
   signal Daa_Output : std_logic_vector(7 downto 0);
 
+  signal Wait_Mode  : std_logic := '0';
+
 begin
 
   Alu_Ports : Alu port map(
@@ -103,7 +105,11 @@ begin
         B <= X"00";
         Mem_Addr <= X"0000";
         Interrupts_Enabled <= '0';      -- Assumed value.
+        Wait_Mode <= '1';
+      elsif Wait_Mode = '1' then
+        Wait_Mode <= '0';
       else
+        Wait_Mode <= '1';
         -- Reset the high flags, since most instructions assume it is set to zero.
         Alu_High_Flags <= '0';
         Waited_Clks <= std_logic_vector(unsigned(Waited_Clks) + 1);
