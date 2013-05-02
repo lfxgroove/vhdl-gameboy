@@ -19,7 +19,7 @@ architecture Cpu_Implementation of Cpu is
   -- Exec2, 3 is used when an instruction requires more than one clock cycle.
   -- Halted is a state used when the CPU should wait for interrupts.
   -- Mb_Exec is the execution stages for multi-byte op-codes.
-  type State_Type is (Waiting, Fetch, Fetch2, Exec, Exec2, Exec3, Exec4, Mb_Exec, Mb_Exec2, Halted);
+  type State_Type is (Waiting, Fetch, Fetch2, Exec, Exec2, Exec3, Exec4, Mb_Fetch, Mb_Exec, Mb_Exec2, Halted);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -71,8 +71,6 @@ architecture Cpu_Implementation of Cpu is
   signal Daa_Flags : std_logic_vector(7 downto 0);
   signal Daa_Output : std_logic_vector(7 downto 0);
 
-  signal Wait_Mode  : std_logic := '0';
-
 begin
 
   Alu_Ports : Alu port map(
@@ -105,11 +103,7 @@ begin
         B <= X"00";
         Mem_Addr <= X"0000";
         Interrupts_Enabled <= '0';      -- Assumed value.
-        Wait_Mode <= '1';
-      elsif Wait_Mode = '1' then
-        Wait_Mode <= '0';
       else
-        Wait_Mode <= '1';
         -- Reset the high flags, since most instructions assume it is set to zero.
         Alu_High_Flags <= '0';
         Waited_Clks <= std_logic_vector(unsigned(Waited_Clks) + 1);
@@ -1194,11 +1188,11 @@ begin
               when X"10" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
-                State <= Mb_Exec;
+                State <= Mb_Fetch;
               when X"CB" =>
                 Mem_Addr <= PC;
                 PC <= std_logic_vector(unsigned(PC) + 1);
-                State <= Mb_Exec;
+                State <= Mb_Fetch;
 
                 -- OP-codes from page 95
                 -- DAA (not implemented in daa_logic)
@@ -2541,11 +2535,15 @@ begin
 
               when others =>
             end case;
+          when Mb_Fetch =>
+            -- Fetch the next OP-code. Fetching it in Mb_Exec is too slow.
+            MB_IR <= Mem_Read;
+            State <= Mb_Exec;
           when Mb_Exec =>
             -- Multi-byte OP-codes.
             State <= Waiting;
             MB_IR <= Mem_Read;
-            Tmp := IR & Mem_Read;
+            Tmp := IR & MB_IR;
             
             case (Tmp) is
               -- STOP Not correct implementation, halts instead
