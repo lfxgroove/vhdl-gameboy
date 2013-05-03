@@ -152,7 +152,7 @@ begin
     Cpu_Allowed <= '1';
     wait until rising_edge(Clk);
     
-    for I in 1 to 200 loop
+    for I in 1 to 400 loop
       wait until rising_edge(Clk);
     end loop; 
     
@@ -166,7 +166,7 @@ begin
       Internal_Mem_Addr <= std_logic_vector(Curr_Addr);
       
       wait until rising_edge(Clk);
-      --wait until rising_edge(Clk);
+      wait until rising_edge(Clk);
       
       Data_Byte(7 downto 0) := Mem_Read(7 downto 0);
       Curr_Addr := std_logic_vector(unsigned(Curr_Addr) + 1);

@@ -7,7 +7,7 @@
 }
 
 @test {
-  # Loop from 0x97FE to 0x97FF
+  # Loop from 0x97F0 to 0x97FF
   # LD BC, #97FA
   01 FA 97
   # LD HL, #6801
