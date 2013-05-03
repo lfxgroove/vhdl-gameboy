@@ -116,58 +116,109 @@ begin
     '1' when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
                                                       -- (actually to 0xFEFF)
     '0';
+
+
+  -- Process for writing to ram and other things...
+  process (Clk)
+  begin
+    if rising_edge(Clk) then
+      if Mem_Write_Enable = '0' then
+        if Mem_Addr(15 downto 14) = "00" then  -- 0x0000-0x3900
+          -- Addresses 0-100 contains interrupt vectors.
+          -- User program area. The ROM inserted into the unit.
+          -- NOTE: Address X100 is the actual starting address, but
+          -- since it is only three bytes before some data required
+          -- by the boot-loader, it usually only contains the instruction
+          -- JMP 0x150, which is where the predefined things end.
+          -- No writing allowed here!
+          Mem_Read <= Rom_Memory(to_integer(unsigned(Mem_Addr(14 downto 0))));
+        elsif Mem_Addr(15 downto 14) = "01" then  -- 0x4000-0x7FFF
+          -- The addresses 4000-7FFF is switchable in som ROMS, implement!
+          -- No writing allowed here!
+          Mem_Read <= Rom_Memory(to_integer(unsigned(Mem_Addr(14 downto 0))));
+        elsif Mem_Addr(15 downto 13) = "100" then -- 0x8000-0x9FFF
+          -- Character data. Send to GPU.
+          -- Character codes (BG data 1). Send to GPU.
+          -- Character codes (BG data 2). Send to GPU.
+          -- Writes are handled below.
+          Mem_Read <= Gpu_Read;
+        elsif Mem_Addr(15 downto 13) = "101" then -- 0xA000-0xBFFF
+          -- External expansion working RAM 8KB.
+          Mem_Read <= External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
+        elsif Mem_Addr(15 downto 13) = "110" then  -- 0xC000-0xDFFF
+          -- Unit working ram 8KB.
+          Mem_Read <= Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
+          -- Addresses 0xE000-0xFDFF are handled by the "else" case.
+        elsif Mem_Addr(15 downto 8) = "11111110" then  -- 0xFE00-0xFE9F
+          -- OAM memory, send to GPU.
+          -- Writes are handled below
+          Mem_Read <= Gpu_Read;
+        elsif Mem_Addr(15 downto 7) = "111111110" then  -- 0xFF00-0xFF7F
+          -- Port mode registers (input).
+          -- Control registers.
+          -- Sound register.
+          Mem_Read <= X"00";
+        elsif Mem_Addr(15 downto 7) = "111111111" then  -- 0xFF80-0xFFFF
+          -- Working stack and RAM.
+          Mem_Read <= Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))));
+        else
+          -- Undefined.
+        end if;
+      end if;
+    end if;
+  end process;
+
   
+  ---- Reading memory:
+  --Mem_Read <=
+  --  -- Addresses 0-100 contains interrupt vectors.
+  --  -- User program area. The ROM inserted into the unit.
+  --  -- NOTE: Address X100 is the actual starting address, but
+  --  -- since it is only three bytes before some data required
+  --  -- by the boot-loader, it usually only contains the instruction
+  --  -- JMP 0x150, which is where the predefined things end.
+  --  Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
+  --  when Mem_Addr(15 downto 14) = "00" else  -- 0x0000-0x3999
 
-  -- Reading memory:
-  Mem_Read <=
-    -- Addresses 0-100 contains interrupt vectors.
-    -- User program area. The ROM inserted into the unit.
-    -- NOTE: Address X100 is the actual starting address, but
-    -- since it is only three bytes before some data required
-    -- by the boot-loader, it usually only contains the instruction
-    -- JMP 0x150, which is where the predefined things end.
-    Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
-    when Mem_Addr(15 downto 14) = "00" else  -- 0x0000-0x3999
+  --  -- The addresses 4000-7FFF is switchable in som ROMS, implement!
+  --  Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
+  --  when Mem_Addr(15 downto 14) = "01" else  -- 0x4000-0x7999
 
-    -- The addresses 4000-7FFF is switchable in som ROMS, implement!
-    Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
-    when Mem_Addr(15 downto 14) = "01" else  -- 0x4000-0x7999
+  --  -- Character data. Send to GPU.
+  --  -- Character codes (BG data 1). Send to GPU.
+  --  -- Character codes (BG data 2). Send to GPU.
+  --  Gpu_Read
+  --  when Mem_Addr(15 downto 13) = "100" else  -- 0x8000-0x9FFF
 
-    -- Character data. Send to GPU.
-    -- Character codes (BG data 1). Send to GPU.
-    -- Character codes (BG data 2). Send to GPU.
-    Gpu_Read
-    when Mem_Addr(15 downto 13) = "100" else  -- 0x8000-0x9FFF
+  --  -- External expansion working RAM 8KB.
+  --  External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
+  --  when Mem_Addr(15 downto 13) = "101" else  -- 0xA000-0xBFFF
 
-    -- External expansion working RAM 8KB.
-    External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
-    when Mem_Addr(15 downto 13) = "101" else  -- 0xA000-0xBFFF
+  --  -- Unit working RAM 8KB.
+  --  Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
+  --  when Mem_Addr(15 downto 13) = "110" else  -- 0xC000-0xDFFF
 
-    -- Unit working RAM 8KB.
-    Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
-    when Mem_Addr(15 downto 13) = "110" else  -- 0xC000-0xDFFF
+  --  -- Addresses 0xE000-0xFDFF are implemented as the default case below
 
-    -- Addresses 0xE000-0xFDFF are implemented as the default case below
+  --  -- OAM memory, send to GPU
+  --  Gpu_Read
+  --  when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
+  --  -- The above actually goes all the way to 0xFEFF, but since the remaining area
+  --  -- is undefined, it does not matter.
 
-    -- OAM memory, send to GPU
-    Gpu_Read
-    when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
-    -- The above actually goes all the way to 0xFEFF, but since the remaining area
-    -- is undefined, it does not matter.
+  --  -- Port mode registers (input).
+  --  -- Control registers.
+  --  -- Sound registers.
+  --  X"00"
+  --  when Mem_Addr(15 downto 7) = "111111110" else  -- 0xFF00-0xFF7F
 
-    -- Port mode registers (input).
-    -- Control registers.
-    -- Sound registers.
-    X"00"
-    when Mem_Addr(15 downto 7) = "111111110" else  -- 0xFF00-0xFF7F
+  --  -- Working stack and RAM.
+  --  Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))))
+  --  when Mem_Addr(15 downto 7) = "111111111" else  -- 0xFF80-0xFFFF
 
-    -- Working stack and RAM.
-    Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))))
-    when Mem_Addr(15 downto 7) = "111111111" else  -- 0xFF80-0xFFFF
-
-    -- When we get here, we are at address 0xE000-0xFDFF.
-    -- Undefined value (mirror of internal ram).
-    Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
+  --  -- When we get here, we are at address 0xE000-0xFDFF.
+  --  -- Undefined value (mirror of internal ram).
+  --  Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
 
 
 end Bus_Controller_Behaviour;
