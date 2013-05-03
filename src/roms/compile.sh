@@ -9,6 +9,15 @@ then
     exit 1
 fi
 
+if [ $# -gt 1 ]
+then
+    if [ $2 = a ]
+    then
+	lcc -Wa-l -Wl-m -Wl-j -S -o $1.asm $1.c
+	exit 0
+    fi
+fi
+
 if [ -e $1.gb ]
 then
     rm $1.gb
