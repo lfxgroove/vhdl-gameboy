@@ -162,7 +162,8 @@ begin
           -- Working stack and RAM.
           Mem_Read <= Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))));
         else
-          -- Undefined.
+          -- Undefined value (mirror of internal ram).
+          Mem_Read <= Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
         end if;
       end if;
     end if;
