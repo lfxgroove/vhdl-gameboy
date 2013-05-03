@@ -1,0 +1,39 @@
+#This is where your code goes, dont forget:
+#@prepare, @test { @check } for it to work:
+
+@prepare {
+  # NOP
+  00
+}
+
+@test {
+  # Loop from 0x97FA to 0x97FF
+  # LD BC, #97FA
+  01 FA 97
+  # LD HL, #6801
+  21 01 68
+  # ADD HL, BC
+  09
+  # JP C, #1000
+  DA 00 10
+  # INC BC
+  03
+  # LD DE, #C001
+  11 01 C0
+  # LD A, C
+  79
+  # LD (DE), A
+  12
+  # JP #0154
+  C3 54 01
+
+  # LD A, #10
+  # LD HL, #C000
+  # LD (HL), A
+  [1000] 3E 10 21 00 C0 77
+
+  @check {
+    [C000] 10
+    [C001] FF
+  }
+}

@@ -85,7 +85,7 @@ Instructions parseFile(const string &filename) {
       if (line == "when Exec =>") state = execWhen;
       break;
     case execWhen:
-      if (line == "case (Mem_Read) is") state = memRead;
+      if (line == "case (IR) is") state = memRead;
       break;
     case memRead:
       if (line.size() > 2 && line.substr(0, 2) == "--") {

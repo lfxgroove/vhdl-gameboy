@@ -73,7 +73,7 @@ begin
   A_Carry <= "000000000" & A(7 downto 0) when High_Flags = '0' else
              "0" & A(15 downto 0);
   B_Carry <= "000000000" & B(7 downto 0) when High_Flags = '0' else
-             "0" & A(15 downto 0);
+             "0" & B(15 downto 0);
   Result_Carry <=
     std_logic_vector(unsigned(A_Carry) + unsigned(B_Carry)) when Mode = "0000" else
     std_logic_vector(unsigned(A_Carry) - unsigned(B_Carry)) when Mode = "0001" else
