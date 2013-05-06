@@ -2392,8 +2392,7 @@ begin
 
                 -- ADD SP, n
               when X"E8" =>
-                H <= Alu_Result(15 downto 8);
-                L <= Alu_Result(7 downto 0);
+                SP <= Alu_Result;
                 F <= Alu_Flags;
 
                 -- JP nn

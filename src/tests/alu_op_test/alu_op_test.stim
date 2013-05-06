@@ -710,8 +710,9 @@ D6 CE 77
 @test { 
 # LD SP, nn (nn = OO C1)
 # ADD SP, n (n = 08)
+# LD HL, SP + n (n = 00)
 # LD (HL), A
-31 00 C1 E8 08 77
+31 00 C1 E8 08 F8 00 77
   @check {
     [C108] 03
   }

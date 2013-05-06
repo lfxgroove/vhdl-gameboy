@@ -137,8 +137,8 @@ begin
       if unsigned(Y_Counter) < 480 then
         if unsigned(X_Counter) < 640 then
           if Next_Pixel_Counter = "11" then
-            Video(1) <= Row_Buffer_High(to_integer(unsigned(Column)));
-            Video(0) <= Row_Buffer_Low(to_integer(unsigned(Column)));
+            Video(1) <= not Row_Buffer_High(to_integer(unsigned(Column)));
+            Video(0) <= not Row_Buffer_Low(to_integer(unsigned(Column)));
           end if;
         else
           Video <= "00";

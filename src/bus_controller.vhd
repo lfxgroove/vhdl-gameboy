@@ -123,7 +123,7 @@ begin
   begin
     if rising_edge(Clk) then
       if Mem_Write_Enable = '0' then
-        if Mem_Addr(15 downto 14) = "00" then  -- 0x0000-0x3900
+        if Mem_Addr(15 downto 14) = "00" then  -- 0x0000-0x3FFF
           -- Addresses 0-100 contains interrupt vectors.
           -- User program area. The ROM inserted into the unit.
           -- NOTE: Address X100 is the actual starting address, but
