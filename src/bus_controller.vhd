@@ -115,10 +115,13 @@ begin
     '1' when Mem_Addr(15 downto 14) = "10" else  -- 0x8000-0x9FFF
     '1' when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
                                                       -- (actually to 0xFEFF)
+    '1' when Mem_Addr(15 downto 4) = X"FF4" else  -- Gpu Stuff :), see
+                                                  -- gpu_logic for more info
+    --'1' when Mem_Addr(15 downto 0) = X"FF42" else  -- Scroll register Y
+    --'1' when Mem_Addr(15 downto 0) = X"FF43" else  -- Scroll register X
+    --'1' when Mem_Addr(15 downto 0) = X"FF40" else  -- LCD register
     '0';
 
-
-  -- Process for writing to ram and other things...
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -161,6 +164,9 @@ begin
         elsif Mem_Addr(15 downto 7) = "111111111" then  -- 0xFF80-0xFFFF
           -- Working stack and RAM.
           Mem_Read <= Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))));
+        elsif Mem_Addr(15 downto 4) = X"FF4" then
+          --Read from GPU, for Stat reg right now
+          Mem_Read <= Gpu_Read;
         else
           -- Undefined value (mirror of internal ram).
           Mem_Read <= Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));

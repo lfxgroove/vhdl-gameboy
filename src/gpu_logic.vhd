@@ -38,8 +38,8 @@ architecture Behavioral of Gpu_Logic is
   signal Current_Row_Buffer_Low : std_logic_vector(159 downto 0) := (others => '0');
 
   signal Next_Row : std_logic_vector(7 downto 0);
-  signal Next_Row_Buffer_High : std_logic_vector(159 downto 0) := (others => '0');
-  signal Next_Row_Buffer_Low : std_logic_vector(159 downto 0) := (others => '0');
+  signal Next_Row_Buffer_High : std_logic_vector(167 downto 0) := (others => '0');
+  signal Next_Row_Buffer_Low : std_logic_vector(167 downto 0) := (others => '0');
 
   -- 8 kb video ram starting at address 0x8000
   type Video_Ram_Type is array(8191 downto 0) of std_logic_vector(7 downto 0);
@@ -53,7 +53,7 @@ architecture Behavioral of Gpu_Logic is
   signal On_Next_Row : std_logic;
 
   type State_Type is (Read_Bg, Read_BG_B, Read_Bg_C, Read_Bg_D, Sprites, Sprites_B, Sprites_C, Sprites_D,
-                      Sprites_E, Sprites_F, Done);
+                      Sprites_E, Sprites_F, Sprites_G, Done);
   signal State : State_Type := Done;
   signal Bg_Addr : std_logic_vector(7 downto 0) := X"00";
   signal Bg_Added : std_logic_vector(15 downto 0) := X"0000";
@@ -77,6 +77,13 @@ architecture Behavioral of Gpu_Logic is
   --pointer to the current bg-sprite index
   signal Bg_Map_Addr : std_logic_vector(15 downto 0) := X"0000";
   signal Sprite_Pixel_Counter : std_logic_vector(3 downto 0) := X"0";
+
+  --Registers in the gpu
+  signal Scroll_X, Scroll_Y : std_logic_vector(7 downto 0);
+  signal LCD : std_logic_vector(7 downto 0);
+  signal Stat : std_logic_vector(7 downto 0) := X"00";
+  alias Stat_Mode : std_logic_vector is Stat(1 downto 0);
+  --alias Stat_Int_Mode : std_logic_vector is Stat(6 downto 4);
 
   function reverse_any_vector (a: in std_logic_vector)
     return std_logic_vector is
@@ -115,12 +122,33 @@ begin
         Current_Row_Buffer_Low <= (others => '0');
         Current_Row_Buffer_High <= (others => '0');
       elsif On_Next_Row = '1' then
-          Current_Row_Buffer_Low <= Next_Row_Buffer_Low;
-          Current_Row_Buffer_High <= Next_Row_Buffer_High;
+        Current_Row_Buffer_Low <= Next_Row_Buffer_Low(159 downto 0);
+        Current_Row_Buffer_High <= Next_Row_Buffer_High(159 downto 0);
       end if;
     end if;
   end process;
 
+  --For the Stat register, to update it's flags
+  process(Clk)
+  begin
+    if rising_edge(Clk) then
+      if Rst = '1' then
+        Stat <= X"00";
+      else
+        if Internal_Hsync = '1' then
+          Stat_Mode <= B"00";
+        elsif Internal_Vsync = '1' then
+          Stat_Mode <= B"01";
+        elsif State = Sprites or State = Sprites_B then
+          --The oam/obj memory is used in these 2 states
+          Stat_Mode <= B"10";
+        else
+          Stat_Mode <= B"11";
+        end if;
+      end if;
+    end if;   
+  end process;
+  
   -- Detect next row, and increment the row counter. Also tell the scanline
   -- generator when the entire screen has been drawn.
   process (Clk)
@@ -144,15 +172,18 @@ begin
       if Next_Screen = '1' then
         Next_Row_Buffer_Low <= (others => '0');
         Next_Row_Buffer_High <= (others => '0');
-        
-        Bg_First_Sprite_Offset <= X"0000";
-        Bg_Sprite_Line_Offset <= X"00";
+
+        -- Each bg bitmap is 8*8  big and the bg is 32 bitmaps wide
+        Bg_First_Sprite_Offset <= std_logic_vector(0 + unsigned(Scroll_Y) / 8 * 32);
+        -- Scroll Y % 8
+        Bg_Sprite_Line_Offset <= B"00000" & Scroll_Y(2 downto 0); 
       elsif On_Next_Row = '1' then
         State <= Read_Bg;
         
         if Bg_Sprite_Line_Offset = X"07" then
           Bg_Sprite_Line_Offset <= X"00";
-          Bg_First_Sprite_Offset <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 32);
+          -- 32 * 32 is the screen size in bitmaps
+          Bg_First_Sprite_Offset <= std_logic_vector((unsigned(Bg_First_Sprite_Offset) + 32) mod (32 * 32));
         else
           Bg_Sprite_Line_Offset <= std_logic_vector(unsigned(Bg_Sprite_Line_Offset) + 1);
         end if;
@@ -163,26 +194,39 @@ begin
           when Done =>
             null;
           when Read_Bg =>
-            --TODO: Switch between two mem locations, 6144 (0x1800) should be able to be replaced
-            Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added));
+            --Select BG Code
+            if LCD(3) = '1' then
+              -- 0x1C00
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 7168 + unsigned(Bg_Added) + ((unsigned(Scroll_X) / 8) mod 32));
+            else
+              -- 0x1800
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added) + ((unsigned(Scroll_X) / 8) mod 32));
+            end if; 
             State <= Read_Bg_B;
           when Read_Bg_B =>
             --Sprite_Id <= Video_Ram(to_integer(unsigned(Bg_Map_Addr)));
             -- Sprite_Row <= Next_Row;
             --calculates the sprite's row address using the current sprite row
             --and the sprite id, ie: sprite_id*16 + sprite_row
-            Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
-                                                * 16 + unsigned(Bg_Sprite_Line_Offset) * 2); 
+            --Select BG Char
+            if LCD(4) = '0' then
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(signed(Sprite_Row_Addr))))
+                                                  * 16 + unsigned(Bg_Sprite_Line_Offset) * 2 + 2048); 
+            else
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
+                                                  * 16 + unsigned(Bg_Sprite_Line_Offset) * 2); 
+            end if;
             state <= Read_Bg_C;
           when Read_Bg_C =>
-            if unsigned(Bg_Added) = 20 then
+            if unsigned(Bg_Added) = 21 then
               State <= Sprites;            --was Sprites
               Sprite_Addr <= X"00";
+              Next_Row_Buffer_High(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_High(167 downto to_integer(unsigned(Scroll_X) mod 8));
+              Next_Row_Buffer_Low(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_Low(167 downto to_integer(unsigned(Scroll_X) mod 8));
             else
               --Flip the bits and shift right
-              Next_Row_Buffer_High(159 downto 152) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
-              
-              Next_Row_Buffer_High(151 downto 0) <= Next_Row_Buffer_High(159 downto 8);
+              Next_Row_Buffer_High(167 downto 160) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+              Next_Row_Buffer_High(159 downto 0) <= Next_Row_Buffer_High(167 downto 8);
               State <= Read_Bg_D;
               -- increase the addr here so that the compiler understands that
               -- we want to use RAM :D:D:D:D
@@ -190,9 +234,8 @@ begin
             end if;
           when Read_Bg_D =>
             --Flip the bits and shift right
-            Next_Row_Buffer_Low(159 downto 152) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
-
-            Next_Row_Buffer_Low(151 downto 0) <= Next_Row_Buffer_Low(159 downto 8);
+            Next_Row_Buffer_Low(167 downto 160) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+            Next_Row_Buffer_Low(159 downto 0) <= Next_Row_Buffer_Low(167 downto 8);
             Bg_Added <= std_logic_vector(unsigned(Bg_Added) + 1);
             State <= Read_Bg;
           when Sprites =>
@@ -209,31 +252,56 @@ begin
             Sprite_Tile_Number <= Obj_Ram_Even(to_integer(unsigned(Sprite_Addr)));
             Sprite_Options <= Obj_Ram_Odd(to_integer(unsigned(Sprite_Addr)));
             Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 1);
+
+            Sprite_Y <= std_logic_vector(unsigned(Next_Row) - unsigned(Sprite_Y) + 16);
+ 
             State <= Sprites_C;
           when Sprites_C =>
-            if unsigned(Sprite_Y) <= unsigned(Next_Row) + 16
-              and unsigned(Sprite_Y) + 8 > unsigned(Next_Row) + 16 then
+            -- HFlip check
+            if Sprite_Options(5) = '1' then
+              Sprite_Y <= std_logic_vector(7 - unsigned(Sprite_Y));
+            end if;
+            State <= Sprites_D;
+          when Sprites_D =>
+            if unsigned(Sprite_Y) >= 0 and
+              unsigned(Sprite_Y) < 8 then
               -- We found something to draw, lets read it into some registers
               -- in the following states
               -- TODO: Replace 0 with a more suitable address
-              Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
-                                                  + (unsigned(Next_Row) - unsigned(Sprite_Y) + 16) * 2 + 0);  
-              State <= Sprites_D;
+              if Sprite_Options(4) = '1' then
+                Sprite_Row_Addr <= std_logic_vector(signed(Sprite_Tile_Number) * 16
+                                                    + signed(Sprite_Y) * 2 + 2048);
+              else
+                Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
+                                                    + (unsigned(Sprite_Y) * 2)) ;
+              end if; 
+              State <= Sprites_E;
             else
               --Nothing in range to draw on screen, read next bg sprite
               State <= Sprites;
             end if;
-          when Sprites_D =>
-            --Read the high data from vram and increase the sprite row addr
-            Sprite_High_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
-            Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
-            State <= Sprites_E;   
           when Sprites_E =>
-            --Read the low data from vram
-            Sprite_Low_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+            --Read the high data from vram and increase the sprite row addr
+            --VFlip bit
+            if Sprite_Options(6) = '0' then
+              Sprite_High_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+            else
+              Sprite_High_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
+            end if; 
+            Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
             State <= Sprites_F;
-            Sprite_Pixel_Counter <= X"0";
           when Sprites_F =>
+            --Read the low data from vram
+            --VFlip bit
+            if Sprite_Options(6) = '0' then
+              Sprite_Low_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
+            else
+              Sprite_Low_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
+            end if; 
+            State <= Sprites_G;
+            Sprite_Pixel_Counter <= X"0";
+          when Sprites_G =>
+            --HFlip bit check
             if Sprite_Pixel_Counter = X"8" then
               State <= Sprites;
             else
@@ -264,7 +332,7 @@ begin
       end if;
     end if;
   end process;
-
+  
   -- Writing to video memory
   process (Clk) is
   begin
@@ -280,11 +348,18 @@ begin
           else
             Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) <= Gpu_Write;
           end if;
+        elsif Gpu_Addr = X"FF42" then
+          Scroll_Y <= Gpu_Write;
+        elsif Gpu_Addr = X"FF43" then
+          Scroll_X <= Gpu_Write;
+        elsif Gpu_Addr = X"FF40" then
+          LCD <= Gpu_Write;
         end if;
       end if;
     end if;
   end process;
-
+  
   -- Reading not implemented yet!
-  Gpu_Read <= X"00";
+  Gpu_Read <= Stat when Gpu_Addr = X"FF41" else
+              X"00";
 end Behavioral;

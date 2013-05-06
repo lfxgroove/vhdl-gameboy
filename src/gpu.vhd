@@ -44,7 +44,15 @@ architecture Behavioral of Gpu is
   signal Small_To_Big_Y : std_logic_vector(1 downto 0) := "00";
   -- HS VS
   signal HS, VS : std_logic := '0';
+
+  type Palette_Type is array (0 to 3) of std_logic_vector(1 downto 0);
   
+  constant Palette : Palette_Type := (
+    "11",
+    "01",
+    "10",
+    "00"
+    );
 begin
   Current_Row <= Row;
 
@@ -132,13 +140,15 @@ begin
 
   -- Video
   process(Clk)
+    variable Tmp_Video : std_logic_vector(1 downto 0);
   begin
     if rising_edge(Clk) then
       if unsigned(Y_Counter) < 480 then
         if unsigned(X_Counter) < 640 then
           if Next_Pixel_Counter = "11" then
-            Video(1) <= not Row_Buffer_High(to_integer(unsigned(Column)));
-            Video(0) <= not Row_Buffer_Low(to_integer(unsigned(Column)));
+            Tmp_Video(1) := Row_Buffer_High(to_integer(unsigned(Column)));
+            Tmp_Video(0) := Row_Buffer_Low(to_integer(unsigned(Column)));
+            Video <= Palette(to_integer(unsigned(Tmp_Video)));
           end if;
         else
           Video <= "00";
