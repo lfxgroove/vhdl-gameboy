@@ -75,10 +75,10 @@
   21 00 C0
   # LD A, #FF
   3E FF
-  # LD A, #0F
-  3E 0F
   # LD (HL), A
   77
+  # LD A, #0F
+  3E 0F
   # INC (HL)
   23
   # JR NZ, 2

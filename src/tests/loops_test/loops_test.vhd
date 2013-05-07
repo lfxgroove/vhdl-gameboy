@@ -31,8 +31,8 @@ architecture Behavior of loops_Test is
     port(Clk, Reset : in std_logic;
          Mem_Write_External : out std_logic_vector(7 downto 0);
          Mem_Read : in std_logic_vector(7 downto 0);
-         Mem_Addr : out std_logic_vector(15 downto 0);
-         Mem_Write_Enable : out std_logic;
+         Mem_Addr_External : out std_logic_vector(15 downto 0);
+         Mem_Write_Enable_External : out std_logic;
          Interrupt_Requests : in std_logic_vector(7 downto 0));
   end component;
   
