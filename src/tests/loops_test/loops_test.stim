@@ -37,3 +37,31 @@
     [C001] FF
   }
 }
+
+
+@test {
+  # Loop through a list...
+  # LD HL, #1000
+  21 00 10
+  # LD A, (HL+) <-- Jump here!
+  7E
+  # OR A, (HL)
+  B6
+  # JR Z, 3 Jump to "We're done" -->
+  18 03
+  # INC HL
+  23
+  # JR -7 Jump to "Jump here!" -->
+  18 F9
+  # LD A, #FF <-- We're done
+  3E FF
+  # LD (HL), A
+  77
+
+  # The list
+  [1000] 10 10 20 20 00 00
+
+  @check {
+    [2020] FF
+  }
+}

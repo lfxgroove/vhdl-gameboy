@@ -26,13 +26,14 @@ architecture Behavior of loops_Test is
          Rom_Addr : in std_logic_vector(15 downto 0);
          Rom_Write : in std_logic_vector(7 downto 0));
   end component;
-  
+
   component Cpu
     port(Clk, Reset : in std_logic;
-         Mem_Write : out std_logic_vector(7 downto 0);
+         Mem_Write_External : out std_logic_vector(7 downto 0);
          Mem_Read : in std_logic_vector(7 downto 0);
-         Mem_Addr : out std_logic_vector(15 downto 0);
-         Mem_Write_Enable : out std_logic);
+         Mem_Addr_External : out std_logic_vector(15 downto 0);
+         Mem_Write_Enable_External : out std_logic;
+         Interrupt_Requests : in std_logic_vector(7 downto 0));
   end component;
   
   signal Clk, Reset, Bus_Reset : std_logic;
@@ -54,6 +55,7 @@ architecture Behavior of loops_Test is
   signal Gpu_Read : std_logic_vector(7 downto 0);
   signal Gpu_Addr : std_logic_vector(15 downto 0);
   signal Gpu_Write_Enable : std_logic;
+  signal Interrupt_Requests : std_logic_vector(7 downto 0);
   
 begin
 -- compnent instantiation
@@ -75,11 +77,12 @@ begin
   Cpu_Ports : Cpu port map(
     Clk => Clk,
     Reset => Reset,
-    Mem_Write => Cpu_Mem_Write,
+    Mem_Write_External => Cpu_Mem_Write,
     --Mem_Write => Mem_Write,
     Mem_Read => Mem_Read,
-    Mem_Addr => Cpu_Mem_Addr,
-    Mem_Write_Enable => Cpu_Mem_Write_Enable);
+    Mem_Addr_External => Cpu_Mem_Addr,
+    Mem_Write_Enable_External => Cpu_Mem_Write_Enable,
+    Interrupt_Requests => Interrupt_Requests);
     --Mem_Write_Enable => Mem_Write_Enable);
   
   Clk_Gen : process
