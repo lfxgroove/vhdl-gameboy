@@ -320,12 +320,12 @@ void Parser::parse_byte()
 	  tmp.str("");
 	  if (m_block == BLOCK_PREPARE && !m_in_addr)
 	    {
-	      // std::cout << "Lagger till: " << int(data) << " till prep" << std::endl;
+	      // std::cout << "no" << std::hex << m_current_addr.get_addr() << ": " << data << std::dec << std::endl;
 	      m_prepare.push_back((byte) data);
 	    }
 	  else if (m_block == BLOCK_PREPARE && m_in_addr)
 	    {
-	      // std::cout << "Lagger till: " << int(data) << " till prep addr" << std::endl;
+	      // std::cout << std::hex << m_current_addr.get_addr() << ": " << data << std::dec << std::endl;
 	      m_current_addr.add_byte(byte(data));
 	    }
 	  else if (m_block == BLOCK_CHECK || m_block == BLOCK_TEST)

@@ -9,7 +9,7 @@ void TestFile::generate_input()
   
   for (AddrDatas::iterator it = addrs.begin();
        it != addrs.end();
-       ++it)
+       )//++it)
     {
       int to_addr = it->get_addr();
       if (to_addr > 0x150)
@@ -34,6 +34,10 @@ void TestFile::generate_input()
 	  ++it;
 	  addrs.erase(to_del);
   	}
+      else
+	{
+	  ++it;
+	}
     }
   
   pad_addr(0x150);
@@ -71,6 +75,7 @@ void TestFile::add_bytes(AddrDatas::iterator& it)
        it != bytes.end();
        ++it)
     {
+      // std::cout << std::hex << m_curr_addr << ": " << int(*it) << std::dec << std::endl;
       m_bytes.push_back(*it);
       ++m_curr_addr;
     }
@@ -83,6 +88,7 @@ void TestFile::add_bytes(AddrDatas::const_iterator& it)
        it != bytes.end();
        ++it)
     {
+      // std::cout << std::hex << m_curr_addr << ": " << int(*it) << std::dec << std::endl;
       m_bytes.push_back(*it);
       ++m_curr_addr;
     }
