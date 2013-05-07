@@ -69,3 +69,26 @@
     [C0C0] 05
   }
 }
+
+@test {
+  # LD HL, C000
+  21 00 C0
+  # LD A, #FF
+  3E FF
+  # LD A, #0F
+  3E 0F
+  # LD (HL), A
+  77
+  # INC (HL)
+  23
+  # JR NZ, 2
+  20 02
+  # LD A, #FE <-- skipped
+  3E FE
+  # LD (HL), A <-- 0F if OK, otherwise FE
+  77
+
+  @check {
+    [C000] 0F
+  }
+}
