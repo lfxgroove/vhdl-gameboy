@@ -4,10 +4,10 @@ use IEEE.numeric_std.all;
 
 entity Cpu is
   port(Clk, Reset : in std_logic;
-       Mem_Write : out std_logic_vector(7 downto 0);
+       Mem_Write_External : out std_logic_vector(7 downto 0);
        Mem_Read : in std_logic_vector(7 downto 0);
-       Mem_Addr : out std_logic_vector(15 downto 0);
-       Mem_Write_Enable : out std_logic);
+       Mem_Addr_External : out std_logic_vector(15 downto 0);
+       Mem_Write_Enable_External : out std_logic);
 end Cpu;
 
 architecture Cpu_Implementation of Cpu is
@@ -20,6 +20,7 @@ architecture Cpu_Implementation of Cpu is
   -- Halted is a state used when the CPU should wait for interrupts.
   -- Mb_Exec is the execution stages for multi-byte op-codes.
   type State_Type is (Waiting, Fetch, Fetch2, Exec, Exec2, Exec3, Exec4, Mb_Fetch, Mb_Exec, Mb_Exec2, Halted);
+  type DMA_State_Type is (Reading, Writing);
   -- current state of the interpreter
   signal State : State_Type := Waiting;
   -- how long have we been waiting?
@@ -72,9 +73,23 @@ architecture Cpu_Implementation of Cpu is
   signal Daa_Output : std_logic_vector(7 downto 0);
 
   signal Wait_Mode : std_logic := '0';
+  --Signals for DMA - direct mem access
+  signal DMA_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal DMA_State : DMA_State_Type := Reading;
+  signal New_DMA_Addr : std_logic_vector(15 downto 0) := X"0000";
 
+  --Signals for the bus controller so that we can read the data.
+  signal Mem_Write : std_logic_vector(7 downto 0) := X"00";
+  signal Mem_Addr : std_logic_vector(15 downto 0) := X"0000";
+  signal Mem_Write_Enable : std_logic := '0';
+  
 begin
 
+  --Forward the signals :)
+  Mem_Write_External <= Mem_Write;
+  Mem_Addr_External <= Mem_Addr;
+  Mem_Write_Enable_External <= Mem_Write_Enable;
+  
   Alu_Ports : Alu port map(
     A => Alu_A,
     B => Alu_B,
@@ -90,7 +105,18 @@ begin
     Flags_Out => Daa_Flags,
     Output => Daa_Output);
 
-  -- 
+  process (Clk)
+  begin
+    if rising_edge(Clk) then
+      if Mem_Addr = X"FF46" and Mem_Write_Enable = '1' then
+        New_DMA_Addr <= Mem_Write & X"00";
+      elsif DMA_Addr(15 downto 8) = New_DMA_Addr(15 downto 8) then
+        New_DMA_Addr <= X"0000";
+      end if; 
+    end if;
+  end process;
+  
+  -- Megaloid CPU process :)
   process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin
@@ -108,6 +134,30 @@ begin
         Wait_Mode <= '0';
       elsif Wait_Mode = '0' then
         Wait_Mode <= '1';
+        --Take care of DMA here instead of the bus controller because of RAM issues
+        --This will count up until addr A0 but not copy that addr.
+        if New_DMA_Addr /= X"0000" then
+          DMA_Addr <= New_DMA_Addr;
+          DMA_State <= Reading;
+        elsif DMA_Addr /= X"0000" then
+          case (DMA_State) is
+            when Reading =>
+              Mem_Addr <= DMA_Addr;
+              Mem_Write_Enable <= '0';
+              DMA_State <= Writing;
+            when Writing =>
+              Mem_Addr <= X"FE" & DMA_Addr(7 downto 0);
+              Mem_Write_Enable <= '1';
+              Mem_Write <= Mem_Read;
+              DMA_State <= Reading;
+              --Write until (not including) A0
+              if DMA_Addr(7 downto 0) = X"9F" then
+                DMA_Addr <= X"0000";
+              else
+                DMA_Addr <= std_logic_vector(unsigned(DMA_Addr) + 1);
+              end if;
+          end case; 
+        end if;
       else
         Wait_Mode <= '0';
         -- Reset the high flags, since most instructions assume it is set to zero.
@@ -122,6 +172,8 @@ begin
             if (unsigned(Waited_Clks) > 5) then
               State <= Fetch;
               Waited_Clks <= X"0000";
+            else
+              
             end if;
           when Halted =>
             -- TODO: Wait for interrupt.

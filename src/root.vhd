@@ -26,10 +26,10 @@ architecture Behavioural of Root is
 
   component Cpu
     port(Clk, Reset : in std_logic;
-         Mem_Write : out std_logic_vector(7 downto 0);
+         Mem_Write_External : out std_logic_vector(7 downto 0);
          Mem_Read : in std_logic_vector(7 downto 0);
-         Mem_Addr : out std_logic_vector(15 downto 0);
-         Mem_Write_Enable : out std_logic);
+         Mem_Addr_External : out std_logic_vector(15 downto 0);
+         Mem_Write_Enable_External : out std_logic);
   end component;
 
   component Bus_Controller
@@ -91,10 +91,10 @@ begin
   Cpu_Port : Cpu port map (
     Clk => Clk,
     Reset => Cpu_Reset,
-    Mem_Write => Mem_Write,
+    Mem_Write_External => Mem_Write,
     Mem_Read => Mem_Read,
-    Mem_Addr => Mem_Addr,
-    Mem_Write_Enable => Mem_Write_Enable);
+    Mem_Addr_External => Mem_Addr,
+    Mem_Write_Enable_External => Mem_Write_Enable);
 
   Bus_Port : Bus_Controller port map (
     Clk => Clk,
