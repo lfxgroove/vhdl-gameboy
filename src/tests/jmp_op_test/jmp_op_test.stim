@@ -36,17 +36,19 @@
 # INC DE <- we increase the address so we come to the next instruction
 # PUSH DE <- We put it back so the RET can be made
 # RET
-[0000] 3E 00 77 D1 13 D5 C9
-[0008] 3E 08 77 D1 13 D5 C9
-[0010] 3E 10 77 D1 13 D5 C9
-[0018] 3E 18 77 D1 13 D5 C9
-[0020] 3E 20 77 D1 13 D5 C9
-[0028] 3E 28 77 D1 13 D5 C9
-[0030] 3E 30 77 D1 13 D5 C9
-[0038] 3E 38 77 D1 13 D5 C9
+[0000] 3E 00 77 C9
+[0008] 3E 08 77 C9
+[0010] 3E 10 77 C9
+[0018] 3E 18 77 C9
+[0020] 3E 20 77 C9
+[0028] 3E 28 77 C9
+[0030] 3E 30 77 C9
+[0038] 3E 38 77 C9
 
-# - writes 20 to c100
-[0200] 21 00 C1 3E 20 77 76 # used so JPs can jump to here 
+# - writes 20 to HL
+[0200] 3E 20 77 76 # used so JPs can jump to here 
+# - writes 20 to C100
+[0300] 21 00 C1 3E 20 77 76 # used so JPs can jump to here 
 
 [0250] 3E 25 77 76 # or to here and then (HL) should contain 20 and 25 respectevly 
 [C000] FF
@@ -310,7 +312,7 @@ C3 50 02
 # Tests E9
 # Test number: 20
 @test { 
-# LD HL, nn (nn = 00 02)
+# LD HL, nn (nn = 00 03)
 # JP (HL)
 # LD HL, nn (nn = 00 C0)
 # LD (HL), A
