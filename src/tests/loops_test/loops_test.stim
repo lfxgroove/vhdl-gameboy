@@ -44,24 +44,28 @@
   # LD HL, #1000
   21 00 10
   # LD A, (HL+) <-- Jump here!
-  7E
+  2A
   # OR A, (HL)
   B6
   # JR Z, 3 Jump to "We're done" -->
-  18 03
+  28 03
   # INC HL
   23
   # JR -7 Jump to "Jump here!" -->
   18 F9
   # LD A, #FF <-- We're done
   3E FF
+  # LD A, L
+  7D
+  # LD HL, #C0C0
+  21 C0 C0
   # LD (HL), A
   77
 
   # The list
-  [1000] 10 10 20 20 00 00
+  [1000] 10 10 C0 C0 00 00
 
   @check {
-    [2020] FF
+    [C0C0] 05
   }
 }
