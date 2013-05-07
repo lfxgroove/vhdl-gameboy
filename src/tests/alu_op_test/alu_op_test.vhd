@@ -32,7 +32,8 @@ architecture Behavior of alu_op_Test is
          Mem_Write : out std_logic_vector(7 downto 0);
          Mem_Read : in std_logic_vector(7 downto 0);
          Mem_Addr : out std_logic_vector(15 downto 0);
-         Mem_Write_Enable : out std_logic);
+         Mem_Write_Enable : out std_logic;
+         Interrupt_Requests : in std_logic_vector(7 downto 0));
   end component;
   
   signal Clk, Reset, Bus_Reset : std_logic;
@@ -54,6 +55,7 @@ architecture Behavior of alu_op_Test is
   signal Gpu_Read : std_logic_vector(7 downto 0);
   signal Gpu_Addr : std_logic_vector(15 downto 0);
   signal Gpu_Write_Enable : std_logic;
+  signal Interrupt_Requests : std_logic_vector(7 downto 0);
   
 begin
 -- compnent instantiation
@@ -152,7 +154,7 @@ begin
     Cpu_Allowed <= '1';
     wait until rising_edge(Clk);
     
-    for I in 1 to 400 loop
+    for I in 1 to 600 loop
       wait until rising_edge(Clk);
     end loop; 
     

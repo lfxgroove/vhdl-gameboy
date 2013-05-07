@@ -320,7 +320,9 @@ begin
                     Next_Row_Buffer_Low(Sprite_Tmp_X) <=
                       Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
                   end if;
-                else
+                  -- If Sprite is transparent (= white) dont do anythingish
+                elsif Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0'
+                  or Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0' then
                   -- if above background
                   Next_Row_Buffer_High(Sprite_Tmp_X) <=
                     Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));

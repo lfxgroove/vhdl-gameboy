@@ -45,7 +45,7 @@ architecture Behavioral of Gpu is
   signal Small_To_Big_Y : std_logic_vector(1 downto 0) := "00";
   -- HS VS
   signal HS, VS : std_logic := '0';
-
+  
   type Palette_Type is array (0 to 3) of std_logic_vector(1 downto 0);
   
   constant Palette : Palette_Type := (
