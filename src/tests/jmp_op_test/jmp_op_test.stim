@@ -316,7 +316,7 @@ C3 50 02
 # JP (HL)
 # LD HL, nn (nn = 00 C0)
 # LD (HL), A
-21 00 02 E9 21 00 C0 77
+21 00 03 E9 21 00 C0 77
   @check {
     [C100] 20
   }
@@ -331,7 +331,7 @@ C3 50 02
 # RST 0x00
 # LD A, #DD
 # LD (BC), A
-C7 35 DD 02
+C7 3E DD 02
   @check {
     [C000] 00
     [C104] DD
@@ -344,7 +344,7 @@ C7 35 DD 02
 # RST 0x10
 # LD A, #DD
 # LD (BC), A
-D7 35 DD 02
+D7 3E DD 02
   @check {
     [C000] 10
     [C104] DD
@@ -357,7 +357,7 @@ D7 35 DD 02
 # RST 0x18
 # LD A, #DD
 # LD (BC), A
-DF 35 DD 02
+DF 3E DD 02
   @check {
     [C000] 18
     [C104] DD
@@ -370,7 +370,7 @@ DF 35 DD 02
 # RST 0x20
 # LD A, #DD
 # LD (BC), A
-E7 35 DD 02
+E7 3E DD 02
   @check {
     [C000] 20
     [C104] DD
@@ -383,7 +383,7 @@ E7 35 DD 02
 # RST 0x28
 # LD A, #DD
 # LD (BC), A
-EF 35 DD 02
+EF 3E DD 02
   @check {
     [C000] 28
     [C104] DD
@@ -396,7 +396,7 @@ EF 35 DD 02
 # RST 0x30
 # LD A, #DD
 # LD (BC), A
-F7 35 DD 02
+F7 3E DD 02
   @check {
     [C000] 30
     [C104] DD
@@ -409,7 +409,7 @@ F7 35 DD 02
 # RST 0x38
 # LD A, #DD
 # LD (BC), A
-FF 35 DD 02
+FF 3E DD 02
   @check {
     [C000] 38
     [C104] DD
