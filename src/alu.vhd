@@ -107,7 +107,7 @@ begin
        Result_Half(12);
   N <= '1' when Mode = "0001" else
        '0';
-  Z <= '1' when Tmp_Result(8 downto 0) = X"00" and High_Flags = '0' else
+  Z <= '1' when Tmp_Result(7 downto 0) = X"00" and High_Flags = '0' else
        '1' when Tmp_Result = X"0000" and High_Flags = '1' else
        '0';
 
