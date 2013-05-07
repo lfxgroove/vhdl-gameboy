@@ -116,4 +116,5 @@ begin
   Flags(5) <= H;
   Flags(6) <= N;
   Flags(7) <= Z;
+  
 end Alu_Implementation;
