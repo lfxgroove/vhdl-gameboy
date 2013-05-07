@@ -17,7 +17,8 @@ entity Gpu_Logic is
            Gpu_Write : in std_logic_vector(7 downto 0);
            Gpu_Read : out std_logic_vector(7 downto 0);
            Gpu_Addr : in std_logic_vector(15 downto 0);
-           Gpu_Write_Enable : in std_logic);
+           Gpu_Write_Enable : in std_logic;
+           VBlank_Interrupt : out std_logic);
 end Gpu_Logic;
 
 architecture Behavioral of Gpu_Logic is
@@ -30,7 +31,8 @@ architecture Behavioral of Gpu_Logic is
            Next_Row : out std_logic;
            Row_Buffer_High : in std_logic_vector(159 downto 0);
            Row_Buffer_Low : in std_logic_vector(159 downto 0);
-           Next_Screen : out std_logic);
+           Next_Screen : out std_logic;
+           VBlank_Interrupt : out std_logic);
   end component;
 
   signal Current_Row : std_logic_vector(7 downto 0);
@@ -109,7 +111,8 @@ begin
     Next_Row => On_Next_Row,
     Row_Buffer_High => Current_Row_Buffer_High,
     Row_Buffer_Low => Current_Row_Buffer_Low,
-    Next_Screen => Next_Screen);
+    Next_Screen => Next_Screen,
+    VBlank_Interrupt => VBlank_Interrupt);
   
   Hsync <= Internal_Hsync;
   Vsync <= Internal_Vsync;

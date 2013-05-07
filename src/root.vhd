@@ -21,7 +21,8 @@ architecture Behavioural of Root is
            Gpu_Write : in std_logic_vector(7 downto 0);
            Gpu_Read : out std_logic_vector(7 downto 0);
            Gpu_Addr : in std_logic_vector(15 downto 0);
-           Gpu_Write_Enable : in std_logic);
+           Gpu_Write_Enable : in std_logic;
+           VBlank_Interrupt : out std_logic);
   end component;
 
   component Cpu
@@ -29,7 +30,8 @@ architecture Behavioural of Root is
          Mem_Write_External : out std_logic_vector(7 downto 0);
          Mem_Read : in std_logic_vector(7 downto 0);
          Mem_Addr_External : out std_logic_vector(15 downto 0);
-         Mem_Write_Enable_External : out std_logic);
+         Mem_Write_Enable_External : out std_logic;
+         Interrupt_Requests : in std_logic_vector(7 downto 0));
   end component;
 
   component Bus_Controller
@@ -74,6 +76,9 @@ architecture Behavioural of Root is
 
   signal Rst_Cpu : std_logic;
   signal Cpu_Reset : std_logic;
+  
+  signal Interrupt_Requests : std_logic_vector(7 downto 0);
+  
 begin
   Gpu_Port : Gpu_Logic port map (
     Clk => Clk,
@@ -86,7 +91,8 @@ begin
     Gpu_Write => Gpu_Write,
     Gpu_Read => Gpu_Read,
     Gpu_Addr => Gpu_Addr,
-    Gpu_Write_Enable => Gpu_Write_Enable);
+    Gpu_Write_Enable => Gpu_Write_Enable,
+    VBlank_Interrupt => Interrupt_Requests(0));
 
   Cpu_Port : Cpu port map (
     Clk => Clk,
@@ -94,6 +100,7 @@ begin
     Mem_Write_External => Mem_Write,
     Mem_Read => Mem_Read,
     Mem_Addr_External => Mem_Addr,
+    Interrupt_Requests => Interrupt_Requests,
     Mem_Write_Enable_External => Mem_Write_Enable);
 
   Bus_Port : Bus_Controller port map (

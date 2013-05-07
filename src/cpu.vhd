@@ -7,7 +7,12 @@ entity Cpu is
        Mem_Write_External : out std_logic_vector(7 downto 0);
        Mem_Read : in std_logic_vector(7 downto 0);
        Mem_Addr_External : out std_logic_vector(15 downto 0);
-       Mem_Write_Enable_External : out std_logic);
+       Mem_Write_Enable_External : out std_logic;
+       --These are the possible interrupts we may get,
+       --they are LSB first: Vblank, LCD status trig, timer overflow, serial link,
+       --joypad press
+       --They have the same priority, ie: Vblank is handled first, LCD second etc.
+       Interrupt_Requests : in std_logic_vector(7 downto 0));
 end Cpu;
 
 architecture Cpu_Implementation of Cpu is
@@ -33,7 +38,10 @@ architecture Cpu_Implementation of Cpu is
   signal IR, MB_IR : std_logic_vector(7 downto 0);
   -- Interrupts enabled.
   signal Interrupts_Enabled : std_logic := '0';
-
+  -- Kludge for the interrupt handling to make rst go + 40 on the addr to jump
+  -- to, ish.
+  signal Rst_Add_40 : std_logic := '0';
+  
   -- ALU instantiation.
   component Alu
     port(A, B : in std_logic_vector(15 downto 0);
@@ -83,8 +91,15 @@ architecture Cpu_Implementation of Cpu is
   signal Mem_Addr : std_logic_vector(15 downto 0) := X"0000";
   signal Mem_Write_Enable : std_logic := '0';
   
+  --Signals for interrupts
+  signal Interrupts_Enabled_Mask : std_logic_vector(7 downto 0) := X"00";
+  --These are the interrupts that we got while executing an instruction
+  signal Interrupts_Queue : std_logic_vector(7 downto 0) := X"00";
+  --This is used to clear up items in the "queue"
+  signal Interrupts_Handled : std_logic_vector(7 downto 0) := X"00";
+  
 begin
-
+  
   --Forward the signals :)
   Mem_Write_External <= Mem_Write;
   Mem_Addr_External <= Mem_Addr;
@@ -105,11 +120,21 @@ begin
     Flags_Out => Daa_Flags,
     Output => Daa_Output);
 
+  --This process waits for interrupts and adds them to the "queue".
+  process (Clk)
+  begin
+    if rising_edge(Clk) then
+      Interrupts_Queue <= (Interrupts_Queue or Interrupt_Requests) and (not Interrupts_Handled);
+    end if;
+  end process;
+  
   process (Clk)
   begin
     if rising_edge(Clk) then
       if Mem_Addr = X"FF46" and Mem_Write_Enable = '1' then
         New_DMA_Addr <= Mem_Write & X"00";
+      elsif Mem_Addr = X"FFFF" and Mem_Write_Enable = '1' then
+        Interrupts_Enabled_Mask <= Mem_Write;
       elsif DMA_Addr(15 downto 8) = New_DMA_Addr(15 downto 8) then
         New_DMA_Addr <= X"0000";
       end if; 
@@ -121,6 +146,7 @@ begin
     variable Tmp : std_logic_vector(15 downto 0);
   begin
     if rising_edge(Clk) then
+      Interrupts_Handled <= X"00";
       if (Reset = '1') then
         Waited_Clks <= X"0000";
         State <= Waiting;
@@ -166,19 +192,58 @@ begin
         -- Each cycle, clear the write flag to the memory, to avoid
         -- unintentional writes to the memory.
         Mem_Write_Enable <= '0';
-
+        
         case (State) is
-          when Waiting =>
-            if (unsigned(Waited_Clks) > 5) then
-              State <= Fetch;
-              Waited_Clks <= X"0000";
-            else
-              
+          --interrupts are mainly handled here
+          when Waiting | Halted =>
+            if State = Waiting then
+              if (unsigned(Waited_Clks) > 5) then
+                State <= Fetch;
+                Waited_Clks <= X"0000";
+              end if;
             end if;
-          when Halted =>
-            -- TODO: Wait for interrupt.
+            if Interrupts_Enabled = '1' then
+              Tmp(7 downto 0) := Interrupts_Queue and Interrupts_Enabled_Mask;
+              Rst_Add_40 <= '1';
+              if Tmp(0) = '1' then
+                --Vblank, intv 0040
+                --RST 0x0 + 0x40
+                Interrupts_Handled <= X"01";
+                IR <= X"C7";
+                State <= Exec;
+              elsif Tmp(1) = '1' then
+                --LCD stat trig, intv 0048
+                --RST 0x8 + 0x40
+                Interrupts_Handled <= X"02";
+                IR <= X"CF";
+                State <= Exec;
+              elsif Tmp(2) = '1' then
+                -- Timer overflow, intv 0050
+                --RST 0x10 + 0x40
+                Interrupts_Handled <= X"04";
+                IR <= X"D7";
+                State <= Exec;
+              elsif Tmp(3) = '1' then
+                -- Serial link, intv 0058
+                --RST 0x20 + 0x40
+                Interrupts_Handled <= X"08";
+                IR <= X"DF";
+                State <= Exec;
+              elsif Tmp(4) = '1' then
+                -- Joypad, intv 0060
+                --RST 0x28 + 0x40
+                Interrupts_Handled <= X"10";
+                IR <= X"E7";
+                State <= Exec;
+              else
+                  Rst_Add_40 <= '0';
+              end if; 
+            end if;
           when Fetch =>
             Mem_Addr <= PC;
+            --We shouln't jump to an interrupt vector if we've gotten here, ie
+            --not via the kludge where we handle interrupt vectors
+            Rst_Add_40 <= '0';
             State <= Fetch2;--Exec;
             PC <= std_logic_vector(unsigned(PC) + 1);
           when Fetch2 =>
@@ -2237,7 +2302,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0000";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0040";
+                else
+                  PC <= X"0000";
+                end if;       
                 -- RST 0x08
               when X"CF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2245,7 +2315,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0008";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0048";
+                else
+                  PC <= X"0008";
+                end if;       
                 -- RST 0x10
               when X"D7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2253,7 +2328,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0010";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0050";
+                else
+                  PC <= X"0010";
+                end if;       
                 -- RST 0x18
               when X"DF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2261,7 +2341,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0018";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0058";
+                else
+                  PC <= X"0018";
+                end if;       
                 -- RST 0x20
               when X"E7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2269,7 +2354,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0020";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0060";
+                else
+                  PC <= X"0020";
+                end if;       
                 -- RST 0x28
               when X"EF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2277,7 +2367,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0028";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0068";
+                else
+                  PC <= X"0028";
+                end if;       
                 -- RST 0x30
               when X"F7" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2285,7 +2380,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0030";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0070";
+                else
+                  PC <= X"0030";
+                end if;       
                 -- RST 0x38
               when X"FF" =>
                 Tmp := std_logic_vector(unsigned(SP) - 1);
@@ -2293,7 +2393,12 @@ begin
                 Mem_Write <= PC(7 downto 0);
                 Mem_Addr <= Tmp;
                 Mem_Write_Enable <= '1';
-                PC <= X"0038";
+                if Rst_Add_40 = '1' then
+                  Interrupts_Enabled <= '0';
+                  PC <= X"0078";
+                else
+                  PC <= X"0038";
+                end if;       
 
                 -- RET, and all other RET when they have decided to jump
               when X"C9" | X"C0" | X"C8" | X"D0" | X"D8" | X"D9" =>

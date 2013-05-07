@@ -18,7 +18,8 @@ entity Gpu is
            Row_Buffer_High : in std_logic_vector(159 downto 0);
            Row_Buffer_Low : in std_logic_vector(159 downto 0);
            -- Data to gpu_logic to know when to draw a new screen
-           Next_Screen : out std_logic);
+           Next_Screen : out std_logic;
+           VBlank_Interrupt : out std_logic);
 end Gpu;
 
 architecture Behavioral of Gpu is
@@ -105,6 +106,7 @@ begin
     if rising_edge(Clk) then
       Next_Row <= '0';
       Next_Screen <= '0';
+      VBlank_Interrupt <= '0';
 
       if unsigned(X_Counter) = 670 and Next_Pixel_Counter = "11" then
         Small_To_Big_Y <= std_logic_vector(unsigned(Small_To_Big_Y) + 1);
@@ -126,7 +128,9 @@ begin
           Y_Counter <= std_logic_vector(unsigned(Y_Counter) + 1);
         end if;
 
-        if unsigned(Y_Counter) = 490 then
+        if unsigned(Y_Counter) = 480 then
+          VBlank_Interrupt <= '1';
+        elsif unsigned(Y_Counter) = 490 then
           VS <= '1';
         elsif unsigned(Y_Counter) = 491 then
           VS <= '0';
