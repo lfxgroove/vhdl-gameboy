@@ -80,7 +80,7 @@
   # LD A, #0F
   3E 0F
   # INC (HL)
-  23
+  34
   # JR NZ, 2
   20 02
   # LD A, #FE <-- skipped
@@ -89,6 +89,6 @@
   77
 
   @check {
-    [C000] 0F
+    [C000] FE
   }
 }

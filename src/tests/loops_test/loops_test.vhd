@@ -155,7 +155,7 @@ begin
     Cpu_Allowed <= '1';
     wait until rising_edge(Clk);
     
-    for I in 1 to 600 loop
+    for I in 1 to 1200 loop
       wait until rising_edge(Clk);
     end loop; 
     
