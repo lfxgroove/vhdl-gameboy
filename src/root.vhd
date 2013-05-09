@@ -48,7 +48,9 @@ architecture Behavioural of Root is
           -- These three signals writes to the large rom.
           Rom_Write_Enable : in std_logic;
           Rom_Addr : in std_logic_vector(15 downto 0);
-          Rom_Write : in std_logic_vector(7 downto 0));
+          Rom_Write : in std_logic_vector(7 downto 0);
+          -- Timer Interrupts
+          Timer_Interrupt : out std_logic);
   end component;
 
   component Serial
@@ -116,7 +118,8 @@ begin
     Gpu_Write_Enable => Gpu_Write_Enable,
     Rom_Write_Enable => Rom_Write_Enable,
     Rom_Addr => Rom_Addr,
-    Rom_Write => Rom_Write);
+    Rom_Write => Rom_Write,
+    Timer_Interrupt => Interrupt_Requests(2));
 
   Serial_Port : Serial port map (
     Clk => Clk,
