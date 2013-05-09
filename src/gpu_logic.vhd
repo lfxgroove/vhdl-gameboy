@@ -162,7 +162,7 @@ begin
       elsif Next_Screen = '1' then
         Next_Row <= X"00";
       elsif On_Next_Row = '1' then
-        Next_Row <= std_logic_vector(unsigned(Current_Row) + 1);
+        Next_Row <= std_logic_vector(unsigned(Current_Row));
       end if;
     end if;
   end process;

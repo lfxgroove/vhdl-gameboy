@@ -55,7 +55,8 @@ architecture Behavioral of Gpu is
     "00"
     );
 begin
-  Current_Row <= Row;
+  Current_Row <= Row when unsigned(Row) < unsigned(Screen_Height) else
+                 X"00";
 
   -- Pixel clock generation.
   process(Clk)
@@ -114,7 +115,7 @@ begin
           Row <= std_logic_vector(unsigned(Row) + 1);
           Next_Row <= '1';
           Small_To_Big_Y <= "00";
-          if Row >= Screen_Height then
+          if unsigned(Row) >= unsigned(Screen_Height) - 1 then
             Next_Screen <= '1';
           end if;
         end if;

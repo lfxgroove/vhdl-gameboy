@@ -197,7 +197,7 @@ begin
           --interrupts are mainly handled here
           when Waiting | Halted =>
             if State = Waiting then
-              if (unsigned(Waited_Clks) > 5) then
+              if (unsigned(Waited_Clks) > 20) then
                 State <= Fetch;
                 Waited_Clks <= X"0000";
               end if;

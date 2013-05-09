@@ -38,10 +38,21 @@ entity Bus_Controller is
         Rom_Addr : in std_logic_vector(15 downto 0);
         Rom_Write : in std_logic_vector(7 downto 0);
         -- Timer interrupts
-        Timer_Interrupt : out std_logic);
-end Bus_Controller;
+        Timer_Interrupt : out std_logic;
+        Pulse, Latch  : out std_logic;
+        Data : in std_logic);
+  end Bus_Controller;
 
 architecture Bus_Controller_Behaviour of Bus_Controller is
+  component Input
+    port(Clk, Reset : in std_logic;
+         Controller_Data_Select : in std_logic_vector(1 downto 0);
+         Controller_Input : out std_logic_vector(3 downto 0);
+         Pulse, Latch  : out std_logic;
+         -- Data comes in inverted, 1 mean the button is not pressed.
+         Data : in std_logic);
+  end component;
+  
   type Ram_8KType is array (0 to 8191) of std_logic_vector(7 downto 0);
   type Ram_128Type is array (0 to 127) of std_logic_vector(7 downto 0);
   type Rom_32KType is array (0 to 32767) of std_logic_vector(7 downto 0);
@@ -75,8 +86,21 @@ architecture Bus_Controller_Behaviour of Bus_Controller is
   --Ordering: 4096Hz, 262144Hz, 65536Hz, 16384Hz
   constant Hz_Variable_To : Clock_Intervals := (X"5F5F", X"017E", X"05F6", X"17D8");
 
+  -- Input signals
+  signal Controller_Data_Select : std_logic_vector(1 downto 0) := "00";
+  signal Controller_Input : std_logic_vector(3 downto 0) := X"0";
+  
+  
 begin
-
+  Input_Port : Input port map (
+    Clk => Clk,
+    Reset => Reset,
+    Controller_Data_Select => Controller_Data_Select,
+    Controller_Input => Controller_Input,
+    Pulse => Pulse,
+    Latch => Latch,
+    Data => Data);
+  
   --Static clock, 16384 Hz
   process (Clk)
   begin
@@ -96,19 +120,21 @@ begin
   begin
     if rising_edge(Clk) then
       Timer_Interrupt <= '0';
-      if Timer_Counter_Reset = '1' then
-        Timer_Counter <= Timer_Counter_Reset_Val;
-      end if; 
-      if Hz_Variable_Counter = Hz_Variable_to(to_integer(unsigned(Timer_Speed))) then
-        if Timer_Counter = X"FF" then
-          Timer_Counter <= Timer_Modulo;
-          Timer_Interrupt <= '1';
+      if Timer_Running = '1' then
+        if Timer_Counter_Reset = '1' then
+          Timer_Counter <= Timer_Counter_Reset_Val;
+        end if; 
+        if Hz_Variable_Counter = Hz_Variable_to(to_integer(unsigned(Timer_Speed))) then
+          if Timer_Counter = X"FF" then
+            Timer_Counter <= Timer_Modulo;
+            Timer_Interrupt <= '1';
+          else
+            Timer_Counter <= std_logic_vector(unsigned(Timer_Counter) + 1);
+          end if;
+          Hz_Variable_Counter <= X"0000";
         else
-          Timer_Counter <= std_logic_vector(unsigned(Timer_Counter) + 1);
+          Hz_Variable_Counter <= std_logic_vector(unsigned(Hz_Variable_Counter) + 1);
         end if;
-        Hz_Variable_Counter <= X"0000";
-      else
-        Hz_Variable_Counter <= std_logic_vector(unsigned(Hz_Variable_Counter) + 1);
       end if;
     end if;
   end process;
@@ -156,6 +182,8 @@ begin
         elsif Mem_Addr(15 downto 8) = "11111110" then  -- 0xFE00-0xFE9F
           -- OAM memory, send to GPU.
           -- Writes are handled below.
+        elsif Mem_Addr(15 downto 0) = X"FF00" then
+          Controller_Data_Select <= Mem_Write(5 downto 4);
         elsif Mem_Addr(15 downto 0) = X"FF04" then
           --Timer writes
           Hz_Reset_Divider <= '1';
@@ -231,6 +259,8 @@ begin
           -- OAM memory, send to GPU.
           -- Writes are handled below
           Mem_Read <= Gpu_Read;
+        elsif Mem_Addr(15 downto 0) = X"FF00" then
+          Mem_Read <= "00" & Controller_Data_Select & Controller_Input;
         elsif Mem_Addr(15 downto 0) = X"FF04" then
           --Timer reads
           Mem_Read <= Timer_Divider;

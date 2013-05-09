@@ -9,7 +9,10 @@ entity Root is
         vgaBlue : out std_logic_vector(2 downto 1);
         Hsync, Vsync : out std_logic;
         RxD, TxD : in  std_logic;
-        Led : out std_logic_vector(7 downto 0));
+        Led : out std_logic_vector(7 downto 0);
+        Timer_Interrupt : out std_logic;
+        Pulse, Latch  : out std_logic;
+        Data : in std_logic);
 end Root;
 
 architecture Behavioural of Root is
@@ -50,7 +53,9 @@ architecture Behavioural of Root is
           Rom_Addr : in std_logic_vector(15 downto 0);
           Rom_Write : in std_logic_vector(7 downto 0);
           -- Timer Interrupts
-          Timer_Interrupt : out std_logic);
+          Timer_Interrupt : out std_logic;
+          Pulse, Latch  : out std_logic;
+          Data : in std_logic);
   end component;
 
   component Serial
@@ -119,7 +124,10 @@ begin
     Rom_Write_Enable => Rom_Write_Enable,
     Rom_Addr => Rom_Addr,
     Rom_Write => Rom_Write,
-    Timer_Interrupt => Interrupt_Requests(2));
+    Timer_Interrupt => Interrupt_Requests(2),
+    Pulse => Pulse,
+    Latch => Latch,
+    Data => Data);
 
   Serial_Port : Serial port map (
     Clk => Clk,
