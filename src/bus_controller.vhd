@@ -61,7 +61,7 @@ architecture Bus_Controller_Behaviour of Bus_Controller is
   signal Internal_Ram : Ram_8KType := (others => X"00");
   signal Stack_Ram : Ram_128Type := (others => X"00");
 
-  signal Rom_Memory : Rom_32KType := (others => X"00");
+  signal Rom_Memory : Rom_32KType := (others => X"76");  --all halt
 
   --Timer signals
   --Always increases at specific rate, 16384Hz, reg: 0xFF04
@@ -215,10 +215,10 @@ begin
   -- Writing to GPU. Must be in an async process since we need to
   -- write in one cp.
   Gpu_Write_Enable <=
-    '1' when Mem_Addr(15 downto 14) = "10" else  -- 0x8000-0x9FFF
-    '1' when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
+    Mem_Write_Enable when Mem_Addr(15 downto 14) = "10" else  -- 0x8000-0x9FFF
+    Mem_Write_Enable when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
                                                       -- (actually to 0xFEFF)
-    '1' when Mem_Addr(15 downto 4) = X"FF4" else  -- Gpu Stuff :), see
+    Mem_Write_Enable when Mem_Addr(15 downto 4) = X"FF4" else  -- Gpu Stuff :), see
                                                   -- gpu_logic for more info
     --'1' when Mem_Addr(15 downto 0) = X"FF42" else  -- Scroll register Y
     --'1' when Mem_Addr(15 downto 0) = X"FF43" else  -- Scroll register X
@@ -247,7 +247,8 @@ begin
           -- Character codes (BG data 1). Send to GPU.
           -- Character codes (BG data 2). Send to GPU.
           -- Writes are handled below.
-          Mem_Read <= Gpu_Read;
+          --Mem_Read <= Gpu_Read;
+          Mem_Read <= X"00";
         elsif Mem_Addr(15 downto 13) = "101" then -- 0xA000-0xBFFF
           -- External expansion working RAM 8KB.
           Mem_Read <= External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
@@ -258,7 +259,8 @@ begin
         elsif Mem_Addr(15 downto 8) = "11111110" then  -- 0xFE00-0xFE9F
           -- OAM memory, send to GPU.
           -- Writes are handled below
-          Mem_Read <= Gpu_Read;
+          --Mem_Read <= Gpu_Read;
+          Mem_Read <= X"00";
         elsif Mem_Addr(15 downto 0) = X"FF00" then
           Mem_Read <= "00" & Controller_Data_Select & Controller_Input;
         elsif Mem_Addr(15 downto 0) = X"FF04" then
@@ -270,6 +272,9 @@ begin
           Mem_Read <= Timer_Modulo;
         elsif Mem_Addr(15 downto 0) = X"FF07" then
           Mem_Read <= Timer_Control;
+        elsif Mem_Addr(15 downto 4) = X"FF4" then
+          --Read from GPU, for Stat reg right now
+          Mem_Read <= Gpu_Read;
         elsif Mem_Addr(15 downto 7) = "111111110" then  -- 0xFF00-0xFF7F
           -- Port mode registers (input).
           -- Control registers.
@@ -278,9 +283,6 @@ begin
         elsif Mem_Addr(15 downto 7) = "111111111" then  -- 0xFF80-0xFFFF
           -- Working stack and RAM.
           Mem_Read <= Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))));
-        elsif Mem_Addr(15 downto 4) = X"FF4" then
-          --Read from GPU, for Stat reg right now
-          Mem_Read <= Gpu_Read;
         else
           -- Undefined value (mirror of internal ram).
           Mem_Read <= Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));

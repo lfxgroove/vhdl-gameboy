@@ -25,7 +25,8 @@ architecture Behavioural of Root is
            Gpu_Read : out std_logic_vector(7 downto 0);
            Gpu_Addr : in std_logic_vector(15 downto 0);
            Gpu_Write_Enable : in std_logic;
-           VBlank_Interrupt : out std_logic);
+           VBlank_Interrupt : out std_logic;
+           Stat_Interrupt : out std_logic);
   end component;
 
   component Cpu
@@ -81,15 +82,15 @@ architecture Behavioural of Root is
   signal Gpu_Addr : std_logic_vector(15 downto 0);
   signal Gpu_Write_Enable : std_logic;
 
-  signal Rst_Cpu : std_logic;
-  signal Cpu_Reset : std_logic;
+  signal Rst_Cpu : std_logic := '1';
+  signal Cpu_Reset : std_logic := '1';
   
   signal Interrupt_Requests : std_logic_vector(7 downto 0);
   
 begin
   Gpu_Port : Gpu_Logic port map (
     Clk => Clk,
-    Rst => Rst,
+    Rst => Cpu_Reset,
     vgaRed => vgaRed,
     vgaGreen => vgaGreen,
     vgaBlue => vgaBlue,
@@ -99,7 +100,8 @@ begin
     Gpu_Read => Gpu_Read,
     Gpu_Addr => Gpu_Addr,
     Gpu_Write_Enable => Gpu_Write_Enable,
-    VBlank_Interrupt => Interrupt_Requests(0));
+    VBlank_Interrupt => Interrupt_Requests(0),
+    Stat_Interrupt => Interrupt_Requests(1));
 
   Cpu_Port : Cpu port map (
     Clk => Clk,

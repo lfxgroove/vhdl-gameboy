@@ -18,7 +18,8 @@ entity Gpu_Logic is
            Gpu_Read : out std_logic_vector(7 downto 0);
            Gpu_Addr : in std_logic_vector(15 downto 0);
            Gpu_Write_Enable : in std_logic;
-           VBlank_Interrupt : out std_logic);
+           VBlank_Interrupt : out std_logic;
+           Stat_Interrupt : out std_logic);
 end Gpu_Logic;
 
 architecture Behavioral of Gpu_Logic is
@@ -45,7 +46,7 @@ architecture Behavioral of Gpu_Logic is
 
   -- 8 kb video ram starting at address 0x8000
   type Video_Ram_Type is array(8191 downto 0) of std_logic_vector(7 downto 0);
-  signal Video_Ram : Video_Ram_Type := (others => X"F0");  -- was F0
+  signal Video_Ram : Video_Ram_Type := (others => X"00");  -- was F0
 
   -- 160 byte ram for OBJ, sprites
   type Obj_Ram_Type is array(79 downto 0) of std_logic_vector(7 downto 0);
@@ -85,8 +86,12 @@ architecture Behavioral of Gpu_Logic is
   signal LCD : std_logic_vector(7 downto 0);
   signal Stat : std_logic_vector(7 downto 0) := X"00";
   alias Stat_Mode : std_logic_vector is Stat(1 downto 0);
+  --To prevent generating the same interrupt multiple times
+  signal Last_Stat_Mode : std_logic_vector(1 downto 0) := B"00";
   --alias Stat_Int_Mode : std_logic_vector is Stat(6 downto 4);
-
+  -- Compares itself with LY to generate interrupts
+  signal LYC : std_logic_vector(7 downto 0) := X"FF";
+  
   function reverse_any_vector (a: in std_logic_vector)
     return std_logic_vector is
     variable result: std_logic_vector(a'RANGE);
@@ -136,7 +141,7 @@ begin
   begin
     if rising_edge(Clk) then
       if Rst = '1' then
-        Stat <= X"00";
+        Stat_Mode <= B"00";
       else
         if Internal_Hsync = '1' then
           Stat_Mode <= B"00";
@@ -165,6 +170,31 @@ begin
         Next_Row <= std_logic_vector(unsigned(Current_Row));
       end if;
     end if;
+  end process;
+  
+  --For the Stat reg and generation of interrupts because of it
+  process (Clk)
+  begin
+    if rising_edge(Clk) then
+      if LYC = Current_Row  and On_Next_Row = '1' and Stat(6) = '1' and Stat(2) = '1' then
+        Stat_Interrupt <= '1';
+      elsif LYC /= Current_Row and On_Next_Row = '1' and Stat(6) = '1' and Stat(2) = '0' then
+        Stat_Interrupt <= '1';
+      elsif Last_Stat_Mode /= Stat_Mode then
+        if Stat(5) = '1' and Stat_Mode = B"10" then
+          Stat_Interrupt <= '1';
+        elsif Stat(4) = '1' and Stat_Mode = B"01" then
+          Stat_Interrupt <= '1';
+        elsif Stat(3) = '1' and Stat_Mode = B"00" then
+          Stat_Interrupt <= '1';
+        else
+          Stat_Interrupt <= '0';
+        end if;       
+      else
+        Stat_Interrupt <= '0';
+      end if;
+      Last_Stat_Mode <= Stat_Mode;
+    end if;   
   end process;
   
   process (Clk) is
@@ -222,7 +252,7 @@ begin
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 21 then
-              State <= Sprites;            --was Sprites
+              State <= Sprites;
               Sprite_Addr <= X"00";
               Next_Row_Buffer_High(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_High(167 downto to_integer(unsigned(Scroll_X) mod 8));
               Next_Row_Buffer_Low(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_Low(167 downto to_integer(unsigned(Scroll_X) mod 8));
@@ -242,8 +272,11 @@ begin
             Bg_Added <= std_logic_vector(unsigned(Bg_Added) + 1);
             State <= Read_Bg;
           when Sprites =>
-            --If we're past this address, we've read all the sprites available
-            if unsigned(Sprite_Addr) = 80 then
+            if LCD(1) = '0' then
+              --Don't draw sprites when we shouldn't
+              State <= Done;
+            elsif unsigned(Sprite_Addr) = 80 then
+              --If we're past this address, we've read all the sprites available
               State <= Done;
             else
               Sprite_Y <= Obj_Ram_Even(to_integer(unsigned(Sprite_Addr)));
@@ -342,7 +375,12 @@ begin
   process (Clk) is
   begin
     if rising_edge(Clk) then
-      if Gpu_Write_Enable = '1' then
+      if Rst = '1' then
+        LCD <= X"00";
+        Stat(7 downto 2) <= B"000000";
+        Scroll_X <= X"00";
+        Scroll_Y <= X"00";
+      elsif Gpu_Write_Enable = '1' then
         if Gpu_Addr < X"A000" then
           -- Starts at 0x8000
           Video_Ram(to_integer(unsigned(Gpu_Addr(13 downto 0)))) <= Gpu_Write;
@@ -353,18 +391,32 @@ begin
           else
             Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) <= Gpu_Write;
           end if;
+        elsif Gpu_Addr = X"FF41" then
+          Stat(7 downto 2) <= Gpu_Write(7 downto 2);
         elsif Gpu_Addr = X"FF42" then
           Scroll_Y <= Gpu_Write;
         elsif Gpu_Addr = X"FF43" then
           Scroll_X <= Gpu_Write;
         elsif Gpu_Addr = X"FF40" then
           LCD <= Gpu_Write;
+        elsif Gpu_Addr = X"FF45" then
+          LYC <= Gpu_Write;
         end if;
       end if;
     end if;
   end process;
-  
+
+  --Gpu_Read <= X"00";
   -- Reading not implemented yet!
-  Gpu_Read <= Stat when Gpu_Addr = X"FF41" else
+  Gpu_Read <= LCD when Gpu_Addr = X"FF40" else
+              Stat when Gpu_Addr = X"FF41" else
+              Scroll_Y when Gpu_Addr = X"FF42" else
+              Scroll_X when Gpu_Addr = X"FF43" else
+              Next_Row when Gpu_Addr = X"FF44" else  -- LY reg
+              LYC when Gpu_Addr = X"FF45" else
+              
+              --Video_Ram(to_integer(unsigned(Gpu_Addr(13 downto 0)))) when Gpu_Addr < X"FEA0" else
+              --Obj_Ram_Even(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) when Gpu_Addr < X"FEA0" and Gpu_Addr(0) = '0' else
+              --Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) when Gpu_Addr < X"FEA0" and Gpu_Addr(0) = '1' else
               X"00";
 end Behavioral;
