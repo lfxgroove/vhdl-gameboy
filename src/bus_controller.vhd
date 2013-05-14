@@ -40,7 +40,8 @@ entity Bus_Controller is
         -- Timer interrupts
         Timer_Interrupt : out std_logic;
         Pulse, Latch  : out std_logic;
-        Data : in std_logic);
+        Data : in std_logic;
+        Current_Interrupts : in std_logic_vector(7 downto 0));
   end Bus_Controller;
 
 architecture Bus_Controller_Behaviour of Bus_Controller is
@@ -115,7 +116,8 @@ begin
       end if;
     end if;   
   end process;
-
+  
+  --The variable clock
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -272,6 +274,8 @@ begin
           Mem_Read <= Timer_Modulo;
         elsif Mem_Addr(15 downto 0) = X"FF07" then
           Mem_Read <= Timer_Control;
+        elsif Mem_Addr(15 downto 0) = X"FF0F" then
+          Mem_Read <= Current_Interrupts;
         elsif Mem_Addr(15 downto 4) = X"FF4" then
           --Read from GPU, for Stat reg right now
           Mem_Read <= Gpu_Read;

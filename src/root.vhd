@@ -35,7 +35,8 @@ architecture Behavioural of Root is
          Mem_Read : in std_logic_vector(7 downto 0);
          Mem_Addr_External : out std_logic_vector(15 downto 0);
          Mem_Write_Enable_External : out std_logic;
-         Interrupt_Requests : in std_logic_vector(7 downto 0));
+         Interrupt_Requests : in std_logic_vector(7 downto 0);
+         Current_Interrupts : out std_logic_vector(7 downto 0));
   end component;
 
   component Bus_Controller
@@ -56,7 +57,8 @@ architecture Behavioural of Root is
           -- Timer Interrupts
           Timer_Interrupt : out std_logic;
           Pulse, Latch  : out std_logic;
-          Data : in std_logic);
+          Data : in std_logic;
+          Current_Interrupts : in std_logic_vector(7 downto 0));
   end component;
 
   component Serial
@@ -86,6 +88,7 @@ architecture Behavioural of Root is
   signal Cpu_Reset : std_logic := '1';
   
   signal Interrupt_Requests : std_logic_vector(7 downto 0);
+  signal Current_Interrupts : std_logic_vector(7 downto 0);
   
 begin
   Gpu_Port : Gpu_Logic port map (
@@ -110,7 +113,8 @@ begin
     Mem_Read => Mem_Read,
     Mem_Addr_External => Mem_Addr,
     Interrupt_Requests => Interrupt_Requests,
-    Mem_Write_Enable_External => Mem_Write_Enable);
+    Mem_Write_Enable_External => Mem_Write_Enable,
+    Current_Interrupts => Current_Interrupts);
 
   Bus_Port : Bus_Controller port map (
     Clk => Clk,
@@ -129,7 +133,8 @@ begin
     Timer_Interrupt => Interrupt_Requests(2),
     Pulse => Pulse,
     Latch => Latch,
-    Data => Data);
+    Data => Data,
+    Current_Interrupts => Current_Interrupts);
 
   Serial_Port : Serial port map (
     Clk => Clk,

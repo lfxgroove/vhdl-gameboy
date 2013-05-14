@@ -12,7 +12,8 @@ entity Cpu is
        --they are LSB first: Vblank, LCD status trig, timer overflow, serial link,
        --joypad press
        --They have the same priority, ie: Vblank is handled first, LCD second etc.
-       Interrupt_Requests : in std_logic_vector(7 downto 0));
+       Interrupt_Requests : in std_logic_vector(7 downto 0);
+       Current_Interrupts : out std_logic_vector(7 downto 0));
 end Cpu;
 
 architecture Cpu_Implementation of Cpu is
@@ -125,10 +126,15 @@ begin
   process (Clk)
   begin
     if rising_edge(Clk) then
-      Interrupts_Queue <= (Interrupts_Queue or Interrupt_Requests) and (not Interrupts_Handled);
+      if Mem_Addr = X"FF0F" and Mem_Write_Enable = '1' then
+        Interrupts_Queue <= Mem_Write;
+      else
+        Interrupts_Queue <= (Interrupts_Queue or Interrupt_Requests) and (not Interrupts_Handled);
+      end if;
     end if;
   end process;
-  
+  Current_Interrupts <= Interrupts_Queue;
+
   process (Clk)
   begin
     if rising_edge(Clk) then

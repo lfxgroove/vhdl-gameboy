@@ -157,7 +157,7 @@ begin
       else
         --possible kludge, dunno why
         if LCD(7) = '0' then
-          Stat_Mode <= B"10";
+          Stat_Mode <= B"00";
         --if Internal_Hsync = '1' then
         elsif State = Done then
           Stat_Mode <= B"00";
