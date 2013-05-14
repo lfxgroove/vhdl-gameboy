@@ -55,18 +55,14 @@ architecture Behavioral of Gpu is
     "00"
     );
 begin
-  Current_Row <= Row when unsigned(Row) < unsigned(Screen_Height) else
+  Current_Row <= Row when unsigned(Row) <= 153 else
                  X"00";
 
   -- Pixel clock generation.
   process(Clk)
   begin
     if rising_edge(Clk) then
-      if Rst = '1' then
-        Next_Pixel_Counter <= "00";
-      else
-        Next_Pixel_Counter <= std_logic_vector(unsigned(Next_Pixel_Counter) + 1);
-      end if;
+      Next_Pixel_Counter <= std_logic_vector(unsigned(Next_Pixel_Counter) + 1);
     end if;
   end process;
 

@@ -55,7 +55,7 @@ architecture Behavioral of Gpu_Logic is
   signal Internal_Hsync, Internal_Vsync : std_logic;
   signal On_Next_Row : std_logic;
 
-  type State_Type is (Read_Bg, Read_BG_B, Read_Bg_C, Read_Bg_D, Sprites, Sprites_B, Sprites_C, Sprites_D,
+  type State_Type is (Read_Bg, Read_BG_B, Read_Bg_C, Read_Bg_D, Bg_Apply_Palette, Sprites, Sprites_B, Sprites_C, Sprites_D,
                       Sprites_E, Sprites_F, Sprites_G, Done);
   signal State : State_Type := Done;
   signal Bg_Addr : std_logic_vector(7 downto 0) := X"00";
@@ -79,7 +79,7 @@ architecture Behavioral of Gpu_Logic is
   signal Sprite_Low_Data : std_logic_vector(7 downto 0) := X"00";
   --pointer to the current bg-sprite index
   signal Bg_Map_Addr : std_logic_vector(15 downto 0) := X"0000";
-  signal Sprite_Pixel_Counter : std_logic_vector(3 downto 0) := X"0";
+  signal Sprite_Pixel_Counter : std_logic_vector(7 downto 0) := X"00";
 
   --Registers in the gpu
   signal Scroll_X, Scroll_Y : std_logic_vector(7 downto 0);
@@ -91,6 +91,9 @@ architecture Behavioral of Gpu_Logic is
   --alias Stat_Int_Mode : std_logic_vector is Stat(6 downto 4);
   -- Compares itself with LY to generate interrupts
   signal LYC : std_logic_vector(7 downto 0) := X"FF";
+
+  --Palettes
+  signal BG_Palette, Obj_Palette_0, Obj_Palette_1 : std_logic_vector(7 downto 0) := X"00";
   
   function reverse_any_vector (a: in std_logic_vector)
     return std_logic_vector is
@@ -102,6 +105,15 @@ architecture Behavioral of Gpu_Logic is
     end loop;
     return result;
   end; -- function reverse_any_vector
+
+  function Map_Greyscale(High, Low : in std_logic;
+                         Colour_Map : in std_logic_vector(7 downto 0))
+    return std_logic_vector is
+    variable Tmp : std_logic_vector(1 downto 0) := High & Low;
+    variable Index : integer range 0 to 7 := to_integer(unsigned(Tmp) * 2);
+  begin
+    return Colour_Map(Index + 1) & Colour_Map(Index);
+  end; --Map_Greyscale
   
 begin
   Gpu_Port : Gpu port map (
@@ -143,12 +155,16 @@ begin
       if Rst = '1' then
         Stat_Mode <= B"00";
       else
-        if Internal_Hsync = '1' then
+        --possible kludge, dunno why
+        if LCD(7) = '0' then
+          Stat_Mode <= B"10";
+        --if Internal_Hsync = '1' then
+        elsif State = Done then
           Stat_Mode <= B"00";
         elsif Internal_Vsync = '1' then
           Stat_Mode <= B"01";
-        elsif State = Sprites or State = Sprites_B then
-          --The oam/obj memory is used in these 2 states
+ --        elsif State = Sprites or State = Sprites_B then
+        elsif State = Read_bg or State = Read_bg_B or State = Read_bg_C or State = Read_bg_D then
           Stat_Mode <= B"10";
         else
           Stat_Mode <= B"11";
@@ -199,6 +215,7 @@ begin
   
   process (Clk) is
     variable Sprite_Tmp_X : integer range 0 to 255;
+    variable Sprite_Colour : std_logic_vector(1 downto 0) := B"00";
   begin
     if rising_edge(Clk) then
       -- Next_Screen also works as a reset for this process. See process above.
@@ -230,10 +247,10 @@ begin
             --Select BG Code
             if LCD(3) = '1' then
               -- 0x1C00
-              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 7168 + unsigned(Bg_Added) + ((unsigned(Scroll_X) / 8) mod 32));
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 7168 + ((unsigned(Bg_Added) + (unsigned(Scroll_X) / 8)) mod 32));
             else
               -- 0x1800
-              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + unsigned(Bg_Added) + ((unsigned(Scroll_X) / 8) mod 32));
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Bg_First_Sprite_Offset) + 6144 + ((unsigned(Bg_Added) + (unsigned(Scroll_X) / 8)) mod 32));
             end if; 
             State <= Read_Bg_B;
           when Read_Bg_B =>
@@ -244,7 +261,7 @@ begin
             --Select BG Char
             if LCD(4) = '0' then
               Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(signed(Sprite_Row_Addr))))
-                                                  * 16 + unsigned(Bg_Sprite_Line_Offset) * 2 + 2048); 
+                                                  * 16 + unsigned(Bg_Sprite_Line_Offset) * 2 + 4096); 
             else
               Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
                                                   * 16 + unsigned(Bg_Sprite_Line_Offset) * 2); 
@@ -252,7 +269,8 @@ begin
             state <= Read_Bg_C;
           when Read_Bg_C =>
             if unsigned(Bg_Added) = 21 then
-              State <= Sprites;
+              State <= Bg_Apply_Palette;
+              Sprite_Pixel_Counter <= X"00";
               Sprite_Addr <= X"00";
               Next_Row_Buffer_High(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_High(167 downto to_integer(unsigned(Scroll_X) mod 8));
               Next_Row_Buffer_Low(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_Low(167 downto to_integer(unsigned(Scroll_X) mod 8));
@@ -271,6 +289,19 @@ begin
             Next_Row_Buffer_Low(159 downto 0) <= Next_Row_Buffer_Low(167 downto 8);
             Bg_Added <= std_logic_vector(unsigned(Bg_Added) + 1);
             State <= Read_Bg;
+          when Bg_Apply_Palette =>
+            if unsigned(Sprite_Pixel_Counter) = 160 then
+              State <= Sprites;
+            else
+              Sprite_Colour := Map_Greyscale(
+                Next_Row_Buffer_High(to_integer(unsigned(Sprite_Pixel_Counter))),
+                Next_Row_Buffer_Low(to_integer(unsigned(Sprite_Pixel_Counter))),
+                Bg_Palette);
+              Next_Row_Buffer_High(to_integer(unsigned(Sprite_Pixel_Counter))) <= Sprite_Colour(1);
+              Next_Row_Buffer_Low(to_integer(unsigned(Sprite_Pixel_Counter))) <= Sprite_Colour(0);
+              Sprite_Pixel_Counter <= std_logic_vector(unsigned(Sprite_Pixel_Counter) + 1);
+              State <= Bg_Apply_Palette;
+            end if;
           when Sprites =>
             if LCD(1) = '0' then
               --Don't draw sprites when we shouldn't
@@ -299,18 +330,22 @@ begin
             end if;
             State <= Sprites_D;
           when Sprites_D =>
-            if unsigned(Sprite_Y) >= 0 and
-              unsigned(Sprite_Y) < 8 then
+            -- Check if we should draw 8 or 16 lines
+            if (unsigned(Sprite_Y) >= 0 and
+                unsigned(Sprite_Y) < 8 and LCD(2) = '0')
+              or
+              (unsigned(Sprite_Y) >= 0 and
+               unsigned(Sprite_Y) < 16 and LCD(2) = '1')
+            then
               -- We found something to draw, lets read it into some registers
               -- in the following states
-              -- TODO: Replace 0 with a more suitable address
-              if Sprite_Options(4) = '1' then
-                Sprite_Row_Addr <= std_logic_vector(signed(Sprite_Tile_Number) * 16
-                                                    + signed(Sprite_Y) * 2 + 2048);
-              else
+              --if Sprite_Options(4) = '0' then  -- WAS 1!!!!!oneone11!!one
+              --  Sprite_Row_Addr <= std_logic_vector(signed(Sprite_Tile_Number) * 16
+              --                                      + signed(Sprite_Y) * 2 + 4096);
+              --else
                 Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
                                                     + (unsigned(Sprite_Y) * 2)) ;
-              end if; 
+              --end if; 
               State <= Sprites_E;
             else
               --Nothing in range to draw on screen, read next bg sprite
@@ -335,32 +370,48 @@ begin
               Sprite_Low_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
             end if; 
             State <= Sprites_G;
-            Sprite_Pixel_Counter <= X"0";
+            Sprite_Pixel_Counter <= X"00";
           when Sprites_G =>
-            --HFlip bit check
-            if Sprite_Pixel_Counter = X"8" then
+            if Sprite_Pixel_Counter = X"08" then
               State <= Sprites;
             else
                 Sprite_Tmp_X := to_integer(unsigned(Sprite_Pixel_Counter) + unsigned(Sprite_X)) - 8;
                 -- TODO: Check if the sprite is above or below and if the bg is
                 -- transparent
+                if Sprite_Options(4) = '1' then
+                  Sprite_Colour := Map_Greyscale(
+                    Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))),
+                    Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter))),
+                    Obj_Palette_1);
+                else
+                  Sprite_Colour := Map_Greyscale(
+                    Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))),
+                    Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter))),
+                    Obj_Palette_0);
+                end if;
+
                 if Sprite_Options(7) = '1' then
                   -- If below background:
+
                   if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
                     and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
-                    Next_Row_Buffer_High(Sprite_Tmp_X) <=
-                      Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
-                    Next_Row_Buffer_Low(Sprite_Tmp_X) <=
-                      Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                    Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_Colour(1);
+                    Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Colour(0);
+                    --Next_Row_Buffer_High(Sprite_Tmp_X) <=
+                    --  Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                    --Next_Row_Buffer_Low(Sprite_Tmp_X) <=
+                    --  Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
                   end if;
                   -- If Sprite is transparent (= white) dont do anythingish
-                elsif Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0'
-                  or Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0' then
+                elsif Sprite_Colour /= B"00" then
+                  Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_Colour(1);
+                  Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Colour(0);
                   -- if above background
-                  Next_Row_Buffer_High(Sprite_Tmp_X) <=
-                    Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
-                  Next_Row_Buffer_Low(Sprite_Tmp_X) <=
-                    Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                  --Next_Row_Buffer_High(Sprite_Tmp_X) <=
+                  --  Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+                  --Next_Row_Buffer_Low(Sprite_Tmp_X) <=
+                  --  Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
+
                 end if;
                 Sprite_Pixel_Counter <= std_logic_vector(unsigned(Sprite_Pixel_Counter) + 1);
             end if;
@@ -376,10 +427,13 @@ begin
   begin
     if rising_edge(Clk) then
       if Rst = '1' then
-        LCD <= X"00";
+        LCD <= X"91"; --see page 114 in gb-programming-manual.pdf
         Stat(7 downto 2) <= B"000000";
         Scroll_X <= X"00";
-        Scroll_Y <= X"00";
+        Scroll_Y <= X"91"; --was 0x00
+        Bg_Palette <= X"FC";
+        Obj_Palette_0 <= X"FF";
+        Obj_Palette_1 <= X"FF";
       elsif Gpu_Write_Enable = '1' then
         if Gpu_Addr < X"A000" then
           -- Starts at 0x8000
@@ -401,6 +455,12 @@ begin
           LCD <= Gpu_Write;
         elsif Gpu_Addr = X"FF45" then
           LYC <= Gpu_Write;
+        elsif Gpu_Addr = X"FF47" then
+          BG_Palette <= Gpu_Write;
+        elsif Gpu_Addr = X"FF48" then
+          Obj_Palette_0 <= Gpu_Write;
+        elsif Gpu_Addr = X"FF49" then
+          Obj_Palette_1 <= Gpu_Write;
         end if;
       end if;
     end if;
@@ -409,12 +469,14 @@ begin
   --Gpu_Read <= X"00";
   -- Reading not implemented yet!
   Gpu_Read <= LCD when Gpu_Addr = X"FF40" else
-              Stat when Gpu_Addr = X"FF41" else
+              (Stat or X"80") when Gpu_Addr = X"FF41" else
               Scroll_Y when Gpu_Addr = X"FF42" else
               Scroll_X when Gpu_Addr = X"FF43" else
-              Next_Row when Gpu_Addr = X"FF44" else  -- LY reg
+              Current_Row when Gpu_Addr = X"FF44" else  -- LY reg
               LYC when Gpu_Addr = X"FF45" else
-              
+              BG_Palette when Gpu_Addr = X"FF47" else
+              Obj_Palette_0 when Gpu_Addr = X"FF48" else
+              Obj_Palette_1 when Gpu_Addr = X"FF49" else
               --Video_Ram(to_integer(unsigned(Gpu_Addr(13 downto 0)))) when Gpu_Addr < X"FEA0" else
               --Obj_Ram_Even(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) when Gpu_Addr < X"FEA0" and Gpu_Addr(0) = '0' else
               --Obj_Ram_Odd(to_integer(unsigned(Gpu_Addr(7 downto 0)) srl 1)) when Gpu_Addr < X"FEA0" and Gpu_Addr(0) = '1' else

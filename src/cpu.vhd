@@ -17,7 +17,8 @@ end Cpu;
 
 architecture Cpu_Implementation of Cpu is
   -- General purpose registers. The F register is the flags register.
-  signal A, B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
+  signal B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
+  signal A : std_logic_vector(7 downto 0) := X"01";
   -- Stack pointer and program counter
   signal SP, PC : std_logic_vector(15 downto 0) := X"0000";
 
@@ -153,8 +154,14 @@ begin
         Mem_Write_Enable <= '0';
         PC <= X"0150"; -- the first adress that we can work with
         SP <= X"FFFE"; -- see 3.2.4 at page 64
-        A <= X"03";
+        A <= X"01";    -- see 120 of gb-programming-manual.pdf
         B <= X"00";
+        C <= X"13";
+        D <= X"00";
+        E <= X"D8";
+        H <= X"01";
+        L <= X"40";
+        F <= X"B0";
         Mem_Addr <= X"0000";
         Interrupts_Enabled <= '0';      -- Assumed value.
         Wait_Mode <= '0';
