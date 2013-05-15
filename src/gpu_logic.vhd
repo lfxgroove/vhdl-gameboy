@@ -324,8 +324,8 @@ begin
  
             State <= Sprites_C;
           when Sprites_C =>
-            -- HFlip check
-            if Sprite_Options(5) = '1' then
+            -- VFlip check
+            if Sprite_Options(6) = '1' then
               Sprite_Y <= std_logic_vector(7 - unsigned(Sprite_Y));
             end if;
             State <= Sprites_D;
@@ -353,8 +353,8 @@ begin
             end if;
           when Sprites_E =>
             --Read the high data from vram and increase the sprite row addr
-            --VFlip bit
-            if Sprite_Options(6) = '0' then
+            --HFlip bit
+            if Sprite_Options(5) = '0' then
               Sprite_High_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
             else
               Sprite_High_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
@@ -363,8 +363,8 @@ begin
             State <= Sprites_F;
           when Sprites_F =>
             --Read the low data from vram
-            --VFlip bit
-            if Sprite_Options(6) = '0' then
+            --HFlip bit
+            if Sprite_Options(5) = '0' then
               Sprite_Low_Data <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
             else
               Sprite_Low_Data <= Video_Ram(to_integer(unsigned(Sprite_Row_Addr)));
