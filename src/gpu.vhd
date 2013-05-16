@@ -50,8 +50,8 @@ architecture Behavioral of Gpu is
   
   constant Palette : Palette_Type := (
     "11",
-    "01",
     "10",
+    "01",
     "00"
     );
 begin

@@ -106,7 +106,7 @@ architecture Behavioral of Gpu_Logic is
     return result;
   end; -- function reverse_any_vector
 
-  function Map_Greyscale(High, Low : in std_logic;
+  function Map_Greyscale(Low, High : in std_logic;
                          Colour_Map : in std_logic_vector(7 downto 0))
     return std_logic_vector is
     variable Tmp : std_logic_vector(1 downto 0) := High & Low;
@@ -260,8 +260,8 @@ begin
             --and the sprite id, ie: sprite_id*16 + sprite_row
             --Select BG Char
             if LCD(4) = '0' then
-              Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(signed(Sprite_Row_Addr))))
-                                                  * 16 + unsigned(Bg_Sprite_Line_Offset) * 2 + 4096); 
+              Sprite_Row_Addr <= std_logic_vector(signed(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
+                                                  * 16 + signed(Bg_Sprite_Line_Offset) * 2 + 4096); 
             else
               Sprite_Row_Addr <= std_logic_vector(unsigned(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))))
                                                   * 16 + unsigned(Bg_Sprite_Line_Offset) * 2); 
@@ -376,8 +376,7 @@ begin
               State <= Sprites;
             else
                 Sprite_Tmp_X := to_integer(unsigned(Sprite_Pixel_Counter) + unsigned(Sprite_X)) - 8;
-                -- TODO: Check if the sprite is above or below and if the bg is
-                -- transparent
+                --Which palette to use
                 if Sprite_Options(4) = '1' then
                   Sprite_Colour := Map_Greyscale(
                     Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))),
@@ -390,28 +389,19 @@ begin
                     Obj_Palette_0);
                 end if;
 
+                --Check if we are below or above background
                 if Sprite_Options(7) = '1' then
-                  -- If below background:
-
+                  -- below background:
                   if Next_Row_Buffer_High(Sprite_Tmp_X) = '0'
                     and Next_Row_Buffer_Low(Sprite_Tmp_X) = '0' then
                     Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_Colour(1);
                     Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Colour(0);
-                    --Next_Row_Buffer_High(Sprite_Tmp_X) <=
-                    --  Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
-                    --Next_Row_Buffer_Low(Sprite_Tmp_X) <=
-                    --  Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
                   end if;
                   -- If Sprite is transparent (= white) dont do anythingish
-                elsif Sprite_Colour /= B"00" then
+                elsif Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0' or
+                  Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter))) /= '0' then
                   Next_Row_Buffer_High(Sprite_Tmp_X) <= Sprite_Colour(1);
                   Next_Row_Buffer_Low(Sprite_Tmp_X) <= Sprite_Colour(0);
-                  -- if above background
-                  --Next_Row_Buffer_High(Sprite_Tmp_X) <=
-                  --  Sprite_High_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
-                  --Next_Row_Buffer_Low(Sprite_Tmp_X) <=
-                  --  Sprite_Low_Data(to_integer(unsigned(Sprite_Pixel_Counter)));
-
                 end if;
                 Sprite_Pixel_Counter <= std_logic_vector(unsigned(Sprite_Pixel_Counter) + 1);
             end if;
