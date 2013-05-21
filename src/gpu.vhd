@@ -66,9 +66,9 @@ begin
     end if;
   end process;
 
-  -- Horizontal syncing logic
+  -- Horizontal syncing logic, sends a Hsync to the screen at apropriate
+  -- times
   process(Clk)
-    -- Think of delays in VHDL....!
   begin
     if rising_edge(Clk) then
       if Next_Pixel_Counter = "11" then
@@ -76,8 +76,6 @@ begin
         if Small_To_Big_X = "11" then
           Small_To_Big_X <= "00";
           Column <= std_logic_vector(unsigned(Column) + 1);
-          
-          --MAKE A VSYNC HAPPEN :D:D:D
         end if;
         
         if unsigned(X_Counter) = 670 then
@@ -97,7 +95,8 @@ begin
     end if;
   end process;
 
-  -- Vertical syncing logic
+  -- Vertical syncing logic, sends a Vsync to the screen at apropriate
+  -- times.
   process(Clk)
   begin
     if rising_edge(Clk) then
@@ -139,7 +138,8 @@ begin
   Hsync <= HS;
   Vsync <= VS;
 
-  -- Video
+  -- Sends the actual video signal to the screen, sends black if there's
+  -- no data to send as this seems to be needed to get the screen working
   process(Clk)
     variable Tmp_Video : std_logic_vector(1 downto 0);
   begin

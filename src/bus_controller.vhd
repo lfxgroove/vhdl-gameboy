@@ -62,7 +62,8 @@ architecture Bus_Controller_Behaviour of Bus_Controller is
   signal Internal_Ram : Ram_8KType := (others => X"00");
   signal Stack_Ram : Ram_128Type := (others => X"00");
 
-  signal Rom_Memory : Rom_32KType := (others => X"76");  --all halt
+  signal Rom_Memory : Rom_32KType := (others => X"76");  --filled with HALT to
+                                                         --begin with
 
   --Timer signals
   --Always increases at specific rate, 16384Hz, reg: 0xFF04
@@ -102,7 +103,7 @@ begin
     Latch => Latch,
     Data => Data);
   
-  --Static clock, 16384 Hz
+  --Generates a static clock, 16384 Hz
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -117,7 +118,8 @@ begin
     end if;   
   end process;
   
-  --The variable clock
+  --The variable clock which can be changed between
+  --4096Hz, 262144Hz, 65536Hz and 16384Hz
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -150,13 +152,15 @@ begin
       end if;
     end if;
   end process;
-
-  -- Process for writing to ram and other things...
+  
+  -- Writing to the RAM and other registers that are acessible
+  -- through the bus, also forwards the data sometime to the GPU
+  -- if necessary.
   process (Clk)
   begin
     if rising_edge(Clk) then
-      Hz_Reset_Divider <= '0';            -- ish
-      Timer_Counter_Reset <= '0';       -- ish
+      Hz_Reset_Divider <= '0';           
+      Timer_Counter_Reset <= '0';      
       if Mem_Write_Enable = '1' then
         if Mem_Addr(15 downto 14) = "00" then  -- 0x0000-0x3900
           -- Addresses 0-100 contains interrupt vectors.
@@ -227,6 +231,8 @@ begin
     --'1' when Mem_Addr(15 downto 0) = X"FF40" else  -- LCD register
     '0';
 
+  -- This takes care of reading from RAM and some registers,
+  -- also forwards signals to the GPU if necessary.
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -294,58 +300,5 @@ begin
       end if;
     end if;
   end process;
-
-  
-  ---- Reading memory:
-  --Mem_Read <=
-  --  -- Addresses 0-100 contains interrupt vectors.
-  --  -- User program area. The ROM inserted into the unit.
-  --  -- NOTE: Address X100 is the actual starting address, but
-  --  -- since it is only three bytes before some data required
-  --  -- by the boot-loader, it usually only contains the instruction
-  --  -- JMP 0x150, which is where the predefined things end.
-  --  Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
-  --  when Mem_Addr(15 downto 14) = "00" else  -- 0x0000-0x3999
-
-  --  -- The addresses 4000-7FFF is switchable in som ROMS, implement!
-  --  Rom_Memory(to_integer(unsigned(Mem_Addr(12 downto 0))))
-  --  when Mem_Addr(15 downto 14) = "01" else  -- 0x4000-0x7999
-
-  --  -- Character data. Send to GPU.
-  --  -- Character codes (BG data 1). Send to GPU.
-  --  -- Character codes (BG data 2). Send to GPU.
-  --  Gpu_Read
-  --  when Mem_Addr(15 downto 13) = "100" else  -- 0x8000-0x9FFF
-
-  --  -- External expansion working RAM 8KB.
-  --  External_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
-  --  when Mem_Addr(15 downto 13) = "101" else  -- 0xA000-0xBFFF
-
-  --  -- Unit working RAM 8KB.
-  --  Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))))
-  --  when Mem_Addr(15 downto 13) = "110" else  -- 0xC000-0xDFFF
-
-  --  -- Addresses 0xE000-0xFDFF are implemented as the default case below
-
-  --  -- OAM memory, send to GPU
-  --  Gpu_Read
-  --  when Mem_Addr(15 downto 8) = "11111110" else  -- 0xFE00-0xFE9F
-  --  -- The above actually goes all the way to 0xFEFF, but since the remaining area
-  --  -- is undefined, it does not matter.
-
-  --  -- Port mode registers (input).
-  --  -- Control registers.
-  --  -- Sound registers.
-  --  X"00"
-  --  when Mem_Addr(15 downto 7) = "111111110" else  -- 0xFF00-0xFF7F
-
-  --  -- Working stack and RAM.
-  --  Stack_Ram(to_integer(unsigned(Mem_Addr(6 downto 0))))
-  --  when Mem_Addr(15 downto 7) = "111111111" else  -- 0xFF80-0xFFFF
-
-  --  -- When we get here, we are at address 0xE000-0xFDFF.
-  --  -- Undefined value (mirror of internal ram).
-  --  Internal_Ram(to_integer(unsigned(Mem_Addr(12 downto 0))));
-
 
 end Bus_Controller_Behaviour;
