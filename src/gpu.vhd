@@ -66,7 +66,7 @@ begin
     end if;
   end process;
 
-  -- Horizontal syncing logic, sends a Hsync to the screen at apropriate
+  -- Horizontal syncing logic, sends a Hsync to the screen at appropriate
   -- times
   process(Clk)
   begin
@@ -95,7 +95,7 @@ begin
     end if;
   end process;
 
-  -- Vertical syncing logic, sends a Vsync to the screen at apropriate
+  -- Vertical syncing logic, sends a Vsync to the screen at appropriate
   -- times.
   process(Clk)
   begin
