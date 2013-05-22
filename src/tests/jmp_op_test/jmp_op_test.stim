@@ -316,7 +316,7 @@ C3 50 02
 # JP (HL)
 # LD HL, nn (nn = 00 C0)
 # LD (HL), A
-21 00 02 E9 21 00 C0 77
+21 00 03 E9 21 00 C0 77
   @check {
     [C100] 20
   }
@@ -331,7 +331,7 @@ C3 50 02
 # RST 0x00
 # LD A, #DD
 # LD (BC), A
-C7 35 DD 02
+C7 35 DD 02	
   @check {
     [C000] 00
     [C104] DD
