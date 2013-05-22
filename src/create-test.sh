@@ -18,6 +18,8 @@ sed -i "s/HOWDAREYOUCALLMEFAT/${1}_Test/g" tests/${1}_test/${1}_test.vhd
 sed -i "s/YOUWONTGETTHEHORSE/${1}_test/g" tests/${1}_test/${1}_test.vhd
 mkdir tests/${1}_test/{results,stimulus}
 touch tests/${1}_test/{results,stimulus}/.gitignore
+echo "feed.txt" > tests/${1}_test/stimulus/.gitignore
+echo "results.txt" > tests/${1}_test/results/.gitignore
 touch tests/${1}_test/${1}_test.stim
 echo "#This is where your code goes, dont forget:" >> tests/${1}_test/${1}_test.stim
 echo "#@prepare, @test { @check } for it to work:" >> tests/${1}_test/${1}_test.stim

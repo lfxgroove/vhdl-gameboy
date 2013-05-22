@@ -46,7 +46,7 @@ serial.%: S=serial.vhd
 serial.%: T=
 serial.%: U=serial.ucf
 
-gb.%: S=root.vhd cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd gpu_logic.vhd gpu.vhd serial.vhd
+gb.%: S=root.vhd cpu.vhd bus_controller.vhd alu.vhd daa_logic.vhd gpu_logic.vhd gpu.vhd serial.vhd input.vhd
 gb.%: T=
 gb.%: U=lab.ucf
 

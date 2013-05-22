@@ -37,3 +37,58 @@
     [C001] FF
   }
 }
+
+
+@test {
+  # Loop through a list...
+  # LD HL, #1000
+  21 00 10
+  # LD A, (HL+) <-- Jump here!
+  2A
+  # OR A, (HL)
+  B6
+  # JR Z, 3 Jump to "We're done" -->
+  28 03
+  # INC HL
+  23
+  # JR -7 Jump to "Jump here!" -->
+  18 F9
+  # LD A, #FF <-- We're done
+  3E FF
+  # LD A, L
+  7D
+  # LD HL, #C0C0
+  21 C0 C0
+  # LD (HL), A
+  77
+
+  # The list
+  [1000] 10 10 C0 C0 00 00
+
+  @check {
+    [C0C0] 05
+  }
+}
+
+@test {
+  # LD HL, C000
+  21 00 C0
+  # LD A, #FF
+  3E FF
+  # LD (HL), A
+  77
+  # LD A, #0F
+  3E 0F
+  # INC (HL)
+  34
+  # JR NZ, 2
+  20 02
+  # LD A, #FE <-- skipped
+  3E FE
+  # LD (HL), A <-- 0F if OK, otherwise FE
+  77
+
+  @check {
+    [C000] FE
+  }
+}

@@ -1,0 +1,335 @@
+00   tested  NOP
+01   tested  LD BC,nn
+02   tested  LD (BC), A
+03   tested  INC BC
+04   tested  INC B
+05   tested  DEC B
+06   tested  LD B, n
+07   tested  RLCA
+08   tested  LD (nn), SP
+09   tested  ADD HL, BC
+0a   tested  LD A, (BC)
+0b   tested  DEC BC
+0c   tested  INC C
+0d   tested  DEC C
+0e   tested  LD C, n
+0f   tested  RRCA
+11   tested  LD DE,nn
+12   tested  LD (DE), A
+13   tested  INC DE
+14   tested  INC D
+15   tested  DEC D
+16   tested  LD D, n
+17   tested  RLA
+18   tested  JR n (relative jump, n signed, relative first byte of next instr)
+19   tested  ADD HL, DE
+1a   tested  LD A, (DE)
+1b   tested  DEC DE
+1c   tested  INC E
+1d   tested  DEC E
+1e   tested  LD E, n
+1f   tested  RRA
+20   tested  JR NZ, n
+21   tested  LD HL,nn
+22   tested  LD (HL+), A
+23   tested  INC HL
+24   tested  INC H
+25   tested  DEC H
+26   tested  LD H, n
+28   tested  JR Z, n
+29   tested  ADD HL, HL
+2a   tested  LD A, (HL+)
+2b   tested  DEC HL
+2c   tested  INC L
+2d   tested  DEC L
+2e   tested  LD L, n
+30   tested  JR NC, n
+31   tested  LD SP,nn
+32   tested  LD (HL-), A
+33   tested  INC SP
+34   tested  INC (HL)
+35   tested  DEC (HL)
+36   tested  LD (HL), n
+37   tested  SCF
+38   tested  JR C, n
+39   tested  ADD HL, SP
+3a   tested  LD A,(HL-)
+3b   tested  DEC SP
+3c   tested  INC A
+3d   tested  DEC A
+3e   tested  LD A, #
+3f   tested  CCF
+40   tested  LD B, B
+41   tested  LD B, C
+42   tested  LD B, D
+43   tested  LD B, E
+44   tested  LD B, H
+45   tested  LD B, L
+46   tested  LD B, (HL)
+47   tested  LD B, A
+48   tested  LD C, B
+49   tested  LD C, C
+4a   tested  LD C, D
+4b   tested  LD C, E
+4c   tested  LD C, H
+4d   tested  LD C, L
+4e   tested  LD C, (HL)
+4f   tested  LD C, A
+50   tested  LD D, B
+51   tested  LD D, C
+52   tested  LD D, D
+53   tested  LD D, E
+54   tested  LD D, H
+55   tested  LD D, L
+56   tested  LD D, (HL)
+57   tested  LD D, A
+58   tested  LD E, B
+59   tested  LD E, C
+5a   tested  LD E, D
+5b   tested  LD E, E
+5c   tested  LD E, H
+5d   tested  LD E, L
+5e   tested  LD E, (HL)
+5f   tested  LD E, A
+60   tested  LD H, B
+61   tested  LD H, C
+62   tested  LD H, D
+63   tested  LD H, E
+64   tested  LD H, H
+65   tested  LD H, L
+66   tested  LD, H, (HL)
+67   tested  LD H, A
+68   tested  LD L, B
+69   tested  LD L, C
+6a   tested  LD L, D
+6b   tested  LD L, E
+6c   tested  LD L, H
+6d   tested  LD L, L
+6e   tested  LD L, (HL)
+6f   tested  LD L, A
+70   tested  LD (HL), B
+71   tested  LD (HL), C
+72   tested  LD (HL), D
+73   tested  LD (HL), E
+74   tested  LD (HL), H
+75   tested  LD (HL), L
+76   tested  HALT
+77   tested  LD (HL), A
+78   tested  LD A, B
+79   tested  LD A, C
+7a   tested  LD A, D
+7b   tested  LD A, E
+7c   tested  LD A, H
+7d   tested  LD A, L
+7e   tested  LD A, (HL)
+7f   tested  LD A, A
+80   tested  ADD A, B
+81   tested  ADD A, C
+82   tested  ADD A, D
+83   tested  ADD A, E
+84   tested  ADD A, H
+85   tested  ADD A, L
+86   tested  Add A, (HL)
+87   tested  ADD A, A
+88   tested  ADC A, B   more in detail than 89-8f
+89   tested  ADC A, C
+8a   tested  ADC A, D
+8b   tested  ADC A, E
+8c   tested  ADC A, H
+8d   tested  ADC A, L
+8e   tested  ADC A, (HL)
+8f   tested  ADC A, A
+90   tested  SUB A, B
+91   tested  SUB A, C
+92   tested  SUB A, D
+93   tested  SUB A, E
+94   tested  SUB A, H
+95   tested  SUB A, L
+96   tested  SUB A, (HL)
+97   tested  SUB A, A
+98   tested  SBC A, B - tested more in detail than 99-9F
+99   tested  SBC A, C
+9a   tested  SBC A, D
+9b   tested  SBC A, E
+9c   tested  SBC A, H
+9d   tested  SBC A, L
+9e   tested  SBC A, (HL)
+9f   tested  SBC A, A
+a0   tested  AND A, B  - tested in more detail than A1-A7
+a1   tested  AND A, C
+a2   tested  AND A, D
+a3   tested  AND A, E
+a4   tested  AND A, H
+a5   tested  AND A, L
+a6   tested  AND A, (HL)
+a7   tested  AND A, A
+a8   tested  XOR A, B - tested in more detail than A9-AF
+a9   tested  XOR A, C
+aa   tested  XOR A, D
+ab   tested  XOR A, E
+ac   tested  XOR A, H
+ad   tested  XOR A, L
+ae   tested  XOR A, (HL)
+af   tested  XOR A, A
+b0   tested  OR A, B   - tested in more detail than B1-B7
+b1   tested  OR A, C
+b2   tested  OR A, D
+b3   tested  OR A, E
+b4   tested  OR A, H
+b5   tested  OR A, L
+b6   tested  OR A, (HL)
+b7   tested  OR A, A
+b8   tested  CP A, B - (only tested if this does not destory A)
+b9   tested  CP A, C - (only tested if this does not destory A)
+ba   tested  CP A, D - (only tested if this does not destory A)
+bb   tested  CP A, E - (only tested if this does not destory A)
+bc   tested  CP A, H - (only tested if this does not destory A)
+bd   tested  CP A, L - (only tested if this does not destory A)
+be   tested  CP A, (HL) - (only tested if this does not destory A)
+bf   tested  CP A, A - (only tested if this does not destory A)
+c0   tested  RET NZ
+c1   tested  POP BC
+c2   tested  JP NZ,nn
+c3   tested  JP nn
+c4   tested  CALL NZ, nn
+c5   tested  PUSH BC
+c6   tested  Add A, #
+c7   tested  RST 0x00
+c8   tested  RET Z
+c9   tested  RET
+ca   tested  JP Z,nn
+cc   tested  CALL Z, nn
+cd   tested  CALL nn
+ce   tested  ADC A, #
+cf   tested  RST 0x08
+d0   tested  RET NC
+d1   tested  POP DE
+d2   tested  JP NC,nn
+d4   tested  CALL NC, nn
+d5   tested  PUSH DE
+d6   tested  SUB A, #
+d7   tested  RST 0x10
+d8   tested  RET C
+da   tested  JP C,nn
+dc   tested  CALL C, nn
+de   tested  SBC A, #
+df   tested  RST 0x18
+e0   tested  LD ($FF00+n), A
+e1   tested  POP HL
+e2   tested  LD(C+$FF00),A
+e5   tested  PUSH HL
+e6   tested  AND A, #
+e7   tested  RST 0x20
+e8   tested  ADD SP, n (n = signed byte) # (High or low flags????)
+e9   tested  JP (HL)
+ea   tested  LD (nn), A
+ee   tested  XOR A, #
+ef   tested  RST 0x28
+f0   tested  LD A, ($FF00+n)
+f1   tested  POP AF
+f2   tested  LD A,(C+$FF00)
+f5   tested  PUSH AF tested well enough I belive
+f6   tested  OR A, #
+f7   tested  RST 0x30
+f8   tested  LD HL, SP+n
+f9   tested  LD SP, HL
+fa   tested  LD A, (nn)
+fe   tested  CP A, # - (only tested if this does not destory A)
+ff   tested  RST 0x38
+cb00 tested  RLC B
+cb01 tested  RLC C
+cb02 tested  RLC D
+cb03 tested  RLC E
+cb04 tested  RLC H
+cb05 tested  RLC L
+cb06 tested  RLC (HL)
+cb07 tested  RLC A (same as RLCA)
+cb08 tested  RRC B
+cb09 tested  RRC C
+cb0a tested  RRC D
+cb0b tested  RRC E
+cb0c tested  RRC H
+cb0d tested  RRC L
+cb0e tested  RRC (HL)
+cb0f tested  RRC A
+cb10 tested  RL B
+cb11 tested  RL C
+cb12 tested  RL D
+cb13 tested  RL E
+cb14 tested  RL H
+cb15 tested  RL L
+cb16 tested  RL (HL)
+cb17 tested  RL A (same as RLA)
+cb18 tested  RR B
+cb19 tested  RR C
+cb1a tested  RR D
+cb1b tested  RR E
+cb1c tested  RR H
+cb1d tested  RR L
+cb1e tested  RR (HL)
+cb1f tested  RR A
+cb20 tested  SLA B
+cb21 tested  SLA C
+cb22 tested  SLA D
+cb23 tested  SLA E
+cb24 tested  SLA H
+cb25 tested  SLA L
+cb26 tested  SLA (HL)
+cb27 tested  SLA A
+cb28 tested  SRA B
+cb29 tested  SRA C
+cb2a tested  SRA D
+cb2b tested  SRA E
+cb2c tested  SRA H
+cb2d tested  SRA L
+cb2e tested  SLA (HL)
+cb2f tested  SRA A
+cb30 tested  SWAP B
+cb31 tested  SWAP C
+cb32 tested  SWAP D
+cb33 tested  SWAP E
+cb34 tested  SWAP H
+cb35 tested  SWAP L
+cb36 tested  SWAP (HL)
+cb37 tested  SWAP A
+cb38 tested  SRL B
+cb39 tested  SRL C
+cb3a tested  SRL D
+cb3b tested  SRL E
+cb3c tested  SRL H
+cb3d tested  SRL L
+cb3e tested  SRL (HL)
+cb3f tested  SRL A
+cb40 tested  BIT b, B (where 8 * b is added to the OP-code)
+cb41 tested  BIT b, C (where 8 * b is added to the OP-code)
+cb42 tested  BIT b, D (where 8 * b is added to the OP-code)
+cb43 tested  BIT b, E (where 8 * b is added to the OP-code)
+cb44 tested  BIT b, H (where 8 * b is added to the OP-code)
+cb45 tested  BIT b, L (where 8 * b is added to the OP-code)
+cb46 tested  BIT b, (HL) (where 8 * b is added to the OP-code)
+cb47 tested  BIT b, A (where 8 * b is added to the OP-code)
+cb80 tested  RES b, B (where 8 * b is added to the OP-code)
+cb81 tested  RES b, C (where 8 * b is added to the OP-code)
+cb82 tested  RES b, D (where 8 * b is added to the OP-code)
+cb83 tested  RES b, E (where 8 * b is added to the OP-code)
+cb84 tested  RES b, H (where 8 * b is added to the OP-code)
+cb85 tested  RES b, L (where 8 * b is added to the OP-code)
+cb86 tested  RES b, (HL) (where 8 * b is added to the OP-code)
+cb87 tested  RES b, A (where 8 * b is added to the OP-code)
+cbc0 tested  SET b, B (where 8 * b is added to the OP-code)
+cbc1 tested  SET b, C (where 8 * b is added to the OP-code)
+cbc2 tested  SET b, D (where 8 * b is added to the OP-code)
+cbc3 tested  SET b, E (where 8 * b is added to the OP-code)
+cbc4 tested  SET b, H (where 8 * b is added to the OP-code)
+cbc5 tested  SET b, L (where 8 * b is added to the OP-code)
+cbc6 tested  SET b, (HL) (where 8 * b is added to the OP-code)
+cbc7 tested  SET b, A (where 8 * b is added to the OP-code)
+10           Multi-byte op-codes
+27           DAA (not implemented in daa_logic)
+2f           CPL (set N and H flag)
+cb           Multi-byte op-codes
+d9           RETI
+f3           DI
+fb           EI
+1000         STOP Not correct implementation, halts instead
+Total: 326 of 334 opcodes tested.

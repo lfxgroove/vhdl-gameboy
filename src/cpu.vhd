@@ -12,12 +12,14 @@ entity Cpu is
        --they are LSB first: Vblank, LCD status trig, timer overflow, serial link,
        --joypad press
        --They have the same priority, ie: Vblank is handled first, LCD second etc.
-       Interrupt_Requests : in std_logic_vector(7 downto 0));
+       Interrupt_Requests : in std_logic_vector(7 downto 0);
+       Current_Interrupts : out std_logic_vector(7 downto 0));
 end Cpu;
 
 architecture Cpu_Implementation of Cpu is
   -- General purpose registers. The F register is the flags register.
-  signal A, B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
+  signal B, C, D, E, F, H, L : std_logic_vector(7 downto 0) := X"00";
+  signal A : std_logic_vector(7 downto 0) := X"01";
   -- Stack pointer and program counter
   signal SP, PC : std_logic_vector(15 downto 0) := X"0000";
 
@@ -120,14 +122,22 @@ begin
     Flags_Out => Daa_Flags,
     Output => Daa_Output);
 
-  --This process waits for interrupts and adds them to the "queue".
+  -- This process waits for interrupts and adds them to the "queue" when they
+  -- come in
   process (Clk)
   begin
     if rising_edge(Clk) then
-      Interrupts_Queue <= (Interrupts_Queue or Interrupt_Requests) and (not Interrupts_Handled);
+      if Mem_Addr = X"FF0F" and Mem_Write_Enable = '1' then
+        Interrupts_Queue <= Mem_Write;
+      else
+        Interrupts_Queue <= (Interrupts_Queue or Interrupt_Requests) and (not Interrupts_Handled);
+      end if;
     end if;
   end process;
+  Current_Interrupts <= Interrupts_Queue;
   
+  -- This updates the DMA address so that the CPU process
+  -- knows whether we've got a new DMA transfer coming in or not
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -141,7 +151,8 @@ begin
     end if;
   end process;
   
-  -- Megaloid CPU process :)
+  -- The CPU process, takes care of DMA aswell, mostly parses
+  -- opcodes and runs them with a big state-machine.
   process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin
@@ -153,8 +164,14 @@ begin
         Mem_Write_Enable <= '0';
         PC <= X"0150"; -- the first adress that we can work with
         SP <= X"FFFE"; -- see 3.2.4 at page 64
-        A <= X"03";
+        A <= X"01";    -- see 120 of gb-programming-manual.pdf
         B <= X"00";
+        C <= X"13";
+        D <= X"00";
+        E <= X"D8";
+        H <= X"01";
+        L <= X"40";
+        F <= X"B0";
         Mem_Addr <= X"0000";
         Interrupts_Enabled <= '0';      -- Assumed value.
         Wait_Mode <= '0';
@@ -197,7 +214,7 @@ begin
           --interrupts are mainly handled here
           when Waiting | Halted =>
             if State = Waiting then
-              if (unsigned(Waited_Clks) > 5) then
+              if (unsigned(Waited_Clks) > 20) then
                 State <= Fetch;
                 Waited_Clks <= X"0000";
               end if;

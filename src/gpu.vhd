@@ -45,33 +45,30 @@ architecture Behavioral of Gpu is
   signal Small_To_Big_Y : std_logic_vector(1 downto 0) := "00";
   -- HS VS
   signal HS, VS : std_logic := '0';
-
+  
   type Palette_Type is array (0 to 3) of std_logic_vector(1 downto 0);
   
   constant Palette : Palette_Type := (
     "11",
-    "01",
     "10",
+    "01",
     "00"
     );
 begin
-  Current_Row <= Row;
+  Current_Row <= Row when unsigned(Row) <= 153 else
+                 X"00";
 
   -- Pixel clock generation.
   process(Clk)
   begin
     if rising_edge(Clk) then
-      if Rst = '1' then
-        Next_Pixel_Counter <= "00";
-      else
-        Next_Pixel_Counter <= std_logic_vector(unsigned(Next_Pixel_Counter) + 1);
-      end if;
+      Next_Pixel_Counter <= std_logic_vector(unsigned(Next_Pixel_Counter) + 1);
     end if;
   end process;
 
-  -- Horizontal syncing logic
+  -- Horizontal syncing logic, sends a Hsync to the screen at appropriate
+  -- times
   process(Clk)
-    -- Think of delays in VHDL....!
   begin
     if rising_edge(Clk) then
       if Next_Pixel_Counter = "11" then
@@ -79,8 +76,6 @@ begin
         if Small_To_Big_X = "11" then
           Small_To_Big_X <= "00";
           Column <= std_logic_vector(unsigned(Column) + 1);
-          
-          --MAKE A VSYNC HAPPEN :D:D:D
         end if;
         
         if unsigned(X_Counter) = 670 then
@@ -100,7 +95,8 @@ begin
     end if;
   end process;
 
-  -- Vertical syncing logic
+  -- Vertical syncing logic, sends a Vsync to the screen at appropriate
+  -- times.
   process(Clk)
   begin
     if rising_edge(Clk) then
@@ -114,7 +110,7 @@ begin
           Row <= std_logic_vector(unsigned(Row) + 1);
           Next_Row <= '1';
           Small_To_Big_Y <= "00";
-          if Row >= Screen_Height then
+          if unsigned(Row) >= unsigned(Screen_Height) - 1 then
             Next_Screen <= '1';
           end if;
         end if;
@@ -142,7 +138,8 @@ begin
   Hsync <= HS;
   Vsync <= VS;
 
-  -- Video
+  -- Sends the actual video signal to the screen, sends black if there's
+  -- no data to send as this seems to be needed to get the screen working
   process(Clk)
     variable Tmp_Video : std_logic_vector(1 downto 0);
   begin
