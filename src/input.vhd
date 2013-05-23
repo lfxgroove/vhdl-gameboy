@@ -2,8 +2,8 @@ library ieee;
 use ieee.std_logic_1164.all;
 use IEEE.numeric_std.all;
 
---this entity takes care of controller/joypad input and forwards it to the bus
---where it is instatiated
+-- This entity takes care of controller/joypad input and forwards it to the bus
+-- where it is instatiated
 
 entity Input is
   port (Clk, Reset : in std_logic;
@@ -46,7 +46,12 @@ begin
       end if;
     end if;   
   end process;
-  
+
+  -- Process to read data that is available from the controller, the states
+  -- that we go through are: waiting, latching, reading and pulsing. We start with
+  -- latching to tell the NES-controller to save what buttons are being pressed
+  -- to it's shift-register. After that we read 8 bits by pulsing and then reading
+  -- one bit. Totally we send 7 pulses since we get the first bit "for free" directly.
   process (Clk)
   begin
     if rising_edge(Clk) then

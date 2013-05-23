@@ -8,6 +8,5 @@ Makefile
 *.cr.mti
 *.vcd
 *.cf
-implemented_op_codes.txt
 build/
 /*_test

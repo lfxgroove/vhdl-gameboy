@@ -3,15 +3,6 @@ use ieee.std_logic_1164.all;
 use ieee.std_logic_textio.all;
 use ieee.numeric_std.all;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
--- use IEEE.STD_LOGIC_UNSIGNED.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
 entity Serial is
     Port ( Clk , Rst, RxD, TxD : in  std_logic;
            Led : out std_logic_vector(7 downto 0);
@@ -41,6 +32,8 @@ architecture Behavioral of Serial is
     signal Data : std_logic_vector(7 downto 0);
     signal Current_Addr : std_logic_vector(15 downto 0) := X"0000";
 begin
+  
+  -- A simple enpulsare :)
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -53,15 +46,9 @@ begin
       end if;
     end if;
   end process;
-
   
-  
-  --process(Clk)
-  --begin
-  --  if rising_edge(Clk) then
-  --  end if;     
-  --end process;       
-  
+  -- Pretty much taken straight from our Lab 4 in TSEA83 to read from the UART.
+  -- Shifts in a bit at a given rate to the signal sreg.
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -91,9 +78,9 @@ begin
 
   Data <= sreg(8 downto 1);
 
-    -- 10 bit shiftregister
+  -- 10 bit shiftregister
   process (Clk)
-  begin  -- process
+  begin
     if rising_edge(Clk) then
       if rst = '1' then
         sreg <= B"00_0000_0000";
@@ -102,7 +89,12 @@ begin
       end if;
     end if;
   end process;
-
+  
+  -- Simple state machine to read from the UART, first it reads the size in
+  -- bytes of the data coming (16 bit value). After that that much data is read
+  -- and a simple checksum is calculated to check that everything is okay.
+  -- If everything is okay we light all the LEDs as a visual presentation for the
+  -- user to debug.
   process(Clk)
   begin
     if rising_edge(Clk) then

@@ -122,7 +122,8 @@ begin
     Flags_Out => Daa_Flags,
     Output => Daa_Output);
 
-  --This process waits for interrupts and adds them to the "queue".
+  -- This process waits for interrupts and adds them to the "queue" when they
+  -- come in
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -134,7 +135,9 @@ begin
     end if;
   end process;
   Current_Interrupts <= Interrupts_Queue;
-
+  
+  -- This updates the DMA address so that the CPU process
+  -- knows whether we've got a new DMA transfer coming in or not
   process (Clk)
   begin
     if rising_edge(Clk) then
@@ -148,7 +151,8 @@ begin
     end if;
   end process;
   
-  -- Megaloid CPU process :)
+  -- The CPU process, takes care of DMA aswell, mostly parses
+  -- opcodes and runs them with a big state-machine.
   process (Clk)
     variable Tmp : std_logic_vector(15 downto 0);
   begin

@@ -9,7 +9,6 @@ use IEEE.numeric_std.all;
 -- Output - the result
 -- See http://www.z80.info/z80syntx.htm#DAA for info.
 
-
 -- --------------------------------------------------------------------------------
 -- |           | C Flag  | HEX value in | H Flag | HEX value in | Number  | C flag|
 -- | Operation | Before  | upper digit  | Before | lower digit  | added   | After |
@@ -30,8 +29,6 @@ use IEEE.numeric_std.all;
 -- |   DEC     |    1    |     7-F      |   0    |     0-9      |   A0    |   1   |
 -- |   NEG     |    1    |     6-F      |   1    |     6-F      |   9A    |   1   |
 -- |------------------------------------------------------------------------------|
-
--- NOT IMPLEMENTED YET!
 
 entity Daa_Logic is
   port (Input : in std_logic_vector(7 downto 0);
@@ -86,7 +83,7 @@ begin
   Z_Out <= '1' when Tmp_Output = X"00" else
            '0';
   Output <= Tmp_Output;
-
+  
   Flags_Out(7) <= Z_Out;
   Flags_Out(6) <= Flags(6);
   Flags_Out(5) <= '0';

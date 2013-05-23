@@ -212,7 +212,10 @@ begin
       Last_Stat_Mode <= Stat_Mode;
     end if;   
   end process;
-  
+
+  -- This process generates data to the 2 row buffers by reading
+  -- the background first, and after that sprites and positioning
+  -- them where they should be. See inline comments for more info.
   process (Clk) is
     variable Sprite_Tmp_X : integer range 0 to 255;
     variable Sprite_Colour : std_logic_vector(1 downto 0) := B"00";
@@ -254,8 +257,6 @@ begin
             end if; 
             State <= Read_Bg_B;
           when Read_Bg_B =>
-            --Sprite_Id <= Video_Ram(to_integer(unsigned(Bg_Map_Addr)));
-            -- Sprite_Row <= Next_Row;
             --calculates the sprite's row address using the current sprite row
             --and the sprite id, ie: sprite_id*16 + sprite_row
             --Select BG Char
@@ -272,6 +273,7 @@ begin
               State <= Bg_Apply_Palette;
               Sprite_Pixel_Counter <= X"00";
               Sprite_Addr <= X"00";
+              --Scrolling in X axis is applied here
               Next_Row_Buffer_High(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_High(167 downto to_integer(unsigned(Scroll_X) mod 8));
               Next_Row_Buffer_Low(167 - to_integer(unsigned(Scroll_X) mod 8) downto 0) <= Next_Row_Buffer_Low(167 downto to_integer(unsigned(Scroll_X) mod 8));
             else
@@ -279,8 +281,6 @@ begin
               Next_Row_Buffer_High(167 downto 160) <= reverse_any_vector(Video_Ram(to_integer(unsigned(Sprite_Row_Addr))));
               Next_Row_Buffer_High(159 downto 0) <= Next_Row_Buffer_High(167 downto 8);
               State <= Read_Bg_D;
-              -- increase the addr here so that the compiler understands that
-              -- we want to use RAM :D:D:D:D
               Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Row_Addr) + 1);
             end if;
           when Read_Bg_D =>
@@ -319,9 +319,7 @@ begin
             Sprite_Tile_Number <= Obj_Ram_Even(to_integer(unsigned(Sprite_Addr)));
             Sprite_Options <= Obj_Ram_Odd(to_integer(unsigned(Sprite_Addr)));
             Sprite_Addr <= std_logic_vector(unsigned(Sprite_Addr) + 1);
-
             Sprite_Y <= std_logic_vector(unsigned(Next_Row) - unsigned(Sprite_Y) + 16);
- 
             State <= Sprites_C;
           when Sprites_C =>
             -- VFlip check
@@ -339,13 +337,8 @@ begin
             then
               -- We found something to draw, lets read it into some registers
               -- in the following states
-              --if Sprite_Options(4) = '0' then  -- WAS 1!!!!!oneone11!!one
-              --  Sprite_Row_Addr <= std_logic_vector(signed(Sprite_Tile_Number) * 16
-              --                                      + signed(Sprite_Y) * 2 + 4096);
-              --else
-                Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
-                                                    + (unsigned(Sprite_Y) * 2)) ;
-              --end if; 
+              Sprite_Row_Addr <= std_logic_vector(unsigned(Sprite_Tile_Number) * 16
+                                                  + (unsigned(Sprite_Y) * 2)) ;
               State <= Sprites_E;
             else
               --Nothing in range to draw on screen, read next bg sprite
@@ -405,14 +398,13 @@ begin
                 end if;
                 Sprite_Pixel_Counter <= std_logic_vector(unsigned(Sprite_Pixel_Counter) + 1);
             end if;
-            --This line tells a story D:
-            --for I in 7 downto 0 loop
         end case;
       end if;
     end if;
   end process;
   
-  -- Writing to video memory
+  -- Take care of writes to video ram/registers, these come in from the
+  -- bus controller
   process (Clk) is
   begin
     if rising_edge(Clk) then
@@ -455,9 +447,7 @@ begin
       end if;
     end if;
   end process;
-
-  --Gpu_Read <= X"00";
-  -- Reading not implemented yet!
+  
   Gpu_Read <= LCD when Gpu_Addr = X"FF40" else
               (Stat or X"80") when Gpu_Addr = X"FF41" else
               Scroll_Y when Gpu_Addr = X"FF42" else
